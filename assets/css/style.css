@@ -1,0 +1,469 @@
+@charset "utf-8";
+
+body{
+  font-family: 'Noto Sans JP', "Helvetica Neue", "Helvetica", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "Meiryo", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  /* color: #c93030; */
+}
+
+/* アニメーションさせたい要素の初期状態 */
+.fade-in-target {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s, transform 1s; /* 1秒かけて変化させる */
+}
+
+/* 画面内に入ったときに付与されるクラス */
+.fade-in-target.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-target {
+  text-align: center;
+  padding: 0px 50px 0px 50px;
+}
+/* header */
+.header{
+  background-color: whitesmoke;
+  width: 100%;
+  padding: 10px 30px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  border-bottom: 1px solid #e0e0e0;
+  z-index: 2;
+}
+.header-logo img{
+  height: 45px;
+  width: auto;
+}
+.header-nav ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+}
+.header-nav a{
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+}
+.header-nav a:hover {
+  color: #007bff;
+}
+/* main-visual */
+.main-visual{
+  position: relative;
+  height: 65vh;
+  overflow: hidden;
+}
+.main-visual img{
+  padding-top: 160px;
+} 
+.background-logo img{
+  object-fit: cover;
+  object-position: center;
+  width: 100vw;
+  height: 65vh;
+  padding: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+:root{
+  /* アニメーション全体の時間を管理します */
+  --animation-duration: 2.0s; /* 動画の速度に合わせて調整してください */
+  --easing: cubic-bezier(0.8, 0, 0.170, 1);
+}
+
+.mask-img{
+  position: relative;
+  display: inline-block;
+  /* overflow: hidden; はこの実装では不要です */
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  contain: layout paint style;
+  position: absolute;
+  z-index: 1;
+}
+
+.mask-img img{
+display: block;
+width: 80vw;
+height: auto;
+opacity: 1; /* フェードインは使わないので、常に不透明にします */
+
+  /* ★変更点: clip-pathで画像の表示領域を制御します */
+  /* 初期状態では、下から100%の位置でクリップし非表示にします */
+clip-path: inset(0 0 100% 0);
+will-change: clip-path;
+}
+
+/* ★変更点: 擬似要素を「黒い帯」として使用します */
+.mask-img::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ffffff; /* 白色に変更 */
+  transform: translateY(101%); /* 初期位置は要素の下 */
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* 発火後の状態 */
+.mask-img.anim img{
+  /* ★変更点: 画像を表示させるアニメーションを適用します */
+  animation: reveal var(--animation-duration) var(--easing) forwards;
+}
+
+.mask-img.anim::after{
+  /* 黒い帯をスライドさせるアニメーションを適用します */
+  animation: mask-slide var(--animation-duration) var(--easing) forwards;
+}
+
+/* 黒い帯が下→上へスライドして通過するアニメーション */
+@keyframes mask-slide{
+  0%        { transform: translateY(101%); }
+  40%, 60%  { transform: translateY(0%);   } /* 中央で一瞬停止するような動き */
+  100%      { transform: translateY(-101%);} /* 上へ抜けて非表示 */
+}
+
+/* ★追加: 画像がせり上がって表示されるアニメーション */
+@keyframes reveal {
+  /* 帯が中央に達して動き出すまで(20%)は非表示のまま */
+  0%, 20% {
+    clip-path: inset(0 0 100% 0);
+  }
+  /* 帯が上に抜けきる(100%)のに合わせて、完全に表示します */
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* アクセシビリティ（動きを減らす環境設定） */
+@media (prefers-reduced-motion: reduce){
+  * { 
+    animation-duration: .001ms !important; 
+    animation-iteration-count: 1 !important; 
+    transition-duration: .001ms !important; 
+  }
+  .mask-img img{ 
+    opacity: 1; 
+    /* ★変更点: 最初から表示されるようにclip-pathをリセット */
+    clip-path: inset(0 0 0 0); 
+  }
+  /* 帯は表示不要 */
+  .mask-img::after {
+    display: none;
+  }
+}
+/* news */
+.news-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  text-align: left;
+  margin: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #333;
+}
+
+/* ニュースリスト全体 */
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 各ニュース項目 */
+.news-item {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  margin-right: 20px;
+  padding: 15px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/* 日付 */
+.news-date {
+  font-size: 14px;
+  color: #888;
+  margin-right: 20px;
+}
+
+/* ニュースタイトルリンク */
+.news-link {
+  font-size: 16px;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.news-link:hover {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+/* 「MORE」リンクのコンテナ ★変更点 */
+.more-link-wrapper {
+  text-align: right; /* 中の要素を右寄せにする */
+  margin-top: 25px; /* リストとの間に余白を設ける */
+
+}
+
+/* 「MORE」リンク */
+.more-link {
+  display: inline-block;
+  text-decoration: underline;
+  color: #555;
+  font-weight: bold;
+  transition: color 0.3s;
+  margin-right: 20px;
+}
+
+.more-link:hover {
+  color: #000;
+}
+
+/* LIFE LOG Factory */
+.service-section{
+  color: #333;
+}
+.service-container {
+  /* max-width: 1120px; */
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ヘッダー部分 */
+.section-header {
+  margin-bottom: 40px;
+}
+
+.service-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.service-main-title {
+  /* "Service"のフォントはセリフ体（明朝体）のように見えるため指定 */
+  font-family: "Times New Roman", Times, serif;
+  font-size: 5vw; /* 画面幅に応じてサイズが変わる */
+  color: #0d1b3f; /* 濃い紺色 */
+  margin: 0;
+  font-weight: normal;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-top: 15px;
+}
+
+/* メインコンテンツ部分 */
+.service-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 50px;
+}
+
+.service-content-left {
+  flex: 1.2; /* 左側のカラムを少し広めに */
+}
+
+.service-catchphrase {
+  font-size: 4.9vw;
+  font-weight: bold;
+  color: #0d1b3f;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.service-catchphrase img {
+  width: 100%;
+  height: auto;
+}
+
+.service-content-right {
+  flex: 1;
+}
+
+.service-description {
+  font-size: 1.5vw;
+  line-height: 1.9;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 40px;
+}
+
+.club-info-container {
+  background-color: #f9f9f9; /* ページの背景色 */
+  color: #333;
+  line-height: 1.7;
+  margin: 40px auto;
+}
+
+/* 全体を囲むコンテナ */
+.club-info-container {
+  max-width: 800px;
+  padding: 20px 40px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+/* セクションタイトル */
+.info-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  color: #222;
+}
+
+/* 情報リスト全体 */
+.info-list {
+  margin: 0;
+}
+
+/* 各情報項目（ラベルとデータの行） */
+.info-item {
+  display: flex;
+  flex-wrap: wrap; /* 画面が狭い時に折り返す */
+  padding: 25px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+/* ラベル (dt) */
+.info-label {
+  width: 160px; /* PC表示時のラベルの幅 */
+  font-weight: 600; /* 少し太字に */
+  padding-right: 20px;
+  box-sizing: border-box; /* paddingを含めて幅を計算 */
+}
+
+/* データ (dd) */
+.info-data {
+  flex: 1; /* 残りの幅をすべて使う */
+  margin: 0;
+  min-width: 250px; /* データ部分が狭くなりすぎないように */
+}
+
+/* 事業内容のリスト */
+.info-data ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.info-data ul li {
+  margin-bottom: 8px;
+}
+
+.info-data ul li:last-child {
+  margin-bottom: 0;
+}
+
+/* 設立日の注釈 */
+.note {
+  font-size: 0.9em;
+  color: #555;
+  display: block; /* 改行して表示 */
+  margin-top: 4px;
+}
+
+/* リンクのスタイル */
+.info-data a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.info-data a:hover {
+  text-decoration: underline;
+}
+
+/* --- レスポンシブデザイン (スマートフォン向け) --- */
+@media (max-width: 768px) {
+  .club-info-container {
+      padding: 15px 20px;
+  }
+
+  .info-item {
+      flex-direction: column; /* 縦並びにする */
+      padding: 20px 0;
+  }
+
+  .info-label {
+      width: 100%; /* 幅を100%に */
+      margin-bottom: 8px; /* データとの間に余白を設ける */
+      padding-right: 0;
+  }
+
+  .info-data {
+      min-width: 100%;
+  }
+} 
+
+/* footer */
+.footer {
+  display: flex;
+  justify-content: space-between; /* 左・中央・右に分割 */
+  align-items: flex-start ;       /* 上揃え */
+  padding: 20px 40px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
+}
+
+/* 左 ロゴ縦並び */
+.footer-left {
+  display: flex;
+  gap: 30px;
+}
+.footer-logo {
+  width: 150px;
+  margin-bottom: 8px;
+}
+
+/* 中央 リンク */
+.footer-center {
+  display: flex;
+  flex-wrap: wrap;   /* 折り返し可能 */
+  justify-content: center;
+  gap: 15px;         /* 間隔 */
+  max-width: 500px;  /* 長すぎ防止 */
+  text-align: center;
+}
+.footer-center a {
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+}
+.footer-center a:hover {
+  text-decoration: underline;
+}
+
+/* 右 SNSアイコン */
+.footer-right {
+  align-self: center;
+}
+.footer-right a {
+  margin-left: 15px;
+}
+.footer-right img {
+  width: 30px;
+  height: 30px;
+}

@@ -2,10 +2,218 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>私のウェブサイト</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <title>LIFE LOG Factory</title>
 </head>
 <body>
-    <h1>こんにちは！</h1>
-    <p>これはGitHub Pagesで公開されたサイトです。</p>
+    <!-- header -->
+    <header class="header">
+       <div class="header-logo">
+            <a href="index.html">
+                <img src="assets\img\LLF-img\LLF taitoru black.svg" alt="logo">
+            </a>
+        </div>
+        <nav class="header-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- main visual -->
+    <div class="main-visual">
+        <div class="background-logo">
+            <img src="assets/img/LLF-img/background.svg" alt="background">
+        </div>
+        <div class="mask-img" data-delay="0.5">
+            <img src="assets/img/LLF-img/LLF taitoru.svg" alt="logo">
+        </div>
+    </div>
+    <!-- news -->
+    <section class="news-container">
+        <div class="fade-in-target">
+            <div class="news-title">NEWS</div>
+        </div>
+        <div class="fade-in-target">
+            <ul class="news-list">
+                <li class="news-item">
+                    <time class="news-date" datetime="2025-07-08">2025/7/8</time>
+                    <a href="#" class="news-link">example</a>
+                </li>
+                <li class="news-item">
+                    <time class="news-date" datetime="2025-07-03">2025/7/3</time>
+                    <a href="#" class="news-link">example</a>
+                </li>
+                <li class="news-item">
+                    <time class="news-date" datetime="2025-06-18">2025/6/18</time>
+                    <a href="#" class="news-link">example</a>
+                </li>
+                <li class="news-item">
+                    <time class="news-date" datetime="2025-06-02">2025/6/2</time>
+                    <a href="#" class="news-link">example</a>
+                </li>
+                <li class="news-item">
+                    <time class="news-date" datetime="2025-05-09">2025/5/9</time>
+                    <a href="#" class="news-link">example</a>
+                </li>
+            </ul>
+            <div class="more-link-wrapper">
+                <a href="#" class="more-link">MORE</a>
+            </div>
+        </div>
+    </section>
+    <!-- About LIFE LOG Factory -->
+    <section class="service-section">
+        <div class="service-container">
+            <div class="fade-in-target">
+                <div class="service-header">
+                    <div class="service-title-group">
+                        <h1 class="service-main-title">LIFE LOG Factory</h1>
+                    </div>
+                    <hr class="divider">
+                </div>
+            </div>
+            <div class="fade-in-target">
+                <div class="service-content">
+                    <div class="service-content-left">
+                        <div class="service-catchphrase">
+                            “ライフルログ”<br>に関する<br>“もの・ことづくり”
+                        </div>
+                    </div>
+                        
+                    <div class="service-content-right">
+                        <p class="service-description">
+                            私たちは、“ライフルログ”に関する“もの・ことづくり”を通じて、健康や地域社会、さらには環境に関わるさまざまな課題の解決を目指した製品開発に取り組むサークルです。
+                            人々がより豊かに安心して暮らせる社会の実現を目標に掲げ、これまでにない斬新で独自性のある製品を生み出すことで、新しい価値の創造に挑戦しています。
+                        </p>
+                        <div class="more-link-wrapper">
+                            <a href="#" class="more-link">MORE</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Projects -->
+     <section class="service-section">
+        <div class="service-container">
+            <div class="fade-in-target">
+                <div class="service-header">
+                    <div class="service-title-group">
+                        <h1 class="service-main-title">Projects</h1>
+                    </div>
+                    <hr class="divider">
+                </div>
+            </div>
+            <div class="fade-in-target">
+                <div class="service-content">
+                    <div class="service-content-left">
+                        <h2 class="service-catchphrase"><img src="assets/img/BREMONS/iPhone 15 Pro.svg" alt="">
+                        </h2>
+                        呼吸機能トレーニングゲームの開発
+                    </div>
+
+                    <div class="service-content-right">
+                        <p class="service-description">
+                         誰もが飽きずに続けられるように単調ではない呼吸機能改善及び維持のためのトレーニングゲームを開発。
+                        呼吸器 「長さ」「力強さ」「リズム」の3つの要素で分け意識してコントロールすることで呼吸機能を高める。  
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Schedule -->
+    <div class="fade-in-target">
+        <div class="service-header">
+            <div class="service-title-group">
+                <div class="service-title-group">
+                    <h1 class="service-main-title">活動日程</h1>
+                </div>
+            </div>
+        </div>
+        <hr class="divider">
+    </div>
+    <div class="fade-in-target">
+        <iframe src="https://calendar.google.com/calendar/embed?src=ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com&ctz=Asia%2FTokyo"
+            style="border: 0"
+            width="800"
+            height="600"
+            frameborder="0"
+            scrolling="no">
+        </iframe>
+    </div>
+    </div>
+    <!-- Club Overview -->
+        <div class="club-info-container">
+            <div class="fade-in-target">
+                <h2 class="info-title">サークルについて</h2>
+            </div>
+            <div class="fade-in-target">
+                <dl class="info-list">
+                    <div class="info-item">
+                        <dt class="info-label">サークル名</dt>
+                        <dd class="info-data">LIFE LOG Factory</dd>
+                    </div>
+                    <div class="info-item">
+                        <dt class="info-label">設立</dt>
+                        <dd class="info-data">
+                            2025年
+                        </dd>
+                    </div> 
+                    <div class="info-item">
+                        <dt class="info-label">活動内容</dt>
+                        <dd class="info-data">
+                            呼吸機能トレーニングゲームの開発<br>
+                            心理的効果を用いた工業デザイン（時間を操る砂時計）
+                        </dd>
+                    </div>
+                    <div class="info-item">
+                        <dt class="info-label">人数</dt>
+                        <dd class="info-data">
+                            研究員 6名<br>
+                            顧問 2名
+                        </dd>
+                    </div>
+                <div class="info-item">
+                        <dt class="info-label">活動日</dt>
+                        <dd class="info-data">毎週金曜日</dd>
+                </div>
+                <div class="info-item">
+                    <dt class="info-label">所在地</dt>
+                    <dd class="info-data">〒852-8521 長崎市文教町1-14</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+     <footer class="footer">
+    <!-- 左：ロゴ縦並び -->
+    <div class="footer-left">
+      <img src="assets\img\LLF-img\LLF taitoru black.svg" alt="Main Logo" class="footer-logo">
+      <img src="assets\img\LLF-img\nagasaki-u.png" alt="Sub Logo" class="footer-logo">
+    </div>
+
+  <!-- 中央：テキストリンク -->
+  <div class="footer-center">
+    <a href="#">会社情報</a>
+    <a href="#">ニュース</a>
+    <a href="#">クッキーポリシー</a>
+    <a href="#">プライバシーポリシー</a>
+    <a href="#">SNSポリシー</a>
+    <a href="#">人権方針</a>
+  </div>
+
+  <!-- 右：SNSアイコン -->
+  <div class="footer-right">
+    <a href="https://www.youtube.com/@LifeLogFactory/videos" target="_blank"><img src="assets\img\sns-icon\youtube.png" alt="YouTube"></a>
+    <a href="https://x.com/LifeLogFactory_" target="_blank"><img src="assets\img\sns-icon\x.png" alt="X"></a>
+    <a href="https://www.instagram.com/lifelogfactory/" target="_blank"><img src="assets\img\sns-icon\instagram.png" alt="Instagram"></a>
+  </div>
+</footer>
+    <script src="./assets/js/script.js" defer></script>
 </body>
 </html>
