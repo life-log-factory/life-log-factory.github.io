@@ -58,111 +58,32 @@ body{
   color: #007bff;
 }
 /* main-visual */
-.main-visual{
-  position: relative;
-  height: 65vh;
+.main-visual {
+  margin: 0;
+  height: 100%;
   overflow: hidden;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.main-visual img{
-  padding-top: 160px;
-} 
-.background-logo img{
-  object-fit: cover;
-  object-position: center;
-  width: 100vw;
-  height: 65vh;
-  padding: 0;
+
+#logo {
   position: absolute;
-  z-index: -1;
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 4rem;
+  letter-spacing: 5px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 1.5s ease-out, transform 1.2s ease-out;
+  text-shadow: 0 0 20px #00ccff;
+  z-index: 10;
 }
 
-:root{
-  /* アニメーション全体の時間を管理します */
-  --animation-duration: 2.0s; /* 動画の速度に合わせて調整してください */
-  --easing: cubic-bezier(0.8, 0, 0.170, 1);
-}
-
-.mask-img{
-  position: relative;
-  display: inline-block;
-  /* overflow: hidden; はこの実装では不要です */
-  top: 35%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  contain: layout paint style;
-  position: absolute;
-  z-index: 1;
-}
-
-.mask-img img{
-display: block;
-width: 80vw;
-height: auto;
-opacity: 1; /* フェードインは使わないので、常に不透明にします */
-
-  /* ★変更点: clip-pathで画像の表示領域を制御します */
-  /* 初期状態では、下から100%の位置でクリップし非表示にします */
-clip-path: inset(0 0 100% 0);
-will-change: clip-path;
-}
-
-/* ★変更点: 擬似要素を「黒い帯」として使用します */
-.mask-img::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #ffffff; /* 白色に変更 */
-  transform: translateY(101%); /* 初期位置は要素の下 */
-  pointer-events: none;
-  will-change: transform;
-}
-
-/* 発火後の状態 */
-.mask-img.anim img{
-  /* ★変更点: 画像を表示させるアニメーションを適用します */
-  animation: reveal var(--animation-duration) var(--easing) forwards;
-}
-
-.mask-img.anim::after{
-  /* 黒い帯をスライドさせるアニメーションを適用します */
-  animation: mask-slide var(--animation-duration) var(--easing) forwards;
-}
-
-/* 黒い帯が下→上へスライドして通過するアニメーション */
-@keyframes mask-slide{
-  0%        { transform: translateY(101%); }
-  40%, 60%  { transform: translateY(0%);   } /* 中央で一瞬停止するような動き */
-  100%      { transform: translateY(-101%);} /* 上へ抜けて非表示 */
-}
-
-/* ★追加: 画像がせり上がって表示されるアニメーション */
-@keyframes reveal {
-  /* 帯が中央に達して動き出すまで(20%)は非表示のまま */
-  0%, 20% {
-    clip-path: inset(0 0 100% 0);
-  }
-  /* 帯が上に抜けきる(100%)のに合わせて、完全に表示します */
-  100% {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-/* アクセシビリティ（動きを減らす環境設定） */
-@media (prefers-reduced-motion: reduce){
-  * { 
-    animation-duration: .001ms !important; 
-    animation-iteration-count: 1 !important; 
-    transition-duration: .001ms !important; 
-  }
-  .mask-img img{ 
-    opacity: 1; 
-    /* ★変更点: 最初から表示されるようにclip-pathをリセット */
-    clip-path: inset(0 0 0 0); 
-  }
-  /* 帯は表示不要 */
-  .mask-img::after {
-    display: none;
-  }
+#logo.show {
+  opacity: 1;
+  transform: scale(1);
 }
 /* news */
 .news-title {
