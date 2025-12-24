@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <title>BREMONS | LIFE LOG Factory</title>
+    <style>
+        /* --- ベース設定 --- */
+        body {
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+            background-color: #000;
+            min-height: 200vh;
+        }
+
+        /* 1. 背景（宇宙） */
+        #bg-parallax-wrapper {
+            position: fixed;
+            top: -50px; left: -50px; right: -50px; bottom: -50px;
+            z-index: -10;
+            overflow: hidden;
+            will-change: transform;
+        }
+        
+        #bg-image {
+            width: 100%;
+            height: 100%;
+            /* パス修正: Projectsフォルダ下へ */
+            background-image: url('./assets/img/Projects/bremons/background.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: blur(4px);
+            animation: idleDrift 60s ease-in-out infinite alternate;
+        }
+
+        @keyframes idleDrift {
+            0% { transform: scale(1.1) translate(0, 0); }
+            100% { transform: scale(1.2) translate(-20px, 20px); }
+        }
+
+        /* 2. サイドバー */
+        .side-pattern {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            /* パス修正: Projectsフォルダ下へ */
+            background-image: url('./assets/img/Projects/bremons/side.png');
+            background-repeat: repeat-y;
+            background-size: 100% auto; 
+            z-index: 15;
+            pointer-events: none;
+        }
+        .side-left { left: 0; }
+        .side-right { right: 0; transform: scaleX(-1); }
+
+        /* 3. エフェクトレイヤー */
+        #effect-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .flying-object {
+            position: absolute;
+            will-change: transform;
+        }
+
+        /* 4. コンテンツエリア */
+        .bremons-content {
+            font-family: 'DotGothic16', sans-serif;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 20px 100px; 
+            text-align: center;
+            position: relative;
+            z-index: 20;
+        }
+
+        .header {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            position: relative;
+            z-index: 50;
+        }
+
+        .bremons-title-container {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+        .bremons-title-container img {
+            width: 70%;
+            max-width: 600px;
+            height: auto;
+            image-rendering: pixelated;
+            animation: floatTitle 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatTitle {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        /* --- 共通ボックススタイル --- */
+        .content-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border: 2px solid #fff;
+            border-radius: 4px;
+            line-height: 2.2;
+            font-size: 1.1rem;
+            text-align: left;
+            margin-bottom: 60px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* ダウンロードセクション */
+        .download-section {
+            margin-top: 0;       
+            margin-bottom: 60px; 
+            padding: 30px;
+            border: 4px double #fff;
+            background: rgba(0, 50, 0, 0.6);
+            text-align: center;
+        }
+        
+        /* --- 見出しデザイン --- */
+        .bremons-content h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px dashed #fff;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 0.1em;
+            color: #00ffff;
+            text-shadow: 2px 2px 0px #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .h-icon {
+            width: 48px;
+            height: auto;
+            image-rendering: pixelated;
+        }
+        .h-icon-r {
+            transform: scaleX(-1);
+        }
+
+        .bremons-content h3 {
+            font-size: 1.3rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: #ff0055;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ダウンロードボタン */
+        .download-btn {
+            display: inline-block;
+            background-color: #00cc00;
+            color: #000;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 20px 50px;
+            border: 4px solid #fff;
+            box-shadow: 8px 8px 0px #000;
+            transition: transform 0.1s, box-shadow 0.1s;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover {
+            transform: translate(4px, 4px);
+            box-shadow: 4px 4px 0px #000;
+            background-color: #00ff00;
+        }
+
+        .download-note {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        /* 動画コンテナ */
+        .movie-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: 2px solid #555;
+        }
+        
+        .movie-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .project-official-name {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: -20px;
+            margin-bottom: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .footer {
+            position: relative;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+       <div class="header-logo">
+            <a href="index.html">
+                <img src="assets\img\LLF-img\LLF taitoru black.svg" alt="logo">
+            </a>
+        </div>
+        <nav class="header-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="bremons.html" class="current-page">BREMONS</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="bg-parallax-wrapper">
+        <div id="bg-image"></div>
+    </div>
+
+    <div class="side-pattern side-left"></div>
+    <div class="side-pattern side-right"></div>
+
+    <div id="effect-layer"></div>
+
+    <section class="bremons-content">
+        <div class="bremons-title-container">
+            <img src="./assets/img/Projects/bremons/title.png" alt="BREMONS">
+        </div>
+
+        <div class="download-section">
+            <h2>
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon">
+                GET THE APP
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon h-icon-r">
+            </h2>
+            <p>現在、Android版のプロトタイプを公開中<br>インストールして遊んでみて！</p>
+            
+            <a href="https://drive.google.com/file/d/1lpGCE77ZLVSLKWrv0QikPQVDDE4gYfgE/view" class="download-btn" target="_blank">
+                DOWNLOAD
+            </a>
+            
+            <div class="download-note">
+                ※Google Driveへ移動します。「ダウンロード」を選択してください。<br>
+                ※提供元不明のアプリとして警告が出る場合があります。
+            </div>
+        </div>
+
+        <div class="content-box">
+            <h2>
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon">
+                BREMONS
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon h-icon-r">
+            </h2>
+            <p>
+                モンスターを召喚・捕獲して<br>
+                進化させて育てよう！<br>
+            </p>
+
+            <h3>
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon" style="width: 32px;">
+                SYSTEM
+            </h3>
+            <p>
+                この呼吸を使ってゲームを進める。<br>
+                マイクに向かって息を吹きかけることで、<br>
+                以下のトレーニングができる！
+            </p>
+            <ul>
+                <li>・長く維持して息を吐こう！</li>
+                <li>・力強く一気に息を吐こう！</li>
+                <li>・リズムよく口笛を吹こう！</li>
+            </ul>
+        </div>
+
+        <div class="content-box">
+            <h2>
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon">
+                DEVELOPMENT LOG
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon h-icon-r">
+            </h2>
+            <p class="project-official-name">
+                呼吸機能トレーニングゲームの開発
+            </p>
+            
+            <div class="movie-container">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/cywj_T1DT2E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <h3>
+                <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon" style="width: 32px;">
+                PROJECT BACKGROUND
+            </h3>
+            <p>　呼吸機能には様々な役割がありますが、その一つに「むせや咳」があります。
+                普段無意識に反射でできている「むせや咳」ですが、老化や病気により意識しても難しくなることがあります。
+                そのため、誰もが意識的にもできるようになっておくことが大切です。<br>
+                　また、呼吸の「長さ・力強さ・リズム」は、意識して呼吸をする際のポイントになります。
+                これらをトレーニングする器具として「かざぐるま」や「吹き上げ」など、ありますが、この従来のトレーニングには、「動作が単調で飽きやすい」という欠点がありました。
+            </p>
+            <p>
+                　そこで私たちは、「誰もが飽きずに続けられるよう、単調ではない、呼吸機能改善及び維持のためのトレーニング”ゲーム”の開発」を目的として進めました。<br>
+            </p>
+        </div>
+
+        <div style="height: 100px;"></div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-left">
+          <img src="assets\img\LLF-img\LLF taitoru black.svg" alt="Main Logo" class="footer-logo" style="background: rgba(255,255,255,0.8); padding: 5px; border-radius: 4px;">
+          <img src="assets\img\LLF-img\nagasaki-u.png" alt="Sub Logo" class="footer-logo" style="background: rgba(255,255,255,0.8); padding: 5px; border-radius: 4px;">
+        </div>
+    
+      <div class="footer-right">
+        <a href="https://www.youtube.com/@LifeLogFactory/videos" target="_blank"><img src="assets\img\sns-icon\youtube.png" alt="YouTube"></a>
+        <a href="https://x.com/LifeLogFactory_" target="_blank"><img src="assets\img\sns-icon\x.png" alt="X"></a>
+        <a href="https://www.instagram.com/lifelogfactory/" target="_blank"><img src="assets\img\sns-icon\instagram.png" alt="Instagram"></a>
+      </div>
+    </footer>
+
+    <script src="./assets/js/script.js" defer></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settings = {
+                bgParallaxSpeed: 0.2,
+                // パス修正: Projectsフォルダ下へ
+                rocketImg: './assets/img/Projects/bremons/rocket.png',
+                meteoImg: './assets/img/Projects/bremons/meteo.png',
+                monsterFiles: ['blue.png', 'red.png', 'yellow.png'],
+                charaFolder: './assets/img/Projects/bremons/chara/',
+                baseFolder: './' 
+            };
+
+            const container = document.getElementById('effect-layer');
+            const bgWrapper = document.getElementById('bg-parallax-wrapper');
+            
+            let w = window.innerWidth;
+            let h = window.innerHeight;
+            window.addEventListener('resize', () => {
+                w = window.innerWidth;
+                h = window.innerHeight;
+            });
+
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                if(bgWrapper) {
+                    bgWrapper.style.transform = `translateY(${scrollY * settings.bgParallaxSpeed}px)`;
+                }
+            });
+
+            const monsterCount = Math.floor(Math.random() * 8) + 5; 
+
+            function spawnMonster() {
+                const img = document.createElement('img');
+                const fileName = settings.monsterFiles[Math.floor(Math.random() * settings.monsterFiles.length)];
+                img.src = settings.charaFolder + fileName;
+                img.classList.add('flying-object');
+                
+                const size = Math.floor(Math.random() * 50) + 40;
+                img.style.width = size + 'px';
+                
+                const rotation = Math.floor(Math.random() * 360);
+                img.style.transform = `rotate(${rotation}deg)`;
+
+                const blurVal = Math.floor(Math.random() * 4);
+                img.style.filter = `blur(${blurVal}px)`;
+                img.style.imageRendering = 'pixelated';
+
+                container.appendChild(img);
+                animateObjectRandomly(img, true); 
+            }
+
+            function animateObjectRandomly(element, isLoop) {
+                const offset = 150; 
+                const startSide = Math.floor(Math.random() * 4);
+                let startX, startY;
+
+                switch(startSide) {
+                    case 0: startX = Math.random() * w; startY = -offset; break; 
+                    case 1: startX = w + offset; startY = Math.random() * h; break; 
+                    case 2: startX = Math.random() * w; startY = h + offset; break; 
+                    case 3: startX = -offset; startY = Math.random() * h; break; 
+                }
+
+                let endSide = Math.floor(Math.random() * 4);
+                while(endSide === startSide) endSide = Math.floor(Math.random() * 4);
+
+                let endX, endY;
+                switch(endSide) {
+                    case 0: endX = Math.random() * w; endY = -offset; break;
+                    case 1: endX = w + offset; endY = Math.random() * h; break;
+                    case 2: endX = Math.random() * w; endY = h + offset; break;
+                    case 3: endX = -offset; endY = Math.random() * h; break;
+                }
+
+                const duration = (Math.random() * 15000) + 15000;
+
+                const animation = element.animate([
+                    { transform: `translate(${startX}px, ${startY}px) rotate(${Math.random() * 360}deg)` },
+                    { transform: `translate(${endX}px, ${endY}px) rotate(${Math.random() * 360}deg)` }
+                ], {
+                    duration: duration,
+                    easing: 'linear',
+                    fill: 'forwards'
+                });
+
+                animation.onfinish = () => {
+                    if(isLoop) {
+                        animateObjectRandomly(element, true);
+                    } else {
+                        element.remove();
+                    }
+                };
+            }
+
+            for(let i=0; i < monsterCount; i++) spawnMonster();
+
+            let lastScrollTop = 0;
+            let lastSpawnTime = 0;
+            const spawnCooldown = 150; 
+
+            window.addEventListener('scroll', () => {
+                const st = window.scrollY; 
+                const now = Date.now();
+
+                if (now - lastSpawnTime < spawnCooldown || Math.abs(st - lastScrollTop) < 5) {
+                    lastScrollTop = st;
+                    return;
+                }
+
+                if (st > lastScrollTop) {
+                    spawnMeteor();
+                } else {
+                    spawnRocket();
+                }
+
+                lastSpawnTime = now;
+                lastScrollTop = st <= 0 ? 0 : st;
+            }, false);
+
+            function spawnRocket() {
+                const img = document.createElement('img');
+                img.src = settings.rocketImg;
+                img.classList.add('flying-object');
+                
+                const size = Math.floor(Math.random() * 40) + 80;
+                img.style.width = size + 'px';
+                img.style.imageRendering = 'pixelated';
+
+                const startX = Math.random() * w;
+                const startY = h + 100;
+                const endY = -200;
+                
+                container.appendChild(img);
+
+                const animation = img.animate([
+                    { transform: `translate(${startX}px, ${startY}px)` },
+                    { transform: `translate(${startX}px, ${endY}px)` }
+                ], {
+                    duration: 1000 + Math.random() * 1000, 
+                    easing: 'ease-out'
+                });
+
+                animation.onfinish = () => img.remove();
+            }
+
+            function spawnMeteor() {
+                const img = document.createElement('img');
+                img.src = settings.meteoImg;
+                img.classList.add('flying-object');
+
+                const size = Math.floor(Math.random() * 50) + 90;
+                img.style.width = size + 'px';
+                img.style.imageRendering = 'pixelated';
+
+                const angle = (Math.random() * 40) - 20; 
+                const startX = Math.random() * w;
+                const startY = -150;
+                const drift = (Math.random() * 600) - 300; 
+                const endX = startX + drift;
+                const endY = h + 150;
+
+                container.appendChild(img);
+
+                const animation = img.animate([
+                    { transform: `translate(${startX}px, ${startY}px) rotate(${angle}deg)` },
+                    { transform: `translate(${endX}px, ${endY}px) rotate(${angle}deg)` }
+                ], {
+                    duration: 1500 + Math.random() * 1000, 
+                    easing: 'linear'
+                });
+
+                animation.onfinish = () => img.remove();
+            }
+        });
+    </script>
+</body>
+</html>
