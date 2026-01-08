@@ -126,14 +126,71 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
-        /* ダウンロードセクション */
+/* --- ダウンロードセクション共通 --- */
         .download-section {
-            margin-top: 0;       
-            margin-bottom: 60px; 
+            margin-bottom: 40px; 
             padding: 30px;
-            border: 4px double #fff;
-            background: rgba(0, 50, 0, 0.6);
+            border-style: double;
+            border-width: 4px;
             text-align: center;
+            position: relative; /* バッジ配置用 */
+            transition: transform 0.3s;
+        }
+
+        /* A. Webアプリ版（メイン：シアン/ピンクで強調） */
+        .download-section.web-ver {
+            background: rgba(0, 50, 80, 0.7); /* 青みがかった背景 */
+            border-color: #00ffff; /* シアンの枠線 */
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3); /* 発光エフェクト */
+            transform: scale(1.02); /* 少し大きく見せる */
+            z-index: 10;
+        }
+
+        .download-section.web-ver h2 {
+            color: #00ffff; /* タイトル色 */
+            border-bottom-color: #00ffff;
+        }
+
+        /* Web版のボタン */
+        .download-btn.web-btn {
+            background-color: #ff0055; /* 強調色のピンク */
+            color: #fff;
+            box-shadow: 6px 6px 0px #440011;
+            font-size: 1.8rem; /* 少し大きく */
+        }
+        .download-btn.web-btn:hover {
+            background-color: #ff3377;
+            box-shadow: 3px 3px 0px #440011;
+        }
+
+        /* B. Android版（サブ：緑で落ち着かせる） */
+        .download-section.android-ver {
+            background: rgba(0, 30, 0, 0.6);
+            border-color: #00cc00;
+            border-width: 2px; /* 少し線を細く */
+            margin-top: 60px; /* 余白を空けて区別 */
+            transform: scale(0.95); /* 少し控えめに */
+        }
+
+        .download-section.android-ver h2 {
+            color: #00cc00;
+            font-size: 1.5rem; /* タイトルも少し小さく */
+            border-bottom: none; /* 線を消してシンプルに */
+        }
+
+        /* Android版のボタン */
+        .download-btn.android-btn {
+            background-color: transparent; /* 背景透明 */
+            border: 2px solid #00cc00;
+            color: #00cc00;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            box-shadow: none;
+        }
+        .download-btn.android-btn:hover {
+            background-color: #00cc00;
+            color: #000;
+            transform: translate(0, 0); /* 動きをシンプルに */
         }
         
         /* --- 見出しデザイン --- */
@@ -262,21 +319,23 @@
             <img src="./assets/img/Projects/bremons/title.png" alt="BREMONS">
         </div>
 
-        <div class="download-section">
+<div class="download-section web-ver">
             <h2>
                 <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon">
-                GET THE APP
+                TRY IT
                 <img src="./assets/img/Projects/bremons/chara/chara.png" alt="" class="h-icon h-icon-r">
             </h2>
-            <p>現在、Android版のプロトタイプを公開中<br>インストールして遊んでみて！</p>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">
+                スマホのブラウザですぐ遊べる！<br>
+                インストール不要のWebアプリ
+            </p>
             
-            <a href="https://drive.google.com/file/d/1lpGCE77ZLVSLKWrv0QikPQVDDE4gYfgE/view" class="download-btn" target="_blank">
-                DOWNLOAD
+            <a href="https://bb54125213.github.io/bremons/" class="download-btn web-btn" target="_blank">
+                GAME START
             </a>
             
             <div class="download-note">
-                ※Google Driveへ移動します。「ダウンロード」を選択してください。<br>
-                ※提供元不明のアプリとして警告が出る場合があります。
+                ※開発段階です。随時アップデート中！
             </div>
         </div>
 
@@ -334,6 +393,25 @@
             <p>
                 　そこで私たちは、「誰もが飽きずに続けられるよう、単調ではない、呼吸機能改善及び維持のためのトレーニング”ゲーム”の開発」を目的として進めました。<br>
             </p>
+        </div>
+
+                <div class="download-section android-ver">
+            <h2>
+                ANDROID APK
+            </h2>
+            <p>
+                オフライン環境向け<br>
+                Android用プロトタイプ(.apk)
+            </p>
+            
+            <a href="https://drive.google.com/file/d/1lpGCE77ZLVSLKWrv0QikPQVDDE4gYfgE/view" class="download-btn android-btn" target="_blank">
+                DOWNLOAD APK
+            </a>
+            
+            <div class="download-note" style="font-size: 0.8rem;">
+                ※Google Driveへ移動します。<br>
+                ※提供元不明のアプリとして警告が出る場合があります。
+            </div>
         </div>
 
         <div style="height: 100px;"></div>
