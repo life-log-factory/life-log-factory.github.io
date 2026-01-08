@@ -70,15 +70,30 @@ body{
 
 #logo {
   position: absolute;
-  color: white;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 4rem;
-  letter-spacing: 5px;
+  /* widthとmax-widthを追加してレスポンシブ対応します */
+  width: 80%;           /* 画面幅の80%を使用 */
+  max-width: 700px;     /* PCで大きくなりすぎないよう最大幅を制限 */
+  z-index: 10;
+
+  /* アニメーション設定 */
   opacity: 0;
   transform: scale(0.8);
   transition: opacity 1.5s ease-out, transform 1.2s ease-out;
-  text-shadow: 0 0 20px #00ccff;
-  z-index: 10;
+  
+  /* 画像を中央に配置 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 新しく追加：画像が枠からはみ出さないようにする設定 */
+#logo img {
+  width: 100%;       /* 親要素(#logo)の幅に合わせて伸縮 */
+  height: auto;      /* 高さは比率を保って自動調整 */
+  object-fit: contain; /* 確実に枠内に収める */
+  
+  /* 以前のCSSにあった影の効果を画像にも適用したい場合（任意） */
+  filter: drop-shadow(0 0 10px rgba(0, 204, 255, 0.5)); 
 }
 
 #logo.show {
@@ -388,4 +403,134 @@ body{
 .footer-right img {
   width: 30px;
   height: 30px;
+}
+
+/* =========================================
+   レスポンシブデザイン (スマートフォン向け設定)
+   ========================================= */
+
+@media (max-width: 768px) {
+  
+  /* --- 全体のフォントサイズ調整 --- */
+  body {
+    font-size: 14px;
+  }
+
+  /* --- ヘッダー --- */
+  .header {
+    flex-direction: column; /* ロゴとメニューを縦並びに */
+    padding: 10px 15px;
+    height: auto; /* 高さを自動調整 */
+  }
+  
+  .header-logo img {
+    height: 35px; /* ロゴを少し小さく */
+    margin-bottom: 10px;
+  }
+  
+  .header-nav ul {
+    gap: 15px; /* メニューの間隔を調整 */
+    font-size: 14px;
+  }
+
+  /* --- メインビジュアル --- */
+  #logo {
+    font-size: 2rem; /* ロゴサイズをスマホ用に縮小 */
+    width: 90%;      /* 画面からはみ出さないように */
+    text-align: center;
+  }
+
+  /* --- ニュースセクション --- */
+  .news-item {
+    flex-direction: column; /* 日付とタイトルを縦並びに */
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .news-date {
+    margin-right: 0;
+    font-size: 12px;
+  }
+
+  /* --- Service / Projects セクション --- */
+  .service-container {
+    padding: 15px;
+  }
+
+  .service-main-title {
+    font-size: 32px; /* vw指定をやめて固定サイズに */
+  }
+
+  .service-content {
+    flex-direction: column; /* コンテンツを縦並びに */
+    gap: 20px;
+  }
+
+  .service-content-left, 
+  .service-content-right {
+    flex: auto;
+    width: 100%;
+  }
+
+  .service-catchphrase {
+    font-size: 24px; /* vw指定をやめて読みやすいサイズに */
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .service-description {
+    font-size: 15px; /* 極小サイズになるのを防ぐ */
+    line-height: 1.8;
+  }
+
+  /* --- 活動日程（カレンダー） --- */
+  /* iframeの親要素を作って制御するためのクラス（HTML側で追加します） */
+  .calendar-wrapper {
+    position: relative;
+    padding-bottom: 75%; /* アスペクト比 4:3 */
+    height: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+  
+  .calendar-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important; /* 強制的に幅を100%に */
+    height: 100% !important;
+  }
+
+  /* --- サークル情報 --- */
+  .club-info-container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    padding: 15px 0;
+  }
+  
+  .info-label {
+    width: 100%;
+    margin-bottom: 5px;
+    border-left: 4px solid #333; /* スマホで見出しっぽく装飾 */
+    padding-left: 10px;
+  }
+
+  /* --- フッター --- */
+  .footer {
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    gap: 30px;
+    text-align: center;
+  }
+
+  .footer-left {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
 }

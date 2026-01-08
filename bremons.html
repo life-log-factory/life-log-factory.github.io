@@ -287,6 +287,49 @@
             position: relative;
             z-index: 50;
         }
+        /* --- スマホ用レスポンシブ設定 (bremons.html専用) --- */
+        @media (max-width: 768px) {
+            /* コンテンツの余白調整 */
+            .bremons-content {
+                padding: 100px 15px 60px; /* 左右の余白を減らす */
+            }
+
+            /* タイトル画像サイズ調整 */
+            .bremons-title-container img {
+                width: 90%;
+            }
+
+            /* ボックスの余白調整 */
+            .content-box {
+                padding: 25px 15px; /* パディングを小さく */
+                line-height: 1.8;
+                font-size: 1rem;
+            }
+
+            /* ダウンロードボタンの文字サイズ調整 */
+            .download-btn {
+                font-size: 1.1rem;
+                padding: 15px 20px;
+                width: 100%; /* 幅いっぱいに */
+                box-sizing: border-box;
+            }
+            
+            .download-section.web-ver h2,
+            .download-section.android-ver h2 {
+                font-size: 1.4rem;
+                flex-direction: column; /* アイコンと文字を縦積みに */
+            }
+
+            .h-icon {
+                margin: 5px 0;
+            }
+            
+            /* 見出しの調整 */
+            .bremons-content h2 {
+                font-size: 1.4rem;
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
