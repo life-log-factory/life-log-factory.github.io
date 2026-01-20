@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BREMONS - GENESIS</title>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* === 裏モード専用スタイル === */
+        body {
+            margin: 0; padding: 0;
+            font-family: 'DotGothic16', sans-serif;
+            background-color: #050505; color: #fff;
+            display: flex; justify-content: center;
+            height: 100dvh; overflow: hidden;
+            user-select: none;
+        }
+
+        .game-container {
+            width: 100%; max-width: 480px; height: 100%;
+            position: relative; overflow: hidden;
+            box-shadow: 0 0 30px rgba(142, 68, 173, 0.2);
+            display: flex; flex-direction: column;
+        }
+
+        /* 背景 */
+        .scrolling-bg {
+            position: absolute; top: -50%; left: 0; width: 100%; height: 200%;
+            background-image: url('./nightgame/background2.png');
+            background-size: cover; background-repeat: repeat-y;
+            z-index: 0;
+            animation: scrollSpace 60s linear infinite;
+            filter: contrast(1.1) brightness(0.8);
+        }
+        @keyframes scrollSpace { from { transform: translateY(0); } to { transform: translateY(50%); } }
+
+        /* UIレイヤー */
+        .ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 10px; box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .back-link {
+            position: absolute; top: 15px; left: 15px;
+            font-size: 14px; text-decoration: none; color: #fff;
+            background: rgba(0,0,0,0.8); padding: 5px 10px;
+            border: 1px solid #fff; border-radius: 4px;
+        }
+
+        .title-area { margin-top: 20px; text-align: center; margin-bottom: 10px; }
+        .game-title {
+            font-size: 48px; margin: 0; letter-spacing: 2px;
+            background: linear-gradient(to right, #ff9a9e, #4facfe, #f093fb);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            filter: drop-shadow(4px 4px 0px rgba(255, 255, 255, 0.2));
+            animation: title-glitch 5s infinite;
+        }
+        @keyframes title-glitch {
+            0%, 95% { transform: skew(0deg); }
+            96% { transform: skew(10deg); } 97% { transform: skew(-10deg); } 98% { transform: skew(0deg); }
+        }
+        .subtitle { font-size: 14px; color: #fff; margin-top: 5px; letter-spacing: 5px; opacity: 0.8; }
+
+        .seed-box {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid #8e44ad; border-radius: 8px;
+            padding: 8px; margin-bottom: 10px;
+            display: flex; gap: 5px; width: 90%;
+            box-shadow: 0 0 10px rgba(142, 68, 173, 0.3);
+        }
+        .seed-input {
+            flex: 1; background: #000; border: 1px solid #555;
+            color: #0f0; font-family: inherit; font-size: 16px;
+            padding: 4px; text-align: center; outline: none; letter-spacing: 1px;
+        }
+        .icon-btn, .restore-btn {
+            background: #333; color: #fff; border: 1px solid #fff; cursor: pointer;
+            padding: 5px 10px; font-size: 14px; border-radius: 4px;
+        }
+        .restore-btn { background: #8e44ad; }
+
+        .menu-area { width: 85%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        
+        .pixel-btn {
+            font-family: 'DotGothic16', sans-serif; font-size: 18px;
+            padding: 15px; width: 100%;
+            background-color: #8e44ad; color: #fff;
+            border: 2px solid #fff; border-radius: 4px;
+            cursor: pointer; text-align: center;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+        .broken-anim { animation: glitch-clip 2.5s infinite steps(1); }
+        @keyframes glitch-clip {
+            0%, 89% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0,0); }
+            90% { clip-path: polygon(0 0, 80% 0, 80% 100%, 0 100%); transform: translate(-2px, 1px); }
+            92% { clip-path: polygon(5% 0, 100% 0, 100% 100%, 5% 100%); transform: translate(2px, -1px); }
+            98% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0,0); }
+        }
+        .save-btn { background-color: #3498db; display: none; }
+
+        .slot-machine-area {
+            width: 90%;
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #fff;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: inset 0 0 10px rgba(142, 68, 173, 0.5);
+        }
+        .slot-drum {
+            width: 30%;
+            text-align: center;
+            border: 1px solid #555;
+            background: #222;
+            padding: 5px 0;
+            display: flex; flex-direction: column;
+        }
+        .slot-label { font-size: 12px; color: #aaa; margin-bottom: 2px; }
+        .slot-value { 
+            font-size: 16px; color: #fff; font-weight: bold; 
+            height: 20px; overflow: hidden; white-space: nowrap;
+        }
+
+        .monster-capsule {
+            width: 220px; height: 220px;
+            border: 2px solid rgba(255,255,255,0.5); border-radius: 16px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.1);
+            position: relative;
+            margin-bottom: 5px; overflow: hidden;
+        }
+        #waveCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.6; }
+        #monCanvas { image-rendering: pixelated; width: 200px; height: 200px; z-index: 5; position: relative; }
+
+        .status-text { font-size: 32px; color: #f1c40f; text-shadow: 2px 2px 0 #000; margin-top: 10px; }
+        .sub-text { font-size: 12px; color: #0f0; text-shadow: 0 0 5px rgba(0,255,0,0.5); letter-spacing: 1px; }
+
+        .custom-dialog-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 200;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .custom-dialog-box {
+            background: #1a0b2e; color: #fff; padding: 20px; 
+            border-radius: 10px; border: 4px solid #8e44ad;
+            width: 85%; max-width: 350px; text-align: center;
+            box-shadow: 0 0 20px rgba(142, 68, 173, 0.4);
+        }
+        .cost-btn {
+            background: rgba(0,0,0,0.5); border: 2px solid #fff; color: #fff;
+            padding: 10px; width: 100%; margin-bottom: 10px; cursor: pointer;
+            font-family: inherit; font-size: 14px; text-align: left;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.2s;
+        }
+        .cost-btn:hover:not(:disabled) { background: #8e44ad; }
+        .cost-btn:disabled { opacity: 0.5; cursor: not-allowed; border-color: #555; color: #aaa; }
+        .hidden { display: none !important; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="scrolling-bg" id="bgLayer"></div>
+
+        <div class="ui-layer">
+            <a href="genesis_hub.html" class="back-link">←HUBへ戻る</a>
+
+            <div class="title-area">
+                <h1 class="game-title">BREMONS</h1>
+                <span class="subtitle">- GENESIS -</span>
+            </div>
+
+            <div class="seed-box">
+                <input type="text" id="seedInput" class="seed-input" placeholder="コード入力待機中...">
+                <button class="icon-btn" onclick="copySeed()">コピー</button>
+                <button class="restore-btn" onclick="loadFromInput()">復元</button>
+            </div>
+
+            <div class="menu-area">
+                <button id="recordBtn" class="pixel-btn broken-anim" onclick="startSequence()">
+                    音声データ解析 (生成開始)
+                </button>
+                <button id="saveBtn" class="pixel-btn save-btn broken-anim" onclick="saveImage()">
+                    画像を保存する
+                </button>
+            </div>
+
+            <div class="slot-machine-area" id="slotMachine">
+                <div class="slot-drum">
+                    <span class="slot-label">色彩</span>
+                    <div class="slot-value" id="slotColor">---</div>
+                </div>
+                <div class="slot-drum">
+                    <span class="slot-label">形状</span>
+                    <div class="slot-value" id="slotForm">---</div>
+                </div>
+                <div class="slot-drum">
+                    <span class="slot-label">構成</span>
+                    <div class="slot-value" id="slotParts">---</div>
+                </div>
+            </div>
+
+            <div class="monster-capsule">
+                <canvas id="waveCanvas" width="220" height="220"></canvas>
+                <canvas id="monCanvas" width="20" height="20"></canvas>
+            </div>
+
+            <div class="status-text" id="percentDisplay">準備完了</div>
+            <div class="sub-text" id="statusMsg">システムオンライン</div>
+
+            <div id="costModal" class="custom-dialog-overlay hidden">
+                <div class="custom-dialog-box">
+                    <h3 style="color:#f093fb; margin-top:0; border-bottom:1px solid #555; padding-bottom:10px;">生体エネルギー選択</h3>
+                    <p style="font-size:12px; margin-bottom:15px; color:#ccc;">生成に使用する素材を選択してください</p>
+                    
+                    <button onclick="selectCost('usa', 5)" id="btnUsa" class="cost-btn">
+                        <span>🔴 Usa (必要: 5)</span> <span style="font-weight:bold;">所持: <span id="ownUsa">0</span></span>
+                    </button>
+                    <button onclick="selectCost('inv', 3)" id="btnInv" class="cost-btn">
+                        <span>🔵 Inv (必要: 3)</span> <span style="font-weight:bold;">所持: <span id="ownInv">0</span></span>
+                    </button>
+                    <button onclick="selectCost('him', 1)" id="btnHim" class="cost-btn">
+                        <span>🟡 Him (必要: 1)</span> <span style="font-weight:bold;">所持: <span id="ownHim">0</span></span>
+                    </button>
+
+                    <button onclick="closeCostModal()" class="pixel-btn" style="background:#555; border-color:#aaa; font-size:14px; margin-top:10px; padding:10px;">
+                        キャンセル
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        // ★修正: addDoc, collection を追加インポート
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion, increment, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUWMn07YntLyB8m4q5-zHmiwjYOz1c_nk",
+            authDomain: "bremons.firebaseapp.com",
+            projectId: "bremons",
+            storageBucket: "bremons.firebasestorage.app",
+            messagingSenderId: "30413071482",
+            appId: "1:30413071482:web:f62c34349b13e6c6ce47c3",
+            measurementId: "G-4D4FCXGDBG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const uid = localStorage.getItem('user_uid');
+        const userName = localStorage.getItem('user_name') || "Unknown Pilot";
+
+        const SCALE_COLORS = [
+            { name: "C", jpn:"赤系", hex: "#FF9AA2", eye: "#C85A62" }, { name: "C#", jpn:"朱系", hex: "#FFB7B2", eye: "#D67C77" },
+            { name: "D", jpn:"橙系", hex: "#FFDAC1", eye: "#D4A88F" }, { name: "D#", jpn:"黄系", hex: "#FFE6A7", eye: "#C9B475" },
+            { name: "E", jpn:"淡黄系", hex: "#FFF5BA", eye: "#C4BD87" }, { name: "F", jpn:"緑系", hex: "#C1E1C1", eye: "#8FAB8F" },
+            { name: "F#", jpn:"青緑系", hex: "#B2E0E6", eye: "#81ADB3" }, { name: "G", jpn:"水系", hex: "#AEEEEE", eye: "#7FBDBD" },
+            { name: "G#", jpn:"空系", hex: "#ADD8E6", eye: "#7FA8B6" }, { name: "A", jpn:"青系", hex: "#B4C6E7", eye: "#8396B7" },
+            { name: "A#", jpn:"紫系", hex: "#C3B1E1", eye: "#917FB1" }, { name: "B", jpn:"桃系", hex: "#E6B0AA", eye: "#B37D77" }
+        ];
+        
+        const FORM_NAMES = ["バランス型", "高機動型", "重装甲型", "超小型", "ギガント型"];
+        const PARTS_NAMES = ["タイプα", "タイプβ", "タイプγ", "タイプδ"];
+
+        let audioContext, analyser, dataArray, waveDataArray;
+        let isProcessing = false;
+        let glitchAudioCtx = null, glitchGain = null;
+
+        let inventory = { usa: 0, inv: 0, him: 0 };
+        let selectedCostType = null;
+        let selectedCostAmount = 0;
+
+        const canvas = document.getElementById('monCanvas');
+        const ctx = canvas.getContext('2d');
+        const waveCanvas = document.getElementById('waveCanvas');
+        const waveCtx = waveCanvas.getContext('2d');
+
+        const percentDisplay = document.getElementById('percentDisplay');
+        const statusMsg = document.getElementById('statusMsg');
+        const recordBtn = document.getElementById('recordBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const seedInput = document.getElementById('seedInput');
+        const bgLayer = document.getElementById('bgLayer');
+        
+        const slotMachine = document.getElementById('slotMachine');
+        const slotColor = document.getElementById('slotColor');
+        const slotForm = document.getElementById('slotForm');
+        const slotParts = document.getElementById('slotParts');
+
+        async function fetchInventory() {
+            if(!uid) return;
+            try {
+                const ref = doc(db, "users", uid);
+                const snap = await getDoc(ref);
+                if(snap.exists()) {
+                    inventory = snap.data().inventory || { usa: 0, inv: 0, him: 0 };
+                    updateCostButtons();
+                }
+            } catch(e) { console.error("Inventory Load Error:", e); }
+        }
+
+        function updateCostButtons() {
+            document.getElementById('ownUsa').innerText = inventory.usa;
+            document.getElementById('ownInv').innerText = inventory.inv;
+            document.getElementById('ownHim').innerText = inventory.him;
+
+            document.getElementById('btnUsa').disabled = (inventory.usa < 5);
+            document.getElementById('btnInv').disabled = (inventory.inv < 3);
+            document.getElementById('btnHim').disabled = (inventory.him < 1);
+        }
+
+        fetchInventory();
+
+        window.startSequence = function() {
+            if(isProcessing) return;
+            document.getElementById('costModal').classList.remove('hidden');
+        };
+
+        window.selectCost = function(type, amount) {
+            if(inventory[type] < amount) {
+                alert("生体エネルギー(在庫)が不足しています！");
+                return;
+            }
+            selectedCostType = type;
+            selectedCostAmount = amount;
+            document.getElementById('costModal').classList.add('hidden');
+            realStartSequence();
+        };
+
+        window.closeCostModal = function() {
+            document.getElementById('costModal').classList.add('hidden');
+        };
+
+        async function realStartSequence() {
+            isProcessing = true;
+            stopBGM();
+            recordBtn.innerText = "音声信号受信中..."; 
+            saveBtn.style.display = 'none';
+            percentDisplay.innerText = "0%"; 
+            statusMsg.innerText = "センサー初期化中...";
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                analyser.fftSize = 2048;
+                
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                waveDataArray = new Uint8Array(analyser.fftSize);
+                
+                let startTime = Date.now();
+                let noteVotes = new Array(12).fill(0);
+                let pitchSum = 0; let pitchCount = 0;
+
+                const loop = setInterval(() => {
+                    let elapsed = Date.now() - startTime;
+                    let progress = Math.min(100, Math.floor((elapsed / 5000) * 100));
+                    percentDisplay.innerText = progress + "%";
+
+                    analyser.getByteFrequencyData(dataArray);
+                    analyser.getByteTimeDomainData(waveDataArray);
+
+                    waveCtx.clearRect(0, 0, 220, 220);
+                    waveCtx.fillStyle = 'rgba(0, 20, 0, 0.5)';
+                    waveCtx.fillRect(0,0,220,220);
+                    waveCtx.lineWidth = 2; waveCtx.strokeStyle = '#0f0'; waveCtx.beginPath();
+                    const sliceWidth = 220 * 1.0 / analyser.fftSize; let x = 0;
+                    for(let i = 0; i < analyser.fftSize; i++) {
+                        const v = waveDataArray[i] / 128.0; const y = v * 110;
+                        if(i === 0) waveCtx.moveTo(x, y); else waveCtx.lineTo(x, y); x += sliceWidth;
+                    }
+                    waveCtx.stroke();
+
+                    let maxVal = 0; let maxIndex = 0;
+                    for(let i=10; i<200; i++) { if(dataArray[i] > maxVal) { maxVal = dataArray[i]; maxIndex = i; } }
+                    const vol = maxVal;
+                    
+                    if(elapsed < 5000) {
+                        if(vol > 30) {
+                            const freq = maxIndex * (audioContext.sampleRate / analyser.fftSize);
+                            const n = 12 * Math.log2(freq / 440) + 69;
+                            const currentNote = (Math.round(n) % 12 + 12) % 12; 
+                            const currentPitch = Math.min(255, Math.max(0, (maxIndex - 10) * 1.5)); 
+                            noteVotes[currentNote] += vol;
+                            pitchSum += currentPitch; pitchCount++;
+
+                            const flickerRnd = Math.floor(Math.random() * 255);
+                            drawMonster(currentNote, currentPitch, currentPitch, flickerRnd);
+                            updateSlot(currentNote, currentPitch, flickerRnd);
+                            statusMsg.innerText = `解析中: ${SCALE_COLORS[currentNote].name} / ${freq.toFixed(0)}Hz`;
+                            statusMsg.style.color = SCALE_COLORS[currentNote].hex;
+                            seedInput.value = `受信中 >> ${toHex(currentNote)} ${toHex(currentPitch)} .. 解析`;
+                        } else {
+                            drawNoise();
+                            updateSlot(Math.floor(Math.random()*12), Math.floor(Math.random()*255), Math.floor(Math.random()*255));
+                            statusMsg.innerText = "信号途絶...";
+                            statusMsg.style.color = "#0f0";
+                        }
+                    } else {
+                        clearInterval(loop);
+                        let maxV = -1; let finalNote = 0;
+                        for(let i=0; i<12; i++) if(noteVotes[i] > maxV) { maxV = noteVotes[i]; finalNote = i; }
+                        if(maxV < 100) finalNote = Math.floor(Math.random()*12);
+                        const finalPitch = (pitchCount > 0) ? Math.floor(pitchSum / pitchCount) : 128;
+                        finishSequence(stream, finalNote, finalPitch);
+                    }
+                }, 50);
+
+            } catch(e) {
+                alert("センサーエラー: " + e);
+                isProcessing = false;
+                startBGM();
+                recordBtn.innerText = "再試行"; 
+                statusMsg.innerText = "致命的エラー";
+            }
+        }
+
+        async function finishSequence(stream, note, pitch) {
+            stream.getTracks().forEach(t => t.stop());
+            isProcessing = false;
+            startBGM();
+            drawGrid();
+
+            let finalType = Math.floor(Math.random() * 255);
+            let finalRnd = Math.floor(Math.random() * 255);
+
+            let p1 = toHex(note); let p2 = toHex(pitch); 
+            let p3 = toHex(finalType); let p4 = toHex(finalRnd);
+            const monsterCode = `BM-${p1}${p2}-${p3}${p4}`;
+
+            seedInput.value = monsterCode;
+            drawMonster(note, pitch, finalType, finalRnd);
+            updateSlot(note, pitch, finalRnd);
+
+            percentDisplay.innerText = "保存中..."; 
+            statusMsg.innerText = "DNAデータを記録しています...";
+            
+            try {
+                if(!uid) throw new Error("ログインしていません");
+                
+                const userRef = doc(db, "users", uid);
+                
+                // 1. 個人の図鑑に保存
+                const updateData = {
+                    genesisMonsters: arrayUnion({
+                        code: monsterCode,
+                        createdAt: new Date().toISOString(),
+                        costType: selectedCostType
+                    })
+                };
+                updateData[`inventory.${selectedCostType}`] = increment(-selectedCostAmount);
+                await updateDoc(userRef, updateData);
+
+                // 2. ★公開データベースに保存 (探索で出現するようにする)
+                await addDoc(collection(db, "public_genesis_monsters"), {
+                    code: monsterCode,
+                    creatorName: userName,
+                    createdAt: new Date().toISOString()
+                });
+
+                inventory[selectedCostType] -= selectedCostAmount;
+                updateCostButtons();
+
+                percentDisplay.innerText = "生成完了";
+                statusMsg.innerText = "図鑑登録 & 宇宙空間へ放流しました";
+                statusMsg.style.color = "#fff";
+                
+                recordBtn.innerText = "再生成する"; 
+                saveBtn.style.display = 'block';
+
+            } catch(e) {
+                console.error(e);
+                statusMsg.innerText = "保存失敗";
+                alert("データの保存に失敗しました(オフライン等)。素材は消費されていません。");
+                recordBtn.innerText = "再試行";
+            }
+        }
+
+        function drawNoise() {
+            ctx.clearRect(0, 0, 20, 20);
+            for(let y=0; y<20; y++) {
+                for(let x=0; x<20; x++) {
+                    if(Math.random() > 0.9) {
+                        ctx.fillStyle = `rgba(0, 255, 0, ${Math.random()})`;
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+                }
+            }
+        }
+
+        window.saveImage = function() {
+            const link = document.createElement('a');
+            link.download = 'bremons.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        window.copySeed = function() {
+            seedInput.select(); document.execCommand("copy");
+            statusMsg.innerText = "クリップボードにコピーしました";
+        }
+
+        window.loadFromInput = function() {
+            const val = seedInput.value.trim().toUpperCase();
+            if(/^BM-[0-9A-F]{4}-[0-9A-F]{4}$/.test(val)) {
+                const parts = val.split('-');
+                const raw = parts[1] + parts[2];
+                const p1 = parseInt(raw.substring(0,2), 16);
+                const p2 = parseInt(raw.substring(2,4), 16);
+                const p3 = parseInt(raw.substring(4,6), 16);
+                const p4 = parseInt(raw.substring(6,8), 16);
+                drawMonster(p1, p2, p3, p4);
+                updateSlot(p1, p2, p4);
+                percentDisplay.innerText = "復元完了";
+                statusMsg.innerText = "生成データをロードしました";
+                saveBtn.style.display = 'block';
+            } else {
+                alert("コードが無効です (BM-XXXX-XXXX)");
+            }
+        }
+
+        class Xorshift32 {
+            constructor(seed) {
+                this.state = seed | 0; 
+                if (this.state === 0) this.state = 0xdeadbeef;
+            }
+            next() {
+                let x = this.state;
+                x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+                this.state = x;
+                return (x >>> 0) / 4294967296;
+            }
+        }
+
+        function drawMonster(noteIdx, pitchVal, typeVal, rndVal) {
+            const colorData = SCALE_COLORS[noteIdx % 12];
+            const mainColor = colorData.hex;
+            const eyeColor = colorData.eye;
+            const shadowColor = adjustBrightness(mainColor, -25);
+            const outlineColor = adjustBrightness(mainColor, -40);
+
+            ctx.clearRect(0, 0, 20, 20); 
+
+            const masterSeed = (noteIdx << 24) ^ (pitchVal << 16) ^ (typeVal << 8) ^ rndVal;
+            const rng = new Xorshift32(masterSeed);
+
+            const gridSize = 20;
+            const grid = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+            const centerX = 9.5; const centerY = 10.5; 
+            
+            let squash = 0.7 + (pitchVal / 255) * 0.3;
+            const baseRadiusW = 8.0; const baseRadiusH = 8.0 * squash;
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const dx = x - centerX; const dy = y - centerY;
+                    let dynamicRadiusW = baseRadiusW * (1.0 + dy * 0.04);
+                    if ((dx*dx)/(dynamicRadiusW*dynamicRadiusW) + (dy*dy)/(baseRadiusH*baseRadiusH) <= 0.95) grid[y][x] = 2; 
+                }
+            }
+
+            const partsType = Math.floor(rng.next() * 4); 
+            
+            let bodyTopY = 0;
+            for(let y=0; y<gridSize/2; y++) { if(grid[y][9] === 2) { bodyTopY = y; break; } }
+            const earX = Math.floor(centerX - 2); const earBaseY = bodyTopY;
+            if (earBaseY >= 1) {
+                if (partsType === 0) { grid[earBaseY][earX]=2; grid[earBaseY][earX-1]=2; grid[earBaseY-1][earX]=2; grid[earBaseY-1][earX-1]=2; grid[earBaseY][earX-1]=4; } 
+                else if (partsType === 1) { grid[earBaseY-1][earX]=2; grid[earBaseY-2][earX]=2; grid[earBaseY-1][earX]=4; } 
+                else if (partsType === 2) { grid[earBaseY][earX-1]=2; grid[earBaseY-1][earX-1]=2; grid[earBaseY-1][earX-2]=2; grid[earBaseY][earX-1]=4; }
+            }
+            
+            let bodyBottomY = gridSize-1;
+            for(let y=gridSize-1; y>gridSize/2; y--) { if(grid[y][9] === 2) { bodyBottomY = y; break; } }
+            const legX = Math.floor(centerX - 3);
+            if (bodyBottomY < gridSize-1 && rng.next() > 0.3) {
+                grid[bodyBottomY+1][legX] = 2; grid[bodyBottomY+2][legX] = 1; 
+                grid[bodyBottomY+1][legX-1] = 2; grid[bodyBottomY+2][legX-1] = 1;
+            }
+
+            for (let y=0; y<gridSize; y++) for(let x=0; x<10; x++) if(grid[y][x]!==0) grid[y][19-x]=grid[y][x];
+            const finalGrid = JSON.parse(JSON.stringify(grid));
+            for (let y=0; y<gridSize; y++) for(let x=0; x<gridSize; x++) if(grid[y][x]===2 || grid[y][x]===4) { let isEdge=false; [[0,-1],[0,1],[-1,0],[1,0]].forEach(([nx,ny])=>{if(!grid[y+ny]||grid[y+ny][x+nx]===0)isEdge=true;}); if(isEdge)finalGrid[y][x]=1; }
+            for (let y=0; y<gridSize; y++) for(let x=0; x<gridSize; x++) if(finalGrid[y][x]===2) { if(x>centerX+4 && y>centerY+3 && (x+y)%2===0) finalGrid[y][x]=4; }
+            for (let y=0; y<gridSize; y++) for(let x=0; x<gridSize; x++) { const val=finalGrid[y][x]; if(val!==0){ if(val===1)ctx.fillStyle=outlineColor; else if(val===2)ctx.fillStyle=mainColor; else if(val===4)ctx.fillStyle=shadowColor; ctx.fillRect(x,y,1,1); } }
+
+            const eyeY = Math.floor(centerY); const eyeX_L = 6; const eyeX_R = 12; 
+            let eyePattern = typeVal % 3;
+            drawSpecifiedEye(ctx, eyeX_L, eyeY, eyeColor, shadowColor, eyePattern);
+            drawSpecifiedEye(ctx, eyeX_R, eyeY, eyeColor, shadowColor, eyePattern, false);
+        }
+
+        function drawSpecifiedEye(ctx, x, y, color, shadow, pattern, isRight=false) {
+            ctx.fillStyle = "#fff";
+            if (pattern === 0) { ctx.fillRect(x, y, 2, 2); ctx.fillStyle = color; ctx.fillRect(x, y+2, 2, 2); } 
+            else if (pattern === 1) { ctx.fillRect(x, y, 2, 2); ctx.fillStyle = shadow; ctx.fillRect(x, y+2, 2, 1); ctx.fillStyle = color; ctx.fillRect(x, y+3, 2, 1); } 
+            else { ctx.fillRect(x, y, 2, 2); ctx.fillStyle = shadow; ctx.fillRect(x, y+2, 2, 1); ctx.fillStyle = color; ctx.fillRect(x, y+3, 2, 1); const decoX = x + 2; ctx.fillStyle = shadow; ctx.fillRect(decoX, y+2, 1, 1); ctx.fillStyle = color; ctx.fillRect(decoX, y+1, 1, 1); }
+        }
+
+        function toHex(n) { return Math.floor(n||0).toString(16).padStart(2,'0').toUpperCase(); }
+        function adjustBrightness(hex, p) {
+            let r = parseInt(hex.slice(1,3), 16); let g = parseInt(hex.slice(3,5), 16); let b = parseInt(hex.slice(5,7), 16);
+            r = Math.max(0, Math.min(255, r + Math.round(2.55 * p))); g = Math.max(0, Math.min(255, g + Math.round(2.55 * p))); b = Math.max(0, Math.min(255, b + Math.round(2.55 * p)));
+            return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+        }
+
+        function initGlitchSound() {
+            if(glitchAudioCtx) return;
+            glitchAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const bufferSize = glitchAudioCtx.sampleRate; 
+            const buffer = glitchAudioCtx.createBuffer(1, bufferSize, glitchAudioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.1;
+
+            const noise = glitchAudioCtx.createBufferSource();
+            noise.buffer = buffer; noise.loop = true;
+            
+            const filter = glitchAudioCtx.createBiquadFilter();
+            filter.type = 'lowpass'; filter.frequency.value = 600;
+            
+            glitchGain = glitchAudioCtx.createGain();
+            glitchGain.gain.value = 0.15;
+
+            setInterval(() => {
+                 if(glitchGain.gain.value > 0) {
+                     glitchGain.gain.setTargetAtTime(Math.random() * 0.1 + 0.05, glitchAudioCtx.currentTime, 0.5);
+                 }
+            }, 500);
+
+            noise.connect(filter).connect(glitchGain).connect(glitchAudioCtx.destination);
+            noise.start();
+        }
+        document.body.addEventListener('click', initGlitchSound, { once: true });
+
+        function stopBGM() { if(glitchGain) glitchGain.gain.value = 0; }
+        function startBGM() { if(glitchGain) glitchGain.gain.value = 0.15; }
+
+        function glitchBackground() {
+            const nextTime = Math.random() * 2000 + 1000;
+            const rMove = Math.random();
+            if(rMove < 0.1) {
+                bgLayer.style.animationDirection = 'reverse'; bgLayer.style.animationDuration = '2s';
+            } else if(rMove < 0.2) {
+                bgLayer.style.animationPlayState = 'paused';
+            } else if(rMove < 0.3) {
+                bgLayer.style.animationDuration = '0.5s';
+            } else {
+                bgLayer.style.animationDirection = 'normal'; bgLayer.style.animationPlayState = 'running'; bgLayer.style.animationDuration = '60s';
+            }
+            setTimeout(glitchBackground, nextTime);
+        }
+        glitchBackground();
+
+        function drawGrid() {
+            if(isProcessing) return;
+            waveCtx.clearRect(0, 0, 220, 220);
+            waveCtx.strokeStyle = "rgba(0, 255, 0, 0.2)";
+            waveCtx.lineWidth = 1;
+            waveCtx.beginPath();
+            for(let i=0; i<=220; i+=20) {
+                waveCtx.moveTo(i, 0); waveCtx.lineTo(i, 220);
+                waveCtx.moveTo(0, i); waveCtx.lineTo(220, i);
+            }
+            waveCtx.stroke();
+            requestAnimationFrame(drawGrid);
+        }
+        drawGrid();
+
+        function updateSlot(note, pitch, partsRnd) {
+            const colorData = SCALE_COLORS[note % 12];
+            const formIndex = Math.floor((pitch / 256) * FORM_NAMES.length) % FORM_NAMES.length;
+            const partsIndex = partsRnd % PARTS_NAMES.length;
+
+            slotColor.innerText = colorData.jpn;
+            slotColor.style.color = colorData.hex;
+            slotForm.innerText = FORM_NAMES[formIndex];
+            slotParts.innerText = PARTS_NAMES[partsIndex];
+        }
+
+    </script>
+</body>
+</html>

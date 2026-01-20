@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Planet Exploration</title>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { 
+            overflow: hidden; background: #000; touch-action: none;
+            height: 100dvh; margin: 0; user-select: none;
+            font-family: 'DotGothic16', sans-serif;
+        }
+        
+        .game-container { width: 100%; height: 100%; position: relative; overflow: hidden; }
+        .game-world { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; will-change: transform; }
+
+        .sky-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('./nightgame/background2.png'); background-size: cover; z-index: 0;
+        }
+        .ground-layer {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 160px;
+            z-index: 10; background-repeat: repeat-x; background-size: auto 100%;
+        }
+        .decor-obj { position: absolute; bottom: 140px; z-index: 5; image-rendering: pixelated; pointer-events: none; }
+
+        .player-char {
+            position: absolute; bottom: 130px; left: 15%; width: 120px; z-index: 20;
+            transition: transform 0.1s; image-rendering: pixelated;
+        }
+        .player-walking { animation: walkBob 0.8s infinite alternate; }
+        @keyframes walkBob { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+        .player-damage { animation: damageFlash 0.5s infinite; }
+        @keyframes damageFlash { 0% { opacity: 1; } 50% { opacity: 0.2; filter: hue-rotate(90deg); } 100% { opacity: 1; } }
+
+        /* プレイヤー頭上のUIコンテナ */
+        .player-hud {
+            position: absolute; bottom: 260px; left: 15%; width: 120px; height: 100px;
+            z-index: 100; pointer-events: none; display: flex; flex-direction: column; 
+            align-items: center; justify-content: flex-end;
+            transform: translateX(10px); 
+        }
+        
+        /* 頭上の呼吸ゲージ */
+        .breath-gauge-container {
+            width: 80px; height: 8px; background: #333; border: 1px solid #fff; border-radius: 4px; overflow: hidden; margin-bottom: 5px;
+        }
+        .breath-gauge-bar {
+            height: 100%; width: 0%; background: #2ecc71; transition: width 0.1s;
+        }
+
+        /* 頭上の「はっ！」「ぱっ！」 */
+        .voice-feedback {
+            font-size: 32px; color: #f1c40f; text-shadow: 2px 2px 0 #000; 
+            opacity: 0; transition: opacity 0.2s; margin-bottom: 5px; white-space: nowrap;
+        }
+
+        .game-obj { position: absolute; z-index: 15; will-change: transform; image-rendering: pixelated; }
+        .monster-obj { bottom: 135px; }
+        .monster-anim { animation: monsterWalk 0.6s infinite alternate ease-in-out; }
+        @keyframes monsterWalk { 0% { transform: translateY(0) scaleY(1); } 100% { transform: translateY(-10px) scaleY(0.95); } }
+        .meteo-obj { width: 90px; top: -100px; }
+        
+        /* ゴールフラッグ */
+        .goal-obj { bottom: 130px; z-index: 18; image-rendering: pixelated; }
+
+        .effect-text {
+            position: absolute; font-size: 32px; font-weight: bold; 
+            color: #fff; text-shadow: 2px 2px 0 #000; pointer-events: none; z-index: 100;
+            animation: popUpFade 0.8s forwards;
+        }
+        @keyframes popUpFade { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-50px) scale(1.5); opacity: 0; } }
+
+        .hud-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: 50; pointer-events: none; padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .header-panel {
+            position: absolute; top: 10px; right: 10px; display: flex; gap: 10px; pointer-events: auto; align-items: flex-start;
+        }
+        .status-box {
+            background: rgba(0,0,0,0.8); border: 2px solid #fff; padding: 8px 15px;
+            border-radius: 8px; color: #fff; font-size: 14px; min-width: 140px; text-align: right;
+        }
+        
+        .pause-btn {
+            background: #e74c3c; color: #fff; border: 2px solid #fff;
+            padding: 8px 15px; font-size: 14px; cursor: pointer; border-radius: 5px;
+            font-family: 'DotGothic16', sans-serif; white-space: nowrap;
+        }
+        .pause-btn:active { transform: translateY(2px); }
+
+        .difficulty-stars {
+            margin-bottom: 2px; display: flex; justify-content: flex-end; gap: 2px;
+        }
+        .difficulty-stars img { width: 16px; height: 16px; filter: drop-shadow(0 0 2px #fff); }
+
+        .life-container {
+            font-size: 16px; letter-spacing: 2px; color: #e74c3c; margin-bottom: 2px;
+        }
+
+        .distance-panel {
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            width: 90%; height: 16px; background: rgba(0,0,0,0.6); border: 2px solid #fff; border-radius: 10px;
+            overflow: hidden; pointer-events: none;
+        }
+        .distance-bar {
+            height: 100%; width: 0%; background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.1s linear;
+        }
+        .distance-label {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: #fff; text-shadow: 1px 1px 0 #000; font-size: 12px;
+        }
+
+        .map-panel {
+            position: absolute; top: 10px; left: 10px; width: 110px; height: 110px;
+            background: rgba(0, 20, 0, 0.9); border: 2px solid #2ecc71; border-radius: 4px;
+            overflow: hidden; box-shadow: 0 0 10px #2ecc71; pointer-events: none;
+        }
+        .map-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(46, 204, 113, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(46, 204, 113, 0.2) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .map-ground-line { position: absolute; bottom: 10px; left: 0; width: 100%; height: 2px; background: #2ecc71; }
+        .map-player-icon {
+            position: absolute; bottom: 10px; left: 20px; width: 0; height: 0;
+            border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 12px solid #fff;
+            transform: translate(-50%, 0); filter: drop-shadow(0 0 4px #fff);
+        }
+        .map-dot {
+            position: absolute; width: 8px; height: 8px; border-radius: 50%;
+            transform: translate(-50%, -50%); transition: all 0.1s linear;
+        }
+        .dot-monster { background: #f1c40f; box-shadow: 0 0 5px #f1c40f; width: 8px; height: 8px; border-radius: 2px; }
+        .dot-meteor { background: #e74c3c; box-shadow: 0 0 5px #e74c3c; border: 1px solid #fff; }
+
+        .overlay-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: #fff; text-align: center;
+        }
+
+        .navi-bubble {
+            position: absolute; top: 140px; left: 20px; width: 220px;
+            background: rgba(0, 0, 0, 0.85); border: 2px solid #3498db; border-radius: 8px;
+            padding: 10px; z-index: 150; box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+            display: flex; gap: 10px; align-items: center; pointer-events: none;
+            transition: opacity 0.5s; opacity: 0;
+        }
+        .navi-bubble.show { opacity: 1; animation: floatNavi 3s infinite ease-in-out; }
+        
+        .navi-icon {
+            width: 36px; height: 36px; border-radius: 50%; background: #222; border: 1px solid #fff;
+            image-rendering: pixelated;
+        }
+        .navi-text { font-size: 12px; color: #fff; line-height: 1.4; text-align: left; }
+        .navi-text strong { color: #f1c40f; }
+
+        @keyframes floatNavi {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .pixel-btn {
+            background: #3498db; color: #fff; border: 2px solid #fff;
+            padding: 12px 24px; font-size: 18px; cursor: pointer; border-radius: 5px;
+            font-family: 'DotGothic16', sans-serif; margin-top: 15px;
+            box-shadow: 0 4px 0 #2980b9;
+        }
+        .pixel-btn:active { transform: translateY(4px); box-shadow: none; }
+        .btn-retry { background: #e74c3c; box-shadow: 0 4px 0 #c0392b; }
+        
+        .level-select-container {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;
+        }
+        .level-btn {
+            background: #222; border: 2px solid #fff; color: #fff;
+            padding: 10px; border-radius: 8px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 120px; height: 80px; transition: background 0.2s;
+        }
+        .level-btn:hover { background: #444; }
+        .level-stars { margin-top: 5px; }
+        .level-stars img { width: 16px; height: 16px; margin: 0 1px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="game-world" id="gameWorld">
+            <div class="sky-bg"></div>
+            <div class="ground-layer" id="groundLayer"></div>
+            <div id="decorLayer"></div>
+            <img src="./nightgame/chara.png" class="player-char player-walking" id="player">
+            
+            <div class="player-hud">
+                <div class="voice-feedback" id="voiceFeedback"></div>
+                <div class="breath-gauge-container">
+                    <div class="breath-gauge-bar" id="micBar"></div>
+                </div>
+            </div>
+
+            <div id="objContainer"></div>
+        </div>
+
+        <div class="hud-layer">
+            <div class="distance-label">GOALまで</div>
+            <div class="distance-panel">
+                <div class="distance-bar" id="distBar"></div>
+            </div>
+            
+            <div class="map-panel" id="mapPanel">
+                <div class="map-grid"></div>
+                <div class="map-ground-line"></div>
+                <div class="map-player-icon"></div>
+            </div>
+
+            <div id="naviBubble" class="navi-bubble">
+                <img src="./nightgame/chara.png" class="navi-icon">
+                <div id="naviText" class="navi-text">...</div>
+            </div>
+
+            <div class="header-panel">
+                <div class="status-box">
+                    <div class="difficulty-stars" id="diffStars"></div>
+                    <div class="life-container" id="lifeDisplay">❤❤❤</div>
+                    <div id="planetName" style="font-size:12px; opacity:0.8;">惑星 ???</div>
+                    <div style="margin-top:2px;">
+                        今回捕獲: <span id="sessionCount" style="color:#2ecc71; font-size:18px;">0</span> 匹
+                    </div>
+                    <div style="font-size:10px; color:#aaa;">(最大出現: <span id="maxSpawnCount">0</span>)</div>
+                </div>
+                <button class="pause-btn" onclick="togglePause()">一時中断</button>
+            </div>
+        </div>
+
+        <div class="overlay-screen" id="startOverlay">
+            <h2>探索ミッション準備</h2>
+            <p style="margin: 10px 0; font-size: 14px; opacity: 0.8;">
+                <span style="color:#f1c40f">「はっ！」</span>で捕獲 / <span style="color:#3c86e7">「ぱっ！」</span>で迎撃<br>
+                難易度を選んでください
+            </p>
+            
+            <div class="level-select-container">
+                <div class="level-btn" onclick="gameStart(1)">
+                    <div>LEVEL 1</div>
+                    <div class="level-stars"><img src="./nightgame/star.png"></div>
+                </div>
+                <div class="level-btn" onclick="gameStart(2)">
+                    <div>LEVEL 2</div>
+                    <div class="level-stars"><img src="./nightgame/star.png"><img src="./nightgame/star.png"></div>
+                </div>
+                <div class="level-btn" onclick="gameStart(3)">
+                    <div>LEVEL 3</div>
+                    <div class="level-stars"><img src="./nightgame/star.png"><img src="./nightgame/star.png"><img src="./nightgame/star.png"></div>
+                </div>
+                <div class="level-btn" onclick="gameStart(4)">
+                    <div>LEVEL 4</div>
+                    <div class="level-stars"><img src="./nightgame/star.png"><img src="./nightgame/star.png"><img src="./nightgame/star.png"><img src="./nightgame/star.png"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overlay-screen" id="pauseOverlay" style="display: none; background: rgba(0,0,0,0.6);">
+            <h2>一時中断中</h2>
+            <button class="pixel-btn" onclick="togglePause()">再開する</button>
+            <button class="pixel-btn" style="background:#555; font-size:14px;" onclick="location.href='stage_select.html'">探索を中止</button>
+        </div>
+
+        <div class="overlay-screen" id="gameOverOverlay" style="display: none;">
+            <h2 style="color:#e74c3c; font-size:40px;">GAME OVER</h2>
+            <p>探索失敗...<br>隕石に衝突してしまった。</p>
+            <button class="pixel-btn btn-retry" onclick="location.reload()">もう一度挑戦</button>
+            <br>
+            <button class="pixel-btn" style="font-size:14px; background:#555;" onclick="location.href='stage_select.html'">戻る</button>
+        </div>
+
+        <div class="overlay-screen" id="gameClearOverlay" style="display: none;">
+            <h2 style="color:#2ecc71; font-size:40px;">MISSION CLEAR!</h2>
+            <p>
+                無事にゴール地点へ到達！<br><br>
+                今回の成果: <span id="resultSessionCount" style="font-size:24px; color:#f1c40f;">0</span> 匹<br>
+                総所持数: <span id="resultTotalCount" style="font-size:24px;">0</span> 匹
+            </p>
+            <button class="pixel-btn" id="saveBtn" onclick="finishExploration()">保存して戻る</button>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ==========================================
+        // ゲームバランス調整エリア
+        // ここで難易度ごとの「数」や「頻度」を変更
+        // ==========================================
+        // maxMonsters:  このステージで出現するモンスターの最大数
+        // totalMeteors: このステージで出現する隕石の最大数
+        // spawnRate:    出現間隔のフレーム数 (数字が大きいほど間隔が長くなり、ゆっくり出現します)
+        //               ※60で約1秒間隔です。200なら約3秒間隔。
+        // ==========================================
+        const DIFFICULTY_RULES = {
+            1: { maxMonsters: 3,  totalMeteors: 2, spawnRate: 200 }, // ゆっくり
+            2: { maxMonsters: 5,  totalMeteors: 3, spawnRate: 180 }, 
+            3: { maxMonsters: 8,  totalMeteors: 5, spawnRate: 150 },
+            4: { maxMonsters: 10, totalMeteors: 8, spawnRate: 120 }  // 速い
+        };
+        // ==========================================
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUWMn07YntLyB8m4q5-zHmiwjYOz1c_nk",
+            authDomain: "bremons.firebaseapp.com",
+            projectId: "bremons",
+            storageBucket: "bremons.firebasestorage.app",
+            messagingSenderId: "30413071482",
+            appId: "1:30413071482:web:f62c34349b13e6c6ce47c3",
+            measurementId: "G-4D4FCXGDBG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const uid = localStorage.getItem('user_uid');
+        if(!uid) location.href = 'index.html';
+
+        const PLANET_DATA = {
+            1: { name: "惑星インハレス", monster: "Usa", img: "./nightgame/red.png", id: "usa", groundColor: "#8B4513" },
+            2: { name: "惑星エクセール", monster: "Inv", img: "./nightgame/blue.png", id: "inv", groundColor: "#2F4F4F" },
+            3: { name: "惑星プネウマ", monster: "Him", img: "./nightgame/yellow.png", id: "him", groundColor: "#DAA520" }
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const pId = urlParams.get('planet') || 1;
+        
+        let currentLevel = 1;
+        const currentData = PLANET_DATA[pId];
+        let currentRule = DIFFICULTY_RULES[currentLevel];
+
+        document.getElementById('planetName').innerText = currentData.name;
+        
+        let inventoryOwned = 0;   
+        let sessionCaught = 0;    
+        
+        let monstersSpawnedTotal = 0; 
+        let meteorsSpawnedTotal = 0;  
+        let goalSpawned = false;
+        let goalDelayTimer = 0; // ゴール出現までの待機時間用
+        
+        let maxLives = 3;
+        let currentLives = 3;
+
+        let isGameRunning = false;
+        let isPaused = false;
+        let gameSpeed = 1.5; 
+        let groundOffset = 0;
+        let shakeTrauma = 0; 
+        
+        let gameObjects = []; 
+        let decorObjects = [];
+        let spawnTimer = 0;
+        let decorTimer = 0;
+        
+        let micConfig = {
+            noiseThreshold: 0.05,
+            haProfile: [0.096, 0.101, 0.044, 0.005, 0.005, 0.019, 0.030, 0.036, 0.038, 0.010, 0.001, 0.004, 0.018, 0.055, 0.069, 0.040, 0.023, 0.012, 0.027, 0.040, 0.029, 0.022, 0.009, 0.038],
+            paProfile: [0.032, 0.041, 0.014, 0.022, 0.009, 0.017, 0.005, 0.022, 0.011, 0.010, 0.029, 0.092, 0.135, 0.139, 0.051, 0.013, 0.009, 0.012, 0.014, 0.014, 0.008, 0.009, 0.017, 0.007]
+        };
+        let audioContext, analyser, dataArray;
+        const THOUSAND_INDEX = 24;
+        let voiceCooldown = 0; 
+
+        const savedConfig = localStorage.getItem('mic_config_v2');
+        if(savedConfig) {
+            try { micConfig = JSON.parse(savedConfig); } catch(e) {}
+        }
+        createGroundTexture(currentData.groundColor);
+        
+        const userRef = doc(db, "users", uid);
+        getDoc(userRef).then(snap => {
+            if(snap.exists() && snap.data().inventory) {
+                inventoryOwned = snap.data().inventory[currentData.id] || 0;
+                updateCountDisplay();
+            }
+        });
+
+        window.gameStart = async function(selectedLevel) {
+            if(selectedLevel) {
+                currentLevel = selectedLevel;
+                currentRule = DIFFICULTY_RULES[currentLevel];
+            }
+            
+            document.getElementById('maxSpawnCount').innerText = currentRule.maxMonsters;
+            const starContainer = document.getElementById('diffStars');
+            starContainer.innerHTML = '';
+            for(let i=0; i<currentLevel; i++) {
+                const img = document.createElement('img');
+                img.src = './nightgame/star.png';
+                starContainer.appendChild(img);
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                const microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                analyser.fftSize = 1024;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+            } catch(e) {
+                console.log("マイクなしモード");
+            }
+            
+            document.getElementById('startOverlay').style.display = 'none';
+            isGameRunning = true;
+            isPaused = false;
+            showNavi("ミッション開始！<br>ゴールを目指して進め！");
+            requestAnimationFrame(gameLoop);
+        };
+
+        window.togglePause = function() {
+            if(!isGameRunning) return;
+            isPaused = !isPaused;
+            if(isPaused) {
+                document.getElementById('pauseOverlay').style.display = 'flex';
+            } else {
+                document.getElementById('pauseOverlay').style.display = 'none';
+                requestAnimationFrame(gameLoop);
+            }
+        };
+
+        function gameLoop() {
+            if(!isGameRunning || isPaused) return;
+
+            groundOffset -= gameSpeed;
+            if(groundOffset <= -128) groundOffset = 0; 
+            document.getElementById('groundLayer').style.backgroundPosition = `${groundOffset}px bottom`;
+
+            updateProgressUI();
+
+            if(analyser) processVoice();
+
+            // ゴール出現チェック（すべて出し切ったら少し待ってゴールを出す）
+            const allSpawned = (monstersSpawnedTotal >= currentRule.maxMonsters) && 
+                               (meteorsSpawnedTotal >= currentRule.totalMeteors);
+            
+            if(allSpawned && !goalSpawned) {
+                goalDelayTimer++;
+                // 最後の敵が出てから約2秒(120フレーム)後にゴールを出す
+                if(goalDelayTimer > 120) {
+                    spawnGoalFlag();
+                    goalSpawned = true;
+                    showNavi("前方にゴールを発見！<br>タッチしてクリアせよ！");
+                }
+            }
+
+            spawnTimer++;
+            // ゴールがまだ出ておらず、タイマーが出現間隔を超えたら
+            if(!allSpawned && spawnTimer > currentRule.spawnRate) { 
+                const canSpawnMonster = monstersSpawnedTotal < currentRule.maxMonsters;
+                const canSpawnMeteor = meteorsSpawnedTotal < currentRule.totalMeteors;
+                
+                // どちらを出すか決定
+                if (canSpawnMonster && canSpawnMeteor) {
+                    // 両方出せるならランダム
+                    if (Math.random() < 0.5) spawnMonster();
+                    else spawnMeteor();
+                } else if (canSpawnMonster) {
+                    // モンスターしか残っていない
+                    spawnMonster();
+                } else if (canSpawnMeteor) {
+                    // 隕石しか残っていない
+                    spawnMeteor();
+                }
+                
+                // 出現させたらタイマーリセット
+                spawnTimer = 0; 
+            }
+
+            decorTimer++;
+            if(decorTimer > 200) {
+                spawnDecor();
+                decorTimer = Math.floor(Math.random() * 100);
+            }
+
+            updateObjects();
+            updateDecor();
+            updateMapUI(); 
+            updateShakeEffect(); 
+            updateNavi();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateProgressUI() {
+            const totalTarget = currentRule.maxMonsters + currentRule.totalMeteors;
+            const currentTotal = monstersSpawnedTotal + meteorsSpawnedTotal;
+            // 敵が出現した割合でバーを進める
+            const progress = Math.min(100, (currentTotal / totalTarget) * 100);
+            document.getElementById('distBar').style.width = `${progress}%`;
+        }
+
+        function spawnGoalFlag() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#aaa';
+            ctx.fillRect(5, 10, 5, 118);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(10, 10, 50, 40);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(10, 10, 25, 20);
+            ctx.fillRect(35, 30, 25, 20);
+
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL();
+            img.className = 'game-obj goal-obj';
+            img.style.width = '60px';
+            document.getElementById('objContainer').appendChild(img);
+            
+            gameObjects.push({ el: img, type: 'goal', x: window.innerWidth + 50, y: 0, alive: true });
+        }
+
+        let naviTimer = 0;
+        let lastNaviType = null;
+        function showNavi(html) {
+            const bubble = document.getElementById('naviBubble');
+            const text = document.getElementById('naviText');
+            text.innerHTML = html;
+            bubble.classList.add('show');
+            naviTimer = 300; 
+        }
+
+        function updateNavi() {
+            if(naviTimer > 0) {
+                naviTimer--;
+                if(naviTimer <= 0) document.getElementById('naviBubble').classList.remove('show');
+            }
+            const playerX = window.innerWidth * 0.15;
+            const nearMonster = gameObjects.find(o => o.type === 'monster' && o.alive && o.x > playerX && o.x < playerX + 300);
+            if (nearMonster && lastNaviType !== 'monster') {
+                showNavi("チャンス！<br><strong>「はっ！」</strong>と言って捕獲しよう！");
+                lastNaviType = 'monster';
+                return;
+            }
+            const nearMeteor = gameObjects.find(o => o.type === 'meteor' && o.alive && o.x > playerX - 100 && o.x < playerX + 500);
+            if (nearMeteor && lastNaviType !== 'meteor') {
+                showNavi("危険！<br><strong>「ぱっ！」</strong>と言って迎撃しよう！");
+                lastNaviType = 'meteor';
+                return;
+            }
+            if (!nearMonster && !nearMeteor) lastNaviType = null;
+        }
+
+        function processVoice() {
+            if(voiceCooldown > 0) {
+                voiceCooldown--;
+                return;
+            }
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
+            let average = sum / dataArray.length;
+            document.getElementById('micBar').style.width = Math.min(100, average * 2) + "%";
+
+            let max_amplitude = 0;
+            for(let i=0; i<THOUSAND_INDEX; i++) {
+                const val = dataArray[i] / 255.0;
+                if(val > max_amplitude) max_amplitude = val;
+            }
+            if(max_amplitude < micConfig.noiseThreshold) return;
+
+            let haDist = 0;
+            let paDist = 0;
+            for(let i=0; i<THOUSAND_INDEX; i++) {
+                const val = dataArray[i] / 255.0;
+                haDist += Math.pow(micConfig.haProfile[i] - val, 2);
+                paDist += Math.pow(micConfig.paProfile[i] - val, 2);
+            }
+            const haScore = 1 / (1 + Math.sqrt(haDist));
+            const paScore = 1 / (1 + Math.sqrt(paDist));
+
+            if (haScore > 0.6 || paScore > 0.6) {
+                if (haScore > paScore + 0.05) {
+                    triggerAction("はっ");
+                    voiceCooldown = 15;
+                } else if (paScore > haScore + 0.05) {
+                    triggerAction("ぱっ");
+                    voiceCooldown = 15;
+                }
+            }
+        }
+
+        function triggerAction(type) {
+            if(isPaused) return;
+
+            const feedback = document.getElementById('voiceFeedback');
+            feedback.innerText = type + "！";
+            feedback.style.opacity = 1;
+            setTimeout(() => feedback.style.opacity = 0, 500);
+
+            const playerX = window.innerWidth * 0.15; 
+            if(type === "はっ") {
+                const targets = gameObjects.filter(o => o.type === 'monster' && o.alive && o.x > playerX && o.x < playerX + 400);
+                if(targets.length > 0) captureMonster(targets[0]);
+            } else if(type === "ぱっ") {
+                const targets = gameObjects.filter(o => o.type === 'meteor' && o.alive && o.x > playerX - 100 && o.x < playerX + 700);
+                if(targets.length > 0) destroyMeteor(targets[0]);
+            }
+        }
+
+        function spawnDecor() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32; canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            if(Math.random() < 0.5) {
+                ctx.fillStyle = '#2ecc71';
+                ctx.fillRect(12, 10, 8, 22); ctx.fillRect(4, 14, 8, 4);   
+                ctx.fillRect(4, 10, 4, 4); ctx.fillRect(20, 18, 8, 4); ctx.fillRect(24, 14, 4, 4);
+            } else {
+                ctx.fillStyle = '#7f8c8d';
+                ctx.fillRect(4, 20, 24, 12); ctx.fillRect(8, 16, 16, 4);
+                ctx.fillStyle = '#95a5a6'; ctx.fillRect(6, 22, 4, 4);
+            }
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL();
+            img.className = 'decor-obj';
+            img.style.width = (Math.random() * 40 + 40) + 'px'; 
+            document.getElementById('decorLayer').appendChild(img);
+            decorObjects.push({ el: img, x: window.innerWidth + 50 });
+        }
+
+        function spawnMonster() {
+            monstersSpawnedTotal++; 
+            const el = document.createElement('img');
+            el.src = currentData.img;
+            el.className = 'game-obj monster-obj monster-anim';
+            document.getElementById('objContainer').appendChild(el);
+            const scale = 0.8 + Math.random() * 0.5;
+            const hue = Math.floor(Math.random() * 60) - 30; 
+            el.style.width = (80 * scale) + 'px';
+            el.style.filter = `hue-rotate(${hue}deg)`;
+            gameObjects.push({ el: el, type: 'monster', x: window.innerWidth + 100, y: 0, alive: true });
+        }
+
+        function spawnMeteor() {
+            meteorsSpawnedTotal++; 
+            const el = document.createElement('img');
+            el.src = './nightgame/meteo.png';
+            el.className = 'game-obj meteo-obj';
+            document.getElementById('objContainer').appendChild(el);
+            const startX = window.innerWidth + Math.random() * 200; 
+            const startY = -150; 
+            const targetX = window.innerWidth * 0.15; 
+            const targetY = window.innerHeight - 150; 
+            const dx = targetX - startX;
+            const dy = targetY - startY;
+            const angleRad = Math.atan2(dy, dx);
+            const speed = gameSpeed + 2; 
+            const vx = Math.cos(angleRad) * speed;
+            const vy = Math.sin(angleRad) * speed;
+            const angleDeg = (angleRad * 180 / Math.PI) - 90;
+            el.style.transform = `rotate(${angleDeg}deg)`;
+            gameObjects.push({ el: el, type: 'meteor', x: startX, y: startY, vx: vx, vy: vy, alive: true });
+        }
+
+        function updateDecor() {
+            decorObjects.forEach(obj => {
+                obj.x -= gameSpeed * 0.8; 
+                obj.el.style.left = obj.x + 'px';
+                if(obj.x < -100) { obj.el.remove(); obj.dead = true; }
+            });
+            decorObjects = decorObjects.filter(o => !o.dead);
+        }
+
+        function updateObjects() {
+            const playerX = window.innerWidth * 0.15;
+            const pHitY = window.innerHeight - 120; 
+
+            gameObjects.forEach(obj => {
+                if(!obj.alive) return;
+
+                if(obj.type === 'monster') {
+                    obj.x -= gameSpeed;
+                    obj.el.style.left = obj.x + 'px';
+                    if(obj.x < playerX + 80 && obj.x > playerX + 70) {
+                        obj.alive = false; 
+                        obj.el.style.transition = "none"; 
+                        obj.el.classList.remove('monster-anim');
+                        obj.el.animate([
+                            { transform: 'translate(0, 0)' },
+                            { transform: 'translate(-200px, -200px) rotate(-45deg)' }, 
+                            { transform: 'translate(-400px, 0) rotate(-90deg)' } 
+                        ], { duration: 1000, fill: 'forwards' });
+                        setTimeout(() => removeObject(obj), 1000);
+                        showEffect("逃げられた...", "#aaa", playerX, pHitY - 50);
+                    }
+                } else if(obj.type === 'meteor') {
+                    obj.x += obj.vx;
+                    obj.y += obj.vy;
+                    obj.el.style.left = obj.x + 'px';
+                    obj.el.style.top = obj.y + 'px';
+                    if(Math.abs(obj.x - playerX) < 60 && Math.abs(obj.y - pHitY) < 60) {
+                        playerHit(obj);
+                    }
+                    if(obj.y > window.innerHeight) removeObject(obj);
+                } else if(obj.type === 'goal') {
+                    obj.x -= gameSpeed;
+                    obj.el.style.left = obj.x + 'px';
+                    if(obj.x < playerX + 80 && obj.x > playerX - 50) {
+                        gameClear();
+                    }
+                }
+            });
+        }
+
+        function updateMapUI() {
+            const mapPanel = document.getElementById('mapPanel');
+            const dots = mapPanel.querySelectorAll('.dot-generated');
+            dots.forEach(d => d.remove());
+
+            const playerX = window.innerWidth * 0.15;
+            const range = window.innerWidth - playerX + 100;
+            const mapW = 110; 
+            const mapH = 110;
+
+            gameObjects.forEach(obj => {
+                if(!obj.alive) return;
+                if(obj.type === 'goal') return;
+
+                const dx = obj.x - playerX;
+                if(dx > -100 && dx < range) {
+                    const dot = document.createElement('div');
+                    dot.className = 'map-dot dot-generated';
+                    if(obj.type === 'monster') dot.classList.add('dot-monster');
+                    else dot.classList.add('dot-meteor');
+
+                    const mapX = 20 + (dx / range) * (mapW - 30);
+                    let mapY = 0;
+                    if(obj.type === 'meteor') {
+                        const groundY = window.innerHeight - 120;
+                        const progressY = (obj.y + 100) / (groundY + 100);
+                        mapY = progressY * (mapH - 10);
+                    } else {
+                        mapY = mapH - 10;
+                    }
+                    if(mapX > mapW) return;
+                    dot.style.left = mapX + 'px';
+                    dot.style.top = mapY + 'px';
+                    mapPanel.appendChild(dot);
+                }
+            });
+        }
+
+        function captureMonster(obj) {
+            obj.alive = false;
+            const pRect = document.getElementById('player').getBoundingClientRect();
+            const mRect = obj.el.getBoundingClientRect();
+            const deltaX = pRect.left - mRect.left;
+            const deltaY = pRect.top - mRect.top;
+
+            obj.el.classList.remove('monster-anim');
+            obj.el.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${deltaX}px, ${deltaY}px) scale(0.1)`, opacity: 0 }
+            ], { duration: 400, easing: 'ease-in', fill: 'forwards' });
+
+            setTimeout(() => removeObject(obj), 400);
+            sessionCaught++;
+            updateCountDisplay();
+            showEffect("GET!", "#f1c40f", pRect.left, pRect.top - 50);
+        }
+
+        function destroyMeteor(obj) {
+            obj.alive = false;
+            shakeTrauma = 1.0; 
+            obj.el.animate([
+                { transform: `rotate(${getRotation(obj.el)}deg) scale(1)`, opacity: 1, filter: 'brightness(2)' },
+                { transform: `rotate(${getRotation(obj.el) + 180}deg) scale(2)`, opacity: 0 }
+            ], { duration: 300, fill: 'forwards' });
+            setTimeout(() => removeObject(obj), 300);
+            showEffect("BREAK!", "#e74c3c", obj.x, obj.y);
+        }
+
+        function getRotation(el) {
+            const st = window.getComputedStyle(el, null);
+            const tr = st.getPropertyValue("transform");
+            if(tr === 'none') return 0;
+            const values = tr.split('(')[1].split(')')[0].split(',');
+            const a = values[0]; const b = values[1];
+            return Math.round(Math.atan2(b, a) * (180/Math.PI));
+        }
+
+        function playerHit(obj) {
+            obj.alive = false;
+            removeObject(obj);
+            shakeTrauma = 1.0; 
+            currentLives--;
+            updateLifeDisplay();
+
+            const p = document.getElementById('player');
+            p.classList.add('player-damage');
+            setTimeout(() => p.classList.remove('player-damage'), 1000);
+            showEffect("OUCH!", "#ff0000", window.innerWidth * 0.15, window.innerHeight - 200);
+
+            if(currentLives <= 0) {
+                gameOver();
+            }
+        }
+
+        function updateLifeDisplay() {
+            let hearts = "";
+            for(let i=0; i<3; i++) {
+                if(i < currentLives) hearts += "❤";
+                else hearts += "<span style='color:#555'>❤</span>";
+            }
+            document.getElementById('lifeDisplay').innerHTML = hearts;
+        }
+
+        function removeObject(obj) {
+            obj.alive = false;
+            if(obj.el && obj.el.parentNode) obj.el.parentNode.removeChild(obj.el);
+        }
+
+        function updateCountDisplay() {
+            document.getElementById('sessionCount').innerText = sessionCaught;
+        }
+
+        function showEffect(text, color, x, y) {
+            const el = document.createElement('div');
+            el.className = 'effect-text';
+            el.innerText = text;
+            el.style.color = color;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        function createGroundTexture(baseColor) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 160;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = baseColor;
+            ctx.fillRect(0, 0, 128, 160);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.beginPath();
+            ctx.moveTo(0, 20);
+            ctx.bezierCurveTo(40, 0, 80, 40, 128, 10);
+            ctx.lineTo(128, 160);
+            ctx.lineTo(0, 160);
+            ctx.fill();
+            for(let i=0; i<400; i++) {
+                ctx.fillStyle = Math.random() < 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.05)';
+                const x = Math.floor(Math.random() * 128);
+                const y = Math.floor(Math.random() * 160);
+                ctx.fillRect(x, y, 2, 2);
+            }
+            const dataUrl = canvas.toDataURL();
+            document.getElementById('groundLayer').style.backgroundImage = `url(${dataUrl})`;
+        }
+
+        function updateShakeEffect() {
+            const playerX = window.innerWidth * 0.15;
+            const playerY = window.innerHeight - 130;
+            let proximityShake = 0;
+            gameObjects.forEach(obj => {
+                if(obj.type === 'meteor' && obj.alive) {
+                    const dx = obj.x - playerX;
+                    const dy = obj.y - playerY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const shakeRange = 600;
+                    if(dist < shakeRange) {
+                        let intensity = 1.0 - (dist / shakeRange);
+                        if(intensity > proximityShake) proximityShake = intensity;
+                    }
+                }
+            });
+            shakeTrauma = Math.max(0, shakeTrauma - 0.02);
+            let totalShake = Math.max(proximityShake, shakeTrauma);
+            const gameWorld = document.getElementById('gameWorld');
+            if(totalShake > 0) {
+                const shakeAmount = 20 * totalShake * totalShake;
+                const tx = (Math.random() - 0.5) * shakeAmount;
+                const ty = (Math.random() - 0.5) * shakeAmount;
+                gameWorld.style.transform = `translate(${tx}px, ${ty}px)`;
+            } else {
+                gameWorld.style.transform = 'none';
+            }
+        }
+
+        function gameOver() {
+            isGameRunning = false;
+            document.getElementById('gameOverOverlay').style.display = 'flex';
+        }
+
+        function gameClear() {
+            isGameRunning = false;
+            document.getElementById('resultSessionCount').innerText = sessionCaught;
+            document.getElementById('resultTotalCount').innerText = inventoryOwned + sessionCaught;
+            document.getElementById('gameClearOverlay').style.display = 'flex';
+        }
+
+        window.finishExploration = async function() {
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "保存中...";
+            btn.disabled = true;
+
+            const saveObj = { inventory: {} };
+            saveObj.inventory[currentData.id] = inventoryOwned + sessionCaught;
+            try {
+                await setDoc(userRef, saveObj, { merge: true });
+                window.location.href = "stage_select.html";
+            } catch(e) {
+                console.error(e);
+                alert("保存に失敗しました");
+                window.location.href = "stage_select.html";
+            }
+        };
+    </script>
+</body>
+</html>
