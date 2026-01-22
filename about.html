@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <title>About - LIFE LOG Factory</title>
+    <style>
+        /* about.html 専用スタイル */
+
+        /* 動画エリア（白背景） */
+        .simple-video-section {
+            background: #fff;
+            /* PC表示時の余白：ヘッダーの高さ分（約80px）＋α */
+            padding: 100px 20px 40px; 
+            text-align: center;
+        }
+
+        /* スマホ表示時の動画エリア余白調整 */
+        @media (max-width: 768px) {
+            .simple-video-section {
+                /* スマホではヘッダーが縦に伸びるため、余白を大きく取る */
+                padding-top: 180px; 
+            }
+        }
+
+        /* 動画のレスポンシブコンテナ */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px; /* 動画の最大幅 */
+            margin: 0 auto;
+            padding-bottom: 56.25%; /* 16:9比率 */
+            height: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* テキストセクションの調整 */
+        .about-text-section {
+            padding: 40px 0;
+        }
+
+        /* 画像ギャラリーエリア */
+        .gallery-section {
+            background: #fcfcfc;
+            padding: 60px 0;
+        }
+        .gallery-grid {
+            display: grid;
+            /* 2列表示 */
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .gallery-item {
+            position: relative;
+            /* 画像の比率調整（スライドなら4:3や16:9が見やすい） */
+            aspect-ratio: auto; 
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: zoom-in;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+            z-index: 2;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* 募集エリア */
+        .join-section {
+            background: #fff;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .join-message {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+        .join-note {
+            font-size: 0.9rem;
+            font-weight: normal;
+            display: block;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        /* 連絡ボタンエリア */
+        .contact-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .btn-contact {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #fff;
+            transition: opacity 0.3s, transform 0.2s;
+            min-width: 180px;
+        }
+        .btn-contact:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .btn-contact img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            filter: brightness(0) invert(1); /* アイコンを白く */
+        }
+        .btn-x { background-color: #000; }
+        .btn-insta { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); }
+        .btn-mail { background-color: #007bff; }
+
+
+        /* 画像ズーム用モーダル（ポップアップ） */
+        #modal-zoom {
+            display: none;
+            position: fixed;
+            z-index: 2000; /* ヘッダーより上に来るように */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            padding: 20px;
+        }
+        #modal-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+       <div class="header-logo">
+            <a href="index.html">
+                <img src="assets/img/LLF-img/LLF taitoru black.svg" alt="logo">
+            </a>
+        </div>
+        <nav class="header-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="bremons.html">BREMONS</a></li>
+                </ul>
+        </nav>
+    </header>
+
+    <section class="simple-video-section">
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/wszkohAAOoA?autoplay=1&mute=1&playlist=wszkohAAOoA&loop=1" 
+                title="LIFE LOG Factory Video" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </section>
+
+    <section class="service-section about-text-section">
+        <div class="service-container">
+            <div class="service-header">
+                <div class="service-title-group">
+                    <h1 class="service-main-title">LIFE LOG Factory</h1>
+                </div>
+                <hr class="divider">
+            </div>
+            <div class="service-content">
+                <div class="service-content-left">
+                    <div class="service-catchphrase">
+                        “もの･ことづくり”
+                    </div>
+                </div>
+                <div class="service-content-right">
+                    <p class="service-description">
+                        私たちは、“ライフルログ”に関する“もの･ことづくり”を通じて、健康や地域社会、さらには環境に関わるさまざまな課題の解決を目指した製品開発に取り組むサークルです。
+                        これまでにない斬新で独自性のある製品を生み出すことで、新しい価値の創造に挑戦しています。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <div class="service-container">
+            <div class="service-header">
+                <div class="service-title-group">
+                    <h1 class="service-main-title">Introduction</h1>
+                </div>
+                <hr class="divider">
+            </div>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="./assets/img/About/01.png" alt="Slide 01" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/02.png" alt="Slide 02" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/03.png" alt="Slide 03" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/04.png" alt="Slide 04" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/05.png" alt="Slide 05" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/06.png" alt="Slide 06" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/07.png" alt="Slide 07" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/08.png" alt="Slide 08" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/09.png" alt="Slide 09" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/10.png" alt="Slide 10" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/11.png" alt="Slide 11" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/12.png" alt="Slide 12" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/13.png" alt="Slide 13" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/14.png" alt="Slide 14" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/15.png" alt="Slide 15" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/16.png" alt="Slide 16" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/17.png" alt="Slide 17" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/18.png" alt="Slide 18" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/19.png" alt="Slide 19" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/20.png" alt="Slide 20" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/21.png" alt="Slide 21" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/22.png" alt="Slide 22" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/23.png" alt="Slide 23" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/24.png" alt="Slide 24" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/25.png" alt="Slide 25" loading="lazy"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="join-section">
+        <div class="service-container">
+            <div class="service-header">
+                <div class="service-title-group">
+                    <h1 class="service-main-title">Join Us & Contact</h1>
+                </div>
+                <hr class="divider">
+            </div>
+            
+            <p class="join-message">
+                学部・分野・学年不問！<br>
+                もの・ことづくりに興味がある人　どなたでも大歓迎です
+                <span class="join-note">（長崎大学生以外でも興味があればご連絡ください！）</span>
+            </p>
+
+            <p style="margin-top: 30px;">
+                質問や見学希望など、お気軽にご連絡ください。<br>
+                以下のSNSのDM、またはメールでお待ちしています。
+            </p>
+
+            <div class="contact-buttons">
+                <a href="https://x.com/LifeLogFactory_" target="_blank" class="btn-contact btn-x">
+                    <img src="assets/img/sns-icon/x.png" alt="X Icon">
+                    X (Twitter) DM
+                </a>
+                <a href="https://www.instagram.com/lifelogfactory/" target="_blank" class="btn-contact btn-insta">
+                    <img src="assets/img/sns-icon/instagram.png" alt="Insta Icon">
+                    Instagram DM
+                </a>
+                <a href="mailto:kokyukinou.kaizen@gmail.com" class="btn-contact btn-mail">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 10px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    メールで連絡
+                </a>
+            </div>
+             <p style="margin-top: 20px; font-size: 0.9rem; color: #555;">Email: kokyukinou.kaizen@gmail.com</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-left">
+            <img src="assets/img/LLF-img/LLF taitoru black.svg" alt="Main Logo" class="footer-logo">
+            <img src="assets/img/LLF-img/nagasaki-u.png" alt="Sub Logo" class="footer-logo">
+        </div>
+    
+        <div class="footer-right">
+            <a href="https://www.youtube.com/@LifeLogFactory/videos" target="_blank"><img src="assets/img/sns-icon/youtube.png" alt="YouTube"></a>
+            <a href="https://x.com/LifeLogFactory_" target="_blank"><img src="assets/img/sns-icon/x.png" alt="X"></a>
+            <a href="https://www.instagram.com/lifelogfactory/" target="_blank"><img src="assets/img/sns-icon/instagram.png" alt="Instagram"></a>
+        </div>
+    </footer>
+
+    <div id="modal-zoom">
+        <img id="modal-img" src="">
+    </div>
+
+    <script>
+        const modal = document.getElementById('modal-zoom');
+        const modalImg = document.getElementById('modal-img');
+        const galleryItems = document.querySelectorAll('.gallery-item img');
+
+        // 各画像をクリックした時の処理
+        galleryItems.forEach(img => {
+            img.addEventListener('click', function() {
+                modal.style.display = "flex"; 
+                modalImg.src = this.src; 
+            });
+        });
+
+        // モーダルをクリックしたら閉じる
+        modal.addEventListener('click', function() {
+            modal.style.display = "none";
+        });
+    </script>
+</body>
+</html>
