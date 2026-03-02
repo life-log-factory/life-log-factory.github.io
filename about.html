@@ -12,15 +12,14 @@
         /* 動画エリア（白背景） */
         .simple-video-section {
             background: #fff;
-            /* PC表示時の余白：ヘッダーの高さ分（約80px）＋α */
-            padding: 100px 20px 40px; 
+            /* 画面の端まで動画を広げるため、左右の余白(20px)を 0 に変更 */
+            padding: 100px 0 40px; 
             text-align: center;
         }
 
         /* スマホ表示時の動画エリア余白調整 */
         @media (max-width: 768px) {
             .simple-video-section {
-                /* スマホではヘッダーが縦に伸びるため、余白を大きく取る */
                 padding-top: 180px; 
             }
         }
@@ -29,12 +28,13 @@
         .video-container {
             position: relative;
             width: 100%;
-            max-width: 900px; /* 動画の最大幅 */
+            /* max-width: 900px; を削除して、画面幅100%に広げます */
             margin: 0 auto;
-            padding-bottom: 56.25%; /* 16:9比率 */
-            height: 0;
+            /* 16:9の比率をきれいに維持するための新しい指定方法 */
+            aspect-ratio: 16 / 9;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        
         .video-container iframe {
             position: absolute;
             top: 0;
@@ -171,6 +171,8 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="bremons.html">BREMONS</a></li>
+                <li><a href="https://bb54125213.github.io/">ID</a></li>
+                <!-- <li><a href="kazoo.html">Kazoo</a></li> -->
                 </ul>
         </nav>
     </header>
@@ -178,8 +180,8 @@
     <section class="simple-video-section">
         <div class="video-container">
             <iframe 
-                src="https://www.youtube.com/embed/wszkohAAOoA?autoplay=1&mute=1&playlist=wszkohAAOoA&loop=1" 
-                title="LIFE LOG Factory Video" 
+                src="https://www.youtube.com/embed/22v3VZWAnjY?autoplay=1&mute=1&playlist=22v3VZWAnjY&loop=1" 
+                title="LIFE LOG Factory PV" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 referrerpolicy="strict-origin-when-cross-origin" 
@@ -225,11 +227,15 @@
                 <div class="gallery-item"><img src="./assets/img/About/01.png" alt="Slide 01" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/02.png" alt="Slide 02" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/03.png" alt="Slide 03" loading="lazy"></div>
-                <div class="gallery-item"><img src="./assets/img/About/04.png" alt="Slide 04" loading="lazy"></div>
+                <!-- <div class="gallery-item"><img src="./assets/img/About/04.png" alt="Slide 04" loading="lazy"></div> -->
+                <div class="gallery-item"><img src="./assets/img/About/04_26.png" alt="Slide 04" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/05.png" alt="Slide 05" loading="lazy"></div>
-                <div class="gallery-item"><img src="./assets/img/About/06.png" alt="Slide 06" loading="lazy"></div>
+                <!-- <div class="gallery-item"><img src="./assets/img/About/06.png" alt="Slide 06" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/07.png" alt="Slide 07" loading="lazy"></div>
-                <div class="gallery-item"><img src="./assets/img/About/08.png" alt="Slide 08" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/08.png" alt="Slide 08" loading="lazy"></div> -->
+                <div class="gallery-item"><img src="./assets/img/About/06_26.png" alt="Slide 06" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/07_26.png" alt="Slide 07" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/08_26.png" alt="Slide 08" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/09.png" alt="Slide 09" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/10.png" alt="Slide 10" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/11.png" alt="Slide 11" loading="lazy"></div>
@@ -246,7 +252,13 @@
                 <div class="gallery-item"><img src="./assets/img/About/22.png" alt="Slide 22" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/23.png" alt="Slide 23" loading="lazy"></div>
                 <div class="gallery-item"><img src="./assets/img/About/24.png" alt="Slide 24" loading="lazy"></div>
-                <div class="gallery-item"><img src="./assets/img/About/25.png" alt="Slide 25" loading="lazy"></div>
+                <!-- <div class="gallery-item"><img src="./assets/img/About/25.png" alt="Slide 25" loading="lazy"></div> -->
+                <div class="gallery-item"><img src="./assets/img/About/26.png" alt="Slide 26" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/27.png" alt="Slide 27" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/28.png" alt="Slide 28" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/29.png" alt="Slide 29" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/30.png" alt="Slide 30" loading="lazy"></div>
+                <div class="gallery-item"><img src="./assets/img/About/31.png" alt="Slide 31" loading="lazy"></div>
             </div>
         </div>
     </section>

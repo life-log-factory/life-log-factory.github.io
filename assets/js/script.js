@@ -73,19 +73,19 @@ const canvas = document.getElementById('starfield');
     frame++;
 
     // フェーズ制御
-    if (frame < 60) {
+    if (frame < 30) {
       phase = 0; // 静止
       speed = 0.5;
-    } else if (frame < 120) {
+    } else if (frame < 90) {
       phase = 1; // 加速
       speed += 0.8;
-    } else if (frame < 300) {
+    } else if (frame < 180) {
       phase = 2; // ハイパースペース
       speed = 50;
-    } else if (frame < 360) {
+    } else if (frame < 240) {
       phase = 3; // 減速
       speed *= 0.92;
-    } else if (frame === 360) {
+    } else if (frame === 240) {
       document.getElementById('logo').classList.add('show');
     }
 
@@ -107,4 +107,39 @@ const canvas = document.getElementById('starfield');
   });
 
   targets.forEach(target => observer.observe(target));
+});
+
+// ニュースの読み込みと表示
+document.addEventListener('DOMContentLoaded', () => {
+    const newsListElement = document.getElementById('news-list');
+    
+    // news-listが存在するページ（index.htmlやnews.html）でのみ実行
+    if (!newsListElement) return;
+
+    // 現在のページが「news.html」かどうかを判定
+    const isNewsPage = window.location.pathname.includes('news.html');
+
+    // JSONデータを取得
+    fetch('./assets/data/news.json')
+        .then(response => response.json())
+        .then(data => {
+            // トップページなら先頭の5件だけを取得、news.htmlなら全件取得
+            const displayData = isNewsPage ? data : data.slice(0, 5);
+
+            // 取得したデータをHTMLに変換して追加
+            displayData.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'news-item';
+                
+                // 日付を「YYYY-MM-DD」から「YYYY/MM/DD」の形式に変換
+                const formattedDate = item.date.replace(/-/g, '/');
+
+                li.innerHTML = `
+                    <time class="news-date" datetime="${item.date}">${formattedDate}</time>
+                    <a href="${item.link}" class="news-link">${item.text}</a>
+                `;
+                newsListElement.appendChild(li);
+            });
+        })
+        .catch(error => console.error('ニュースの読み込みに失敗しました:', error));
 });

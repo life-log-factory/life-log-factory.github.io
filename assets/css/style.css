@@ -35,7 +35,7 @@ body{
   justify-content: space-between;
   position: fixed;
   border-bottom: 1px solid #e0e0e0;
-  z-index: 2;
+  z-index: 1000; /* 修正：ヘッダーが一番上に来るよう数値を大きくしました */
 }
 .header-logo img{
   height: 45px;
@@ -71,8 +71,8 @@ body{
 #logo {
   position: absolute;
   /* widthとmax-widthを追加してレスポンシブ対応します */
-  width: 80%;           /* 画面幅の80%を使用 */
-  max-width: 700px;     /* PCで大きくなりすぎないよう最大幅を制限 */
+  width: 80%;          /* 画面幅の80%を使用 */
+  max-width: 700px;    /* PCで大きくなりすぎないよう最大幅を制限 */
   z-index: 10;
 
   /* アニメーション設定 */
@@ -93,7 +93,7 @@ body{
   object-fit: contain; /* 確実に枠内に収める */
   
   /* 以前のCSSにあった影の効果を画像にも適用したい場合（任意） */
-  filter: drop-shadow(0 0 10px rgba(0, 204, 255, 0.5)); 
+  /* filter: drop-shadow(0 0 10px rgba(0, 204, 255, 0.5));  */
 }
 
 #logo.show {
@@ -103,13 +103,14 @@ body{
 
 /* news */
 .news-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  text-align: left;
-  margin: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #333;
+  font-family: "Times New Roman", Times, serif; /* 他の大見出しとフォントを統一 */
+  font-size: 36px; /* 24pxから大きく変更 */
+  font-weight: normal;
+  color: #0d1b3f; /* 濃い紺色で統一感を出す */
+  text-align: center; /* 中央寄せにして目立たせる（左寄せが良い場合は left に） */
+  margin: 40px 20px 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0; /* 太い黒線から、控えめなグレーの線に変更 */
 }
 
 /* ニュースリスト全体 */
@@ -122,11 +123,17 @@ body{
 /* 各ニュース項目 */
 .news-item {
   display: flex;
-  align-items: center;
+  align-items: center; /* 縦の中央揃え */
   margin-left: 20px;
   margin-right: 20px;
-  padding: 15px 10px;
+  padding: 20px 10px; /* 上下の余白を少し広げて見やすくしました */
   border-bottom: 1px solid #eee;
+  transition: background-color 0.3s; /* ふわっと色が変わる準備 */
+}
+
+/* マウスを乗せたときに少し背景色を変えて、クリックできる感を出す（追加） */
+.news-item:hover {
+  background-color: #fcfcfc; 
 }
 
 /* 日付 */
@@ -134,6 +141,8 @@ body{
   font-size: 14px;
   color: #888;
   margin-right: 20px;
+  width: 100px; /* 追加：日付の幅を固定して、タイトルの開始位置を揃える */
+  flex-shrink: 0; /* 追加：スマホで見たときなどに日付が潰れないようにする */
 }
 
 /* ニュースタイトルリンク */
@@ -533,4 +542,38 @@ body{
     align-items: center;
     gap: 15px;
   }
+}
+
+/* プロジェクトごとの間隔を空け、上の画像との詰まりを解消する（追加） */
+.project-item {
+  margin-bottom: 100px; /* ここで次のプロジェクトとの余白を大きく取る */
+  align-items: flex-start; /* 左右の要素を上揃えにする */
+}
+
+/* プロジェクトのタイトル用デザイン */
+.project-title {
+  font-size: 24px; /* 文字を少しスッキリしたサイズに調整 */
+  font-weight: bold;
+  color: #0d1b3f;
+  margin-top: 0;
+  margin-bottom: 25px; /* 修正：タイトルと下の画像の間にしっかり空白を入れる */
+  line-height: 1.4;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+  display: block;
+}
+
+/* スマホ表示時のプロジェクトタイトルサイズ */
+@media (max-width: 768px) {
+  .project-title {
+    font-size: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+  }
+}
+
+/* プロジェクトごとの間隔を空け、上の画像との詰まりを解消する（追加） */
+.project-item {
+  margin-bottom: 100px; 
+  align-items: center; /* ← ここを flex-start から center に修正 */
 }

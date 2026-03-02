@@ -8,7 +8,6 @@
     <title>LIFE LOG Factory</title>
 </head>
 <body>
-    <!-- header -->
     <header class="header">
        <div class="header-logo">
             <a href="index.html">
@@ -20,63 +19,29 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="bremons.html">BREMONS</a></li>
-                <!-- <li><a href="pid.html">PID</a></li> -->
-            </ul>
+                <li><a href="https://bb54125213.github.io/">ID</a></li>
+                <!-- <li><a href="kazoo.html">Kazoo</a></li> -->
+                </ul>
         </nav>
     </header>
-    <!-- main visual -->
     <div class="main-visual">
         <canvas id="starfield"></canvas>
         <div id="logo">
             <img src="assets/img/LLF-img/LLF taitoru.svg" alt="GALAXY CIRCLE" />
         </div>
     </div>
-    <!-- news -->
     <section class="news-container">
         <div class="fade-in-target">
             <div class="news-title">NEWS</div>
         </div>
         <div class="fade-in-target">
-            <ul class="news-list">
-                <li class="news-item">
-                    <time class="news-date" datetime="2026-01-23">2026/01/23</time>
-                    <a href="about.html" class="news-link">Aboutページを開設しました。</a>
-                </li>
-                <li class="news-item">
-                    <time class="news-date" datetime="2026-01-08">2026/01/08</time>
-                    <a href="index.html" class="news-link">スマートフォンに対応しました。</a>
-                </li>
-                <li class="news-item">
-                    <time class="news-date" datetime="2025-12-24">2025/12/24</time>
-                    <a href="bremons.html" class="news-link">BREMONSページを開設しました。</a>
-                </li>
-                <li class="news-item">
-                    <time class="news-date" datetime="2025-12-24">2025/12/24</time>
-                    <a href="index.html" class="news-link">LIFE LOG Factoryページを開設しました。</a>
-                </li>
-                <!-- <li class="news-item">
-                    <time class="news-date" datetime="2025-07-03">2025/7/3</time>
-                    <a href="#" class="news-link">example</a>
-                </li>
-                <li class="news-item">
-                    <time class="news-date" datetime="2025-06-18">2025/6/18</time>
-                    <a href="#" class="news-link">example</a>
-                </li>
-                <li class="news-item">
-                    <time class="news-date" datetime="2025-06-02">2025/6/2</time>
-                    <a href="#" class="news-link">example</a>
-                </li>
-                <li class="news-item">
-                    <time class="news-date" datetime="2025-05-09">2025/5/9</time>
-                    <a href="#" class="news-link">example</a>
-                </li> -->
-            </ul>
-            <!-- <div class="more-link-wrapper">
-                <a href="#" class="more-link">MORE</a>
-            </div> -->
+            <ul class="news-list" id="news-list">
+                </ul>
+            <div class="more-link-wrapper" style="margin-top: 20px; text-align: right;">
+                <a href="news.html" class="more-link">>>MORE</a>
+            </div>
         </div>
     </section>
-    <!-- About LIFE LOG Factory -->
     <section class="service-section">
         <div class="service-container">
             <div class="fade-in-target">
@@ -108,8 +73,7 @@
             </div>
         </div>
     </section>
-    <!-- Projects -->
-     <section class="service-section">
+    <section class="service-section">
         <div class="service-container">
             <div class="fade-in-target">
                 <div class="service-header">
@@ -120,11 +84,12 @@
                 </div>
             </div>
             <div class="fade-in-target">
-                <div class="service-content">
+                <div class="service-content project-item">
                     <div class="service-content-left">
-                        <h2 class="service-catchphrase"><img src="assets/img/Projects/bremons/iPhone 15 Pro.svg" alt="">
-                        </h2>
-                        呼吸機能トレーニングゲームの開発
+                        <h3 class="project-title">呼吸機能トレーニングゲームの開発</h3>
+                        <div class="service-catchphrase">
+                            <img src="assets/img/Projects/bremons/iPhone 15 Pro.svg" alt="">
+                        </div>
                     </div>
 
                     <div class="service-content-right">
@@ -139,31 +104,47 @@
                 </div>
             </div>
             <div class="fade-in-target">
-                <div class="service-content">
+                <div class="service-content project-item">
                     <div class="service-content-left">
-                        <h2 class="service-catchphrase"><img src="assets/img/Projects/PID/sandgrass.jpg" alt="">
-                        </h2>
-                        心理的効果を用いた工業デザイン
+                        <h3 class="project-title">心理的効果を用いた工業デザイン</h3>
+                        <div class="service-catchphrase">
+                            <img src="assets/img/Projects/PID/sandgrass.jpg" alt="">
+                        </div>
                     </div>
 
                     <div class="service-content-right">
                         <p class="service-description">
                             色や音が異なることで、スピード感覚が変わる心理的効果を用いた工業デザインの開発。
                         </p>
-                        <!-- <div class="more-link-wrapper">
-                            <a href="pid.html" class="more-link">>>MORE</a>
-                        </div> -->
+                        <div class="more-link-wrapper">
+                            <a href="https://bb54125213.github.io/" target="_blank" class="more-link">>>MORE</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fade-in-target">
+                <div class="service-content project-item">
+                    <div class="service-content-left">
+                        <h3 class="project-title">オリジナル「Kazoo」の製作</h3>
+                        <div class="service-catchphrase">
+                            <img src="assets/img/Projects/Kazoo/Kazoo.png" alt="">
+                        </div>
+                    </div>
+
+                    <div class="service-content-right">
+                        <p class="service-description">
+                            呼吸を使った道具として、膜鳴楽器であるKazooを製作しています。このオリジナルKazooは分解することができ衛生的で、膜も身近なポリ袋等を用いて簡単に鳴らすことができます。
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Schedule -->
-<div class="fade-in-target">
+    <div class="fade-in-target">
         <div class="service-header">
             <div class="service-title-group">
                 <div class="service-title-group">
-                    <h1 class="service-main-title">活動日程</h1>
+                    <h1 class="service-main-title">Schedule</h1>
                 </div>
             </div>
         </div>
@@ -180,9 +161,7 @@
             </iframe>
         </div>
     </div>
-    </div>
-    <!-- Club Overview -->
-        <div class="club-info-container">
+    <div class="club-info-container">
             <div class="fade-in-target">
                 <h2 class="info-title">サークルについて</h2>
             </div>
@@ -202,7 +181,8 @@
                         <dt class="info-label">活動内容</dt>
                         <dd class="info-data">
                             呼吸機能トレーニングゲームの開発<br>
-                            心理的効果を用いた工業デザイン
+                            心理的効果を用いた工業デザイン<br>
+                            オリジナル「Kazoo」の製作
                         </dd>
                     </div>
                     <div class="info-item">
@@ -224,23 +204,11 @@
         </div>
     </div>
      <footer class="footer">
-    <!-- 左：ロゴ縦並び -->
     <div class="footer-left">
       <img src="assets\img\LLF-img\LLF taitoru black.svg" alt="Main Logo" class="footer-logo">
       <img src="assets\img\LLF-img\nagasaki-u.png" alt="Sub Logo" class="footer-logo">
     </div>
 
-  <!-- 中央：テキストリンク -->
-  <!-- <div class="footer-center">
-    <a href="#">example</a>
-    <a href="#">example</a>
-    <a href="#">example</a>
-    <a href="#">example</a>
-    <a href="#">example</a>
-    <a href="#">example</a>
- </div> -->
-
-  <!-- 右：SNSアイコン -->
   <div class="footer-right">
     <a href="https://www.youtube.com/@LifeLogFactory/videos" target="_blank"><img src="assets\img\sns-icon\youtube.png" alt="YouTube"></a>
     <a href="https://x.com/LifeLogFactory_" target="_blank"><img src="assets\img\sns-icon\x.png" alt="X"></a>
