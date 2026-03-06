@@ -132,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
             allEvents = data;
             renderNewsList(allEvents);
             renderCalendar(currentYear, currentMonth, allEvents);
+            // ▼ 画像スライダーを描画する関数を呼び出し
+            renderImageSlider(allEvents);
         })
         .catch(error => {
             console.error('データの読み込みに失敗しました:', error);
@@ -139,14 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if(detailsArea) detailsArea.innerHTML = `<p style="color:red; text-align:center;">データの読み込みに失敗しました。</p>`;
         });
 
-// -----------------------------------------
-    // 1. NEWS欄を描画する関数（クリックで開閉・左寄せ対応）
+    // -----------------------------------------
+    // 1. NEWS欄を描画する関数（クラス制御に修正）
     // -----------------------------------------
     function renderNewsList(data) {
         const newsListElement = document.getElementById('news-list');
         if (!newsListElement) return;
 
-        // ★全体を強制的に「左寄せ」にする
         newsListElement.style.textAlign = 'left';
 
         const sortedData = [...data].sort((a, b) => new Date(String(b.date)) - new Date(String(a.date)));
@@ -164,32 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
             li.style.alignItems = 'flex-start';
 
             const formattedDate = String(item.date).replace(/-/g, '/').substring(0, 10);
-            
-            // 画像、または内容（テキスト）があるかチェック
             const hasDetails = item.imageUrl || item.content;
 
             let titleHtml = '';
             let detailHtml = '';
 
             if (hasDetails) {
-                // ▼画像か内容がある場合：タイトルを押すと下の詳細（news-detail-X）が開閉する
                 titleHtml = `<span class="news-link" style="color: #333; font-weight: bold; cursor: pointer; text-decoration: underline;" onclick="const d = document.getElementById('news-detail-${index}'); d.style.display = d.style.display === 'none' ? 'block' : 'none';">${item.title}</span>`;
 
-                // 開く中身の作成（画像）
                 let imgHtml = '';
                 if (item.imageUrl) {
                     const imgTag = `<img src="${item.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: 10px auto; display: block; transition: 0.3s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">`;
-                    // URLがある場合は画像をリンクにする
                     imgHtml = item.link ? `<a href="${item.link}" target="_blank">${imgTag}</a>` : imgTag;
                 }
 
-                // 開く中身の作成（テキスト）
                 let contentHtml = item.content ? `<div style="margin-top: 12px; font-size: 14px; color: #444; white-space: pre-wrap; line-height: 1.6;">${item.content}</div>` : '';
-                
-                // 画像はないけどURLだけある場合のリンクボタン
                 let urlHtml = (item.link && !item.imageUrl) ? `<div style="margin-top:12px;"><a href="${item.link}" target="_blank" style="color:#007bff; font-weight:bold; text-decoration:underline;">&gt;&gt; 詳細リンクを開く</a></div>` : '';
 
-                // 詳細エリア（初期状態は display: none で隠しておく）
                 detailHtml = `
                     <div id="news-detail-${index}" style="display: none; width: 100%; padding: 15px; background-color: #f4f7f6; border-radius: 8px; margin-top: 10px; box-sizing: border-box; border-left: 4px solid #007bff;">
                         ${imgHtml}
@@ -198,22 +190,64 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
-                // ▼画像も内容もない場合：URLがあればただのリンク、なければただの文字
                 titleHtml = item.link 
                     ? `<a href="${item.link}" class="news-link" target="_blank" style="font-weight:bold;">${item.title}</a>` 
                     : `<span class="news-link" style="color: #333; font-weight:bold; cursor: default;">${item.title}</span>`;
             }
 
-            // HTMLの組み立て（日付とタイトルを横並び、詳細はその下）
+            // ▼ インラインスタイルをやめて、CSSのクラスに置き換えました
             li.innerHTML = `
-                <div style="display: flex; align-items: baseline; width: 100%;">
-                    <time class="news-date" datetime="${item.date}" style="margin-right: 20px; flex-shrink: 0; width: 100px;">${formattedDate}</time>
+                <div class="news-header-row">
+                    <time class="news-date news-date-span" datetime="${item.date}">${formattedDate}</time>
                     ${titleHtml}
                 </div>
                 ${detailHtml}
             `;
             newsListElement.appendChild(li);
         });
+    }
+
+    // -----------------------------------------
+    // 追加：画像スライダーを描画する関数
+    // -----------------------------------------
+    function renderImageSlider(data) {
+        const track = document.getElementById('image-slider-track');
+        if (!track) return;
+
+        // データの中から画像URLがあるものだけを抽出
+        const images = data.filter(e => e.imageUrl).map(e => e.imageUrl);
+        
+        // 画像が1枚もない場合は、親枠ごと非表示にする
+        if (images.length === 0) {
+            track.parentElement.style.display = 'none';
+            return;
+        }
+
+        // 画面を埋めるために、画像を20枚分生成するロジック
+        let sliderImages = [];
+        let lastImg = null;
+
+        for (let i = 0; i < 20; i++) {
+            // 画像が1種類しかない場合はそれを連続させるしかない
+            if (images.length === 1) {
+                sliderImages.push(images[0]);
+            } else {
+                // 直前の画像とは違う画像をランダムに選ぶ
+                let availableImages = images.filter(img => img !== lastImg);
+                let randomImg = availableImages[Math.floor(Math.random() * availableImages.length)];
+                sliderImages.push(randomImg);
+                lastImg = randomImg;
+            }
+        }
+
+        // HTMLのimgタグを生成
+        let html = '';
+        sliderImages.forEach(url => {
+            html += `<img src="${url}" class="slider-img">`;
+        });
+
+        // CSSアニメーション（無限ループ）のために、全く同じものをもう1セット繋げる
+        track.innerHTML = html + html; 
     }
 
     // -----------------------------------------
