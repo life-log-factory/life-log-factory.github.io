@@ -830,3 +830,54 @@ body{
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* =========================================
+   スマホ専用の微調整（余白・文字サイズ・カレンダー）
+   ========================================= */
+@media (max-width: 768px) {
+  /* ① 左右の無駄な余白を削る */
+  .fade-in-target {
+    padding: 0px 15px !important; /* PCの50pxから15pxに縮小 */
+  }
+  .custom-calendar-wrapper {
+    padding: 10px;
+  }
+
+  /* ② 大きすぎる文字をスマホサイズにする */
+  .news-title { font-size: 26px; margin: 30px 10px 15px; }
+  .service-main-title { font-size: 28px !important; }
+  .service-catchphrase { font-size: 20px !important; }
+  #calendar-month-year { font-size: 22px; }
+
+  /* ③ カレンダーをスマホ画面に収める */
+  .calendar-table th {
+    font-size: 12px;
+    padding: 5px 0;
+  }
+  .calendar-table td {
+    height: 70px !important; /* マスの高さを少し縮める */
+    padding: 3px !important; /* マス内の余白を極限まで減らす */
+  }
+  .cal-date-num {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+  .marker {
+    font-size: 9px !important; /* タグの文字を小さく */
+    padding: 2px 3px !important;
+    border-left-width: 3px !important; /* 左の線も少し細く */
+  }
+  .cal-btn {
+    padding: 6px 12px;
+    font-size: 16px;
+  }
+
+  /* ④ 詳細画面の余白調整 */
+  .calendar-details {
+    padding: 15px;
+    margin-top: 15px;
+  }
+  .detail-time {
+    font-size: 12px;
+  }
+}

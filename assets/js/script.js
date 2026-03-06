@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 開く中身の作成（画像）
                 let imgHtml = '';
                 if (item.imageUrl) {
-                    const imgTag = `<img src="${item.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; display: block; transition: 0.3s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">`;
+                    const imgTag = `<img src="${item.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: 10px auto; display: block; transition: 0.3s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">`;
                     // URLがある場合は画像をリンクにする
                     imgHtml = item.link ? `<a href="${item.link}" target="_blank">${imgTag}</a>` : imgTag;
                 }
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ▼ 画像の表示（タイトルと内容の間に挟む）
             let imageHtml = '';
             if (e.imageUrl) {
-                const imgTag = `<img src="${e.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin: 12px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: block;">`;
+                const imgTag = `<img src="${e.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin: 12px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: block;">`;
                 // URLがある場合は画像をクリックでリンク先に飛ばす
                 imageHtml = e.link ? `<a href="${e.link}" target="_blank">${imgTag}</a>` : imgTag;
             }
