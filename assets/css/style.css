@@ -665,32 +665,94 @@ body{
     background-color: #fafafa;
 }
 
+/* カレンダーのマス（td）自体の調整 */
+.calendar-table td {
+    height: 100px; /* 少し高さを出して余裕を持たせる */
+    border: 1px solid #eee;
+    vertical-align: top;
+    padding: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
 /* --- スプレッドシートから読み込んだ予定のラベル（色分け） --- */
-.event-markers {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+.event-markers { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 4px; 
+    margin-top: 5px;
 }
 
 .marker {
-    padding: 3px 5px;
-    border-radius: 3px;
-    color: #fff;
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* 文字が長ければ「...」にする */
+    padding: 4px 6px; 
+    border-radius: 4px; /* 少し角を丸く */
+    font-size: 11px;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
     font-weight: bold;
+    color: #fff; /* 文字を白にしてハッキリさせる */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* ほんの少し影をつけて浮き上がらせる */
 }
 
-/* Newsは青色 */
-.marker-news {
-    background-color: #007bff;
+/* 4つのタグの色設定（ベタ塗りにする） */
+.marker-news { background-color: #007bff; } /* 青: NEWS */
+.marker-event { background-color: #dc3545; } /* 赤: EVENT */
+.marker-activity { background-color: #e65100; } /* オレンジ: ACTIVITY */
+.marker-other { background-color: #6c757d; } /* グレー: OTHER */
+
+/* 予定があるマス全体の色を変えるためのクラス */
+.has-event {
+    background-color: #d6e4f9; /* ほんのり青白い背景色 */
 }
 
-/* Schedule（活動日）はオレンジ色 */
-.marker-schedule {
-    background-color: #e65100;
+/* --- 詳細表示エリア --- */
+.calendar-details {
+    margin-top: 25px; padding: 20px; background-color: #f9f9f9;
+    border-left: 4px solid #0d1b3f; border-radius: 4px; min-height: 80px;
+}
+.details-placeholder { color: #888; text-align: center; margin: 0; }
+.detail-item {
+    margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ddd;
+}
+.detail-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+/* 詳細表示用のタグデザイン */
+.detail-type-badge {
+    font-weight: bold; font-size: 12px; padding: 2px 6px; border-radius: 3px; margin-right: 10px;
+}
+.detail-type-news     { color: #007bff; border: 1px solid #007bff; }
+.detail-type-event    { color: #dc3545; border: 1px solid #dc3545; }
+.detail-type-activity { color: #e65100; border: 1px solid #e65100; }
+.detail-type-other    { color: #6c757d; border: 1px solid #6c757d; }
+
+/* 時間と内容のデザイン */
+.detail-time { font-size: 13px; color: #555; font-family: monospace; font-weight: bold; }
+.detail-content {
+    font-size: 14px; margin-top: 10px; color: #444; white-space: pre-wrap;
+    background: #fff; padding: 12px; border-radius: 4px; border: 1px solid #eee; line-height: 1.6;
+}
+
+/* 管理画面リンクボタン */
+.admin-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #111; /* SNSアイコンに合わせた黒 */
+    text-decoration: none;
+    margin-left: 15px;
+    padding: 0 16px;
+    height: 30px; /* SNSアイコンと高さを揃える */
+    border-radius: 15px; /* 丸みを持たせる */
+    transition: 0.3s;
+    vertical-align: middle;
+}
+.admin-link:hover {
+    background-color: #007bff; /* ホバー時はLLFの青に */
+    color: #fff;
 }
 
 /* --- 詳細表示エリア --- */

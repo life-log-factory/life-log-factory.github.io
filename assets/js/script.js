@@ -113,41 +113,30 @@ const canvas = document.getElementById('starfield');
 // スプレッドシート連携 ＆ オリジナルカレンダー
 // =========================================
 document.addEventListener('DOMContentLoaded', () => {
-    const gasUrl = 'https://script.google.com/macros/s/AKfycby5fofJ_EMAWnpYDXLFLfQQD89Ta7gb0ZajMTjx9HeFeAIohgQDOg_k8JvXb3VVCsOz/exec';
+    // ★末尾に ?type=json を追加して、サイト用のデータをもらう
+    const gasUrl = 'https://script.google.com/macros/s/AKfycby5fofJ_EMAWnpYDXLFLfQQD89Ta7gb0ZajMTjx9HeFeAIohgQDOg_k8JvXb3VVCsOz/exec?type=json';
 
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
     let allEvents = [];
 
-    console.log("データの取得を開始します..."); // 【確認用】F12で確認できます
-
     // --- ローディングアニメーションを表示 ---
     const newsListElement = document.getElementById('news-list');
     const calendarBody = document.getElementById('calendar-body');
     const loadingHtml = `<div class="loading-wrapper"><div class="spinner"></div>Loading...</div>`;
-    
-    // NEWS欄にローディングを表示
-    if (newsListElement) {
-        newsListElement.innerHTML = `<li style="list-style:none; border:none;">${loadingHtml}</li>`;
-    }
-    // カレンダー欄にローディングを表示
-    if (calendarBody) {
-        calendarBody.innerHTML = `<tr><td colspan="7" style="border:none; height:150px;">${loadingHtml}</td></tr>`;
-    }
+    if (newsListElement) newsListElement.innerHTML = `<li style="list-style:none; border:none;">${loadingHtml}</li>`;
+    if (calendarBody) calendarBody.innerHTML = `<tr><td colspan="7" style="border:none; height:150px;">${loadingHtml}</td></tr>`;
     // ----------------------------------------
 
     fetch(gasUrl)
         .then(response => response.json())
         .then(data => {
-            console.log("取得したデータ:", data); // 【確認用】データが取れているか確認
             allEvents = data;
-            
             renderNewsList(allEvents);
             renderCalendar(currentYear, currentMonth, allEvents);
         })
         .catch(error => {
             console.error('データの読み込みに失敗しました:', error);
-            // 万が一失敗しても画面に文字を出すようにしました
             const detailsArea = document.getElementById('calendar-details');
             if(detailsArea) detailsArea.innerHTML = `<p style="color:red; text-align:center;">データの読み込みに失敗しました。</p>`;
         });
@@ -156,12 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. NEWS欄を描画する関数
     // -----------------------------------------
     function renderNewsList(data) {
-        const newsListElement = document.getElementById('news-list');
         if (!newsListElement) return;
 
-        // String()をつけて、どんなデータが来てもエラーにならないようにガード
         const sortedData = [...data].sort((a, b) => new Date(String(b.date)) - new Date(String(a.date)));
-        const newsData = sortedData.filter(item => String(item.type).trim().toLowerCase() === 'news');
+        // 種類が NEWS のものだけを絞り込む
+        const newsData = sortedData.filter(item => String(item.type).trim().toUpperCase() === 'NEWS');
 
         const isNewsPage = window.location.pathname.includes('news.html');
         const displayNews = isNewsPage ? newsData : newsData.slice(0, 5);
@@ -170,11 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
         displayNews.forEach(item => {
             const li = document.createElement('li');
             li.className = 'news-item';
-            // 文字列の先頭10文字（YYYY/MM/DD）だけを安全に切り取る
             const formattedDate = String(item.date).replace(/-/g, '/').substring(0, 10);
+            
+            // プログラムの text を title に変更
             const linkHtml = item.link 
-                ? `<a href="${item.link}" class="news-link" target="_blank">${item.text}</a>` 
-                : `<span class="news-link" style="color: #333; cursor: default;">${item.text}</span>`;
+                ? `<a href="${item.link}" class="news-link" target="_blank">${item.title}</a>` 
+                : `<span class="news-link" style="color: #333; cursor: default;">${item.title}</span>`;
 
             li.innerHTML = `<time class="news-date" datetime="${item.date}">${formattedDate}</time>${linkHtml}`;
             newsListElement.appendChild(li);
@@ -185,11 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. カレンダーを描画する関数
     // -----------------------------------------
     function renderCalendar(year, month, events) {
-        const calendarBody = document.getElementById('calendar-body');
-        const monthYearText = document.getElementById('calendar-month-year');
         if (!calendarBody) return;
-
-        monthYearText.textContent = `${year}年 ${month + 1}月`;
+        document.getElementById('calendar-month-year').textContent = `${year}年 ${month + 1}月`;
         calendarBody.innerHTML = ''; 
 
         const firstDay = new Date(year, month, 1).getDay();
@@ -198,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let date = 1;
         for (let i = 0; i < 6; i++) {
             const row = document.createElement('tr');
-            
             for (let j = 0; j < 7; j++) {
                 const cell = document.createElement('td');
                 
@@ -211,20 +196,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                     const dayEvents = events.filter(e => {
-                        // 日付の表記揺れ（/ と -）を吸収し、先頭の10文字（YYYY-MM-DD）だけで安全に比較
                         const eventDateStr = String(e.date).replace(/\//g, '-').substring(0, 10);
                         return eventDateStr === currentDateStr;
                     });
 
                     if (dayEvents.length > 0) {
+                        cell.classList.add('has-event'); 
+
                         const markerContainer = document.createElement('div');
                         markerContainer.className = 'event-markers';
                         
                         dayEvents.forEach(e => {
                             const marker = document.createElement('div');
-                            const isNews = String(e.type).trim().toLowerCase() === 'news';
-                            marker.className = `marker ${isNews ? 'marker-news' : 'marker-schedule'}`;
-                            marker.textContent = e.text;
+                            const typeStr = String(e.type).trim().toUpperCase();
+                            
+                            // 種類によって色（クラス）を変える
+                            let markerClass = 'marker-other';
+                            if (typeStr === 'NEWS') markerClass = 'marker-news';
+                            else if (typeStr === 'EVENT') markerClass = 'marker-event';
+                            else if (typeStr === 'ACTIVITY') markerClass = 'marker-activity';
+                            
+                            marker.className = `marker ${markerClass}`;
+                            marker.textContent = e.title;
                             markerContainer.appendChild(marker);
                         });
                         cell.appendChild(markerContainer);
@@ -259,17 +252,42 @@ document.addEventListener('DOMContentLoaded', () => {
         let html = `<h4 style="margin-top:0; color:#0d1b3f; border-bottom:1px solid #ddd; padding-bottom:10px;">${dateStr} の詳細</h4>`;
         
         dayEvents.forEach(e => {
-            const isNews = String(e.type).trim().toLowerCase() === 'news';
-            const typeClass = isNews ? 'detail-type-news' : 'detail-type-schedule';
-            const typeLabel = isNews ? 'NEWS' : '活動日';
-            const linkHtml = e.link 
-                ? `<a href="${e.link}" target="_blank" style="color:#333; text-decoration:underline; font-weight:bold;">${e.text}</a>` 
-                : `<span style="font-weight:bold;">${e.text}</span>`;
+            const typeStr = String(e.type).trim().toUpperCase();
             
+            // タグの表示設定
+            let typeClass = 'detail-type-other';
+            let typeLabel = 'OTHER';
+            if (typeStr === 'NEWS') { typeClass = 'detail-type-news'; typeLabel = 'NEWS'; }
+            else if (typeStr === 'EVENT') { typeClass = 'detail-type-event'; typeLabel = 'EVENT'; }
+            else if (typeStr === 'ACTIVITY') { typeClass = 'detail-type-activity'; typeLabel = 'ACTIVITY'; }
+
+            // リンクの有無でタイトルを切り替え
+            const linkHtml = e.link 
+                ? `<a href="${e.link}" target="_blank" style="color:#007bff; text-decoration:underline; font-weight:bold; font-size:15px;">${e.title}</a>` 
+                : `<span style="font-weight:bold; font-size:15px; color:#333;">${e.title}</span>`;
+            
+            // 時間の表示組み立て（入力されている場合のみ表示）
+            let timeHtml = '';
+            if (e.startTime) {
+                let endStr = e.endTime ? ` ～ ${e.endTime}` : '';
+                timeHtml = `<span class="detail-time">Time: ${e.startTime}${endStr}</span>`;
+            }
+
+            // 内容の表示（入力されている場合のみ表示）
+            let contentHtml = '';
+            if (e.content) {
+                contentHtml = `<div class="detail-content">${e.content}</div>`;
+            }
+            
+            // 画面に組み立てて出力
             html += `
                 <div class="detail-item">
-                    <span class="${typeClass}">${typeLabel}</span>
-                    ${linkHtml}
+                    <div style="display:flex; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+                        <span class="detail-type-badge ${typeClass}">${typeLabel}</span>
+                        ${timeHtml}
+                    </div>
+                    <div>${linkHtml}</div>
+                    ${contentHtml}
                 </div>
             `;
         });
@@ -285,19 +303,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (prevBtn && nextBtn) {
         prevBtn.addEventListener('click', () => {
             currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
             renderCalendar(currentYear, currentMonth, allEvents);
         });
         
         nextBtn.addEventListener('click', () => {
             currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
             renderCalendar(currentYear, currentMonth, allEvents);
         });
     }
