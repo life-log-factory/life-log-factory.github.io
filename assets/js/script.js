@@ -113,20 +113,18 @@ const canvas = document.getElementById('starfield');
 // スプレッドシート連携 ＆ オリジナルカレンダー
 // =========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // ★末尾に ?type=json を追加して、サイト用のデータをもらう
     const gasUrl = 'https://script.google.com/macros/s/AKfycby5fofJ_EMAWnpYDXLFLfQQD89Ta7gb0ZajMTjx9HeFeAIohgQDOg_k8JvXb3VVCsOz/exec?type=json';
 
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
     let allEvents = [];
 
-    // --- ローディングアニメーションを表示 ---
+    // --- ローディングアニメーション ---
     const newsListElement = document.getElementById('news-list');
     const calendarBody = document.getElementById('calendar-body');
     const loadingHtml = `<div class="loading-wrapper"><div class="spinner"></div>Loading...</div>`;
     if (newsListElement) newsListElement.innerHTML = `<li style="list-style:none; border:none;">${loadingHtml}</li>`;
     if (calendarBody) calendarBody.innerHTML = `<tr><td colspan="7" style="border:none; height:150px;">${loadingHtml}</td></tr>`;
-    // ----------------------------------------
 
     fetch(gasUrl)
         .then(response => response.json())
@@ -141,37 +139,85 @@ document.addEventListener('DOMContentLoaded', () => {
             if(detailsArea) detailsArea.innerHTML = `<p style="color:red; text-align:center;">データの読み込みに失敗しました。</p>`;
         });
 
-    // -----------------------------------------
-    // 1. NEWS欄を描画する関数
+// -----------------------------------------
+    // 1. NEWS欄を描画する関数（クリックで開閉・左寄せ対応）
     // -----------------------------------------
     function renderNewsList(data) {
+        const newsListElement = document.getElementById('news-list');
         if (!newsListElement) return;
 
+        // ★全体を強制的に「左寄せ」にする
+        newsListElement.style.textAlign = 'left';
+
         const sortedData = [...data].sort((a, b) => new Date(String(b.date)) - new Date(String(a.date)));
-        // 種類が NEWS のものだけを絞り込む
         const newsData = sortedData.filter(item => String(item.type).trim().toUpperCase() === 'NEWS');
 
         const isNewsPage = window.location.pathname.includes('news.html');
         const displayNews = isNewsPage ? newsData : newsData.slice(0, 5);
 
         newsListElement.innerHTML = ''; 
-        displayNews.forEach(item => {
+        displayNews.forEach((item, index) => {
             const li = document.createElement('li');
             li.className = 'news-item';
+            li.style.display = 'flex';
+            li.style.flexDirection = 'column';
+            li.style.alignItems = 'flex-start';
+
             const formattedDate = String(item.date).replace(/-/g, '/').substring(0, 10);
             
-            // プログラムの text を title に変更
-            const linkHtml = item.link 
-                ? `<a href="${item.link}" class="news-link" target="_blank">${item.title}</a>` 
-                : `<span class="news-link" style="color: #333; cursor: default;">${item.title}</span>`;
+            // 画像、または内容（テキスト）があるかチェック
+            const hasDetails = item.imageUrl || item.content;
 
-            li.innerHTML = `<time class="news-date" datetime="${item.date}">${formattedDate}</time>${linkHtml}`;
+            let titleHtml = '';
+            let detailHtml = '';
+
+            if (hasDetails) {
+                // ▼画像か内容がある場合：タイトルを押すと下の詳細（news-detail-X）が開閉する
+                titleHtml = `<span class="news-link" style="color: #333; font-weight: bold; cursor: pointer; text-decoration: underline;" onclick="const d = document.getElementById('news-detail-${index}'); d.style.display = d.style.display === 'none' ? 'block' : 'none';">${item.title}</span>`;
+
+                // 開く中身の作成（画像）
+                let imgHtml = '';
+                if (item.imageUrl) {
+                    const imgTag = `<img src="${item.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; display: block; transition: 0.3s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">`;
+                    // URLがある場合は画像をリンクにする
+                    imgHtml = item.link ? `<a href="${item.link}" target="_blank">${imgTag}</a>` : imgTag;
+                }
+
+                // 開く中身の作成（テキスト）
+                let contentHtml = item.content ? `<div style="margin-top: 12px; font-size: 14px; color: #444; white-space: pre-wrap; line-height: 1.6;">${item.content}</div>` : '';
+                
+                // 画像はないけどURLだけある場合のリンクボタン
+                let urlHtml = (item.link && !item.imageUrl) ? `<div style="margin-top:12px;"><a href="${item.link}" target="_blank" style="color:#007bff; font-weight:bold; text-decoration:underline;">&gt;&gt; 詳細リンクを開く</a></div>` : '';
+
+                // 詳細エリア（初期状態は display: none で隠しておく）
+                detailHtml = `
+                    <div id="news-detail-${index}" style="display: none; width: 100%; padding: 15px; background-color: #f4f7f6; border-radius: 8px; margin-top: 10px; box-sizing: border-box; border-left: 4px solid #007bff;">
+                        ${imgHtml}
+                        ${contentHtml}
+                        ${urlHtml}
+                    </div>
+                `;
+            } else {
+                // ▼画像も内容もない場合：URLがあればただのリンク、なければただの文字
+                titleHtml = item.link 
+                    ? `<a href="${item.link}" class="news-link" target="_blank" style="font-weight:bold;">${item.title}</a>` 
+                    : `<span class="news-link" style="color: #333; font-weight:bold; cursor: default;">${item.title}</span>`;
+            }
+
+            // HTMLの組み立て（日付とタイトルを横並び、詳細はその下）
+            li.innerHTML = `
+                <div style="display: flex; align-items: baseline; width: 100%;">
+                    <time class="news-date" datetime="${item.date}" style="margin-right: 20px; flex-shrink: 0; width: 100px;">${formattedDate}</time>
+                    ${titleHtml}
+                </div>
+                ${detailHtml}
+            `;
             newsListElement.appendChild(li);
         });
     }
 
     // -----------------------------------------
-    // 2. カレンダーを描画する関数
+    // 2. カレンダーを描画する関数（背景画像対応）
     // -----------------------------------------
     function renderCalendar(year, month, events) {
         if (!calendarBody) return;
@@ -203,6 +249,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (dayEvents.length > 0) {
                         cell.classList.add('has-event'); 
 
+                        // ▼ 画像がある予定を探して、セルの背景に設定する処理
+                        const eventWithImage = dayEvents.find(e => e.imageUrl);
+                        if (eventWithImage) {
+                            // 文字が読みやすいように、白い半透明のフィルターを画像に被せる
+                            cell.style.backgroundImage = `linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.8)), url('${eventWithImage.imageUrl}')`;
+                            cell.style.backgroundSize = 'cover';
+                            cell.style.backgroundPosition = 'center';
+                        }
+
                         const markerContainer = document.createElement('div');
                         markerContainer.className = 'event-markers';
                         
@@ -210,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             const marker = document.createElement('div');
                             const typeStr = String(e.type).trim().toUpperCase();
                             
-                            // 種類によって色（クラス）を変える
                             let markerClass = 'marker-other';
                             if (typeStr === 'NEWS') markerClass = 'marker-news';
                             else if (typeStr === 'EVENT') markerClass = 'marker-event';
@@ -238,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -----------------------------------------
-    // 3. クリックした日付の詳細を表示する関数
+    // 3. クリックした日付の詳細を表示（画像差し込み対応）
     // -----------------------------------------
     function showDetails(dateStr, dayEvents) {
         const detailsArea = document.getElementById('calendar-details');
@@ -254,32 +308,36 @@ document.addEventListener('DOMContentLoaded', () => {
         dayEvents.forEach(e => {
             const typeStr = String(e.type).trim().toUpperCase();
             
-            // タグの表示設定
             let typeClass = 'detail-type-other';
             let typeLabel = 'OTHER';
             if (typeStr === 'NEWS') { typeClass = 'detail-type-news'; typeLabel = 'NEWS'; }
             else if (typeStr === 'EVENT') { typeClass = 'detail-type-event'; typeLabel = 'EVENT'; }
             else if (typeStr === 'ACTIVITY') { typeClass = 'detail-type-activity'; typeLabel = 'ACTIVITY'; }
 
-            // リンクの有無でタイトルを切り替え
             const linkHtml = e.link 
                 ? `<a href="${e.link}" target="_blank" style="color:#007bff; text-decoration:underline; font-weight:bold; font-size:15px;">${e.title}</a>` 
                 : `<span style="font-weight:bold; font-size:15px; color:#333;">${e.title}</span>`;
             
-            // 時間の表示組み立て（入力されている場合のみ表示）
             let timeHtml = '';
             if (e.startTime) {
                 let endStr = e.endTime ? ` ～ ${e.endTime}` : '';
                 timeHtml = `<span class="detail-time">Time: ${e.startTime}${endStr}</span>`;
             }
 
-            // 内容の表示（入力されている場合のみ表示）
+            // ▼ 画像の表示（タイトルと内容の間に挟む）
+            let imageHtml = '';
+            if (e.imageUrl) {
+                const imgTag = `<img src="${e.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin: 12px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: block;">`;
+                // URLがある場合は画像をクリックでリンク先に飛ばす
+                imageHtml = e.link ? `<a href="${e.link}" target="_blank">${imgTag}</a>` : imgTag;
+            }
+
             let contentHtml = '';
             if (e.content) {
                 contentHtml = `<div class="detail-content">${e.content}</div>`;
             }
             
-            // 画面に組み立てて出力
+            // 順番： バッジ＆時間 ＞ タイトル ＞ 画像 ＞ 内容
             html += `
                 <div class="detail-item">
                     <div style="display:flex; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
@@ -287,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${timeHtml}
                     </div>
                     <div>${linkHtml}</div>
+                    ${imageHtml}
                     ${contentHtml}
                 </div>
             `;
