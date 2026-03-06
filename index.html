@@ -150,7 +150,7 @@
         </div>
         <hr class="divider">
     </div>
-    <div class="fade-in-target">
+    <!-- <div class="fade-in-target">
         <div class="calendar-wrapper">
             <iframe src="https://calendar.google.com/calendar/embed?src=ht3jlfaac5lfd6263ulfh4tql8%40group.calendar.google.com&ctz=Asia%2FTokyo"
                 style="border: 0"
@@ -159,6 +159,28 @@
                 frameborder="0"
                 scrolling="no">
             </iframe>
+        </div>
+    </div> -->
+<div class="fade-in-target">
+        <div class="custom-calendar-wrapper">
+            <div class="calendar-header">
+                <button id="prev-month" class="cal-btn">&lt;</button>
+                <h2 id="calendar-month-year">2026年 3月</h2>
+                <button id="next-month" class="cal-btn">&gt;</button>
+            </div>
+            <table class="calendar-table">
+                <thead>
+                    <tr>
+                        <th style="color: #e63946;">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th style="color: #007bff;">土</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body">
+                    </tbody>
+            </table>
+            
+            <div id="calendar-details" class="calendar-details">
+                <p class="details-placeholder">日付をクリックすると予定やニュースが表示されます。</p>
+            </div>
         </div>
     </div>
     <div class="club-info-container">

@@ -577,3 +577,194 @@ body{
   margin-bottom: 100px; 
   align-items: center; /* ← ここを flex-start から center に修正 */
 }
+
+/* =========================================
+   オリジナルカレンダーのデザイン
+   ========================================= */
+.custom-calendar-wrapper {
+    max-width: 800px;
+    margin: 0 auto 50px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* 軽い影をつける */
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cal-btn {
+    background: none;
+    border: 1px solid #e0e0e0;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 4px;
+    color: #333;
+    transition: background-color 0.3s;
+}
+
+.cal-btn:hover {
+    background: #f0f0f0;
+}
+
+#calendar-month-year {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 28px;
+    color: #0d1b3f; /* サイトのテーマカラー */
+    margin: 0;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* 全ての列を同じ幅にする */
+}
+
+.calendar-table th {
+    padding: 10px 0;
+    color: #555;
+    font-weight: bold;
+    border-bottom: 2px solid #0d1b3f;
+    font-size: 14px;
+}
+
+.calendar-table td {
+    height: 90px;
+    border: 1px solid #eee;
+    vertical-align: top;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.calendar-table td:hover {
+    background-color: #f4f7f6; /* マウスを乗せたら少し色を変える */
+}
+
+.cal-date-num {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* 今月以外の日付をグレーにする */
+.cal-empty {
+    background-color: #fafafa;
+    cursor: default;
+}
+.cal-empty .cal-date-num {
+    color: #ccc;
+}
+.cal-empty:hover {
+    background-color: #fafafa;
+}
+
+/* --- スプレッドシートから読み込んだ予定のラベル（色分け） --- */
+.event-markers {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.marker {
+    padding: 3px 5px;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 文字が長ければ「...」にする */
+    font-weight: bold;
+}
+
+/* Newsは青色 */
+.marker-news {
+    background-color: #007bff;
+}
+
+/* Schedule（活動日）はオレンジ色 */
+.marker-schedule {
+    background-color: #e65100;
+}
+
+/* --- 詳細表示エリア --- */
+.calendar-details {
+    margin-top: 25px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #0d1b3f;
+    border-radius: 4px;
+    min-height: 80px;
+}
+
+.details-placeholder {
+    color: #888;
+    text-align: center;
+    margin: 0;
+}
+
+.detail-item {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed #ddd;
+}
+.detail-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detail-type-news {
+    color: #007bff;
+    font-weight: bold;
+    margin-right: 15px;
+    font-size: 13px;
+    border: 1px solid #007bff;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.detail-type-schedule {
+    color: #e65100;
+    font-weight: bold;
+    margin-right: 15px;
+    font-size: 13px;
+    border: 1px solid #e65100;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* =========================================
+   ローディングアニメーション
+   ========================================= */
+.loading-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+    color: #0d1b3f;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+    letter-spacing: 2px;
+}
+
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff; /* スピナーの青色 */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
