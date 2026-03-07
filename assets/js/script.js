@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCalendar(currentYear, currentMonth, allEvents);
             // ▼ 画像スライダーを描画する関数を呼び出し
             renderImageSlider(allEvents);
+            setupFilterTabs(allEvents);
         })
         .catch(error => {
             console.error('データの読み込みに失敗しました:', error);
@@ -405,5 +406,104 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentMonth > 11) { currentMonth = 0; currentYear++; }
             renderCalendar(currentYear, currentMonth, allEvents);
         });
+    }
+
+    // -----------------------------------------
+    // フィルター付き一覧タブを描画する関数
+    // -----------------------------------------
+    function setupFilterTabs(data) {
+        const tabs = document.querySelectorAll('.filter-tab');
+        const listContainer = document.getElementById('filtered-event-list');
+        if (!listContainer || tabs.length === 0) return;
+
+        function renderFilteredList(typeFilter) {
+            listContainer.style.textAlign = 'left';
+            let filteredData = data;
+            
+            if (typeFilter !== 'ALL') {
+                filteredData = data.filter(item => String(item.type).trim().toUpperCase() === typeFilter);
+            }
+            
+            // 日付が新しい順に並び替え
+            const sortedData = [...filteredData].sort((a, b) => new Date(String(b.date)) - new Date(String(a.date)));
+            
+            listContainer.innerHTML = '';
+            
+            if (sortedData.length === 0) {
+                listContainer.innerHTML = '<p style="text-align:center; color:#888; padding: 20px;">この種類の予定・履歴はありません。</p>';
+                return;
+            }
+
+            sortedData.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'news-item';
+                li.style.display = 'flex';
+                li.style.flexDirection = 'column';
+                li.style.alignItems = 'flex-start';
+
+                const formattedDate = String(item.date).replace(/-/g, '/').substring(0, 10);
+                const hasDetails = item.imageUrl || item.content;
+                const typeStr = String(item.type).trim().toUpperCase();
+
+                // タグの色設定
+                let typeColor = '#6c757d'; // OTHER
+                if (typeStr === 'NEWS') typeColor = '#007bff';
+                else if (typeStr === 'EVENT') typeColor = '#dc3545';
+                else if (typeStr === 'ACTIVITY') typeColor = '#e65100';
+
+                const badgeHtml = `<span style="font-size:11px; font-weight:bold; color:${typeColor}; border:1px solid ${typeColor}; padding:2px 6px; border-radius:3px; margin-right:10px;">${typeStr}</span>`;
+
+                let titleHtml = '';
+                let detailHtml = '';
+
+                // NEWSと同じアコーディオン（開閉）の仕組み
+                if (hasDetails) {
+                    titleHtml = `<span class="news-link" style="color: #333; font-weight: bold; cursor: pointer; text-decoration: underline;" onclick="const d = document.getElementById('filter-detail-${index}'); d.style.display = d.style.display === 'none' ? 'block' : 'none';">${item.title}</span>`;
+
+                    let imgHtml = '';
+                    if (item.imageUrl) {
+                        const imgTag = `<img src="${item.imageUrl}" style="max-width: 100%; max-height: 250px; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: 10px auto; display: block;">`;
+                        imgHtml = item.link ? `<a href="${item.link}" target="_blank">${imgTag}</a>` : imgTag;
+                    }
+                    let contentHtml = item.content ? `<div style="margin-top: 12px; font-size: 14px; color: #444; white-space: pre-wrap; line-height: 1.6;">${item.content}</div>` : '';
+                    let urlHtml = (item.link && !item.imageUrl) ? `<div style="margin-top:12px;"><a href="${item.link}" target="_blank" style="color:#007bff; font-weight:bold; text-decoration:underline;">&gt;&gt; 詳細リンクを開く</a></div>` : '';
+
+                    detailHtml = `
+                        <div id="filter-detail-${index}" style="display: none; width: 100%; padding: 15px; background-color: #f4f7f6; border-radius: 8px; margin-top: 10px; box-sizing: border-box; border-left: 4px solid ${typeColor};">
+                            ${imgHtml}
+                            ${contentHtml}
+                            ${urlHtml}
+                        </div>
+                    `;
+                } else {
+                    titleHtml = item.link 
+                        ? `<a href="${item.link}" class="news-link" target="_blank" style="font-weight:bold;">${item.title}</a>` 
+                        : `<span class="news-link" style="color: #333; font-weight:bold; cursor: default;">${item.title}</span>`;
+                }
+
+                li.innerHTML = `
+                    <div class="news-header-row">
+                        <time class="news-date news-date-span" datetime="${item.date}">${formattedDate}</time>
+                        <div style="display:flex; align-items:baseline; flex-wrap:wrap; margin-bottom:4px;">
+                            ${badgeHtml} ${titleHtml}
+                        </div>
+                    </div>
+                    ${detailHtml}
+                `;
+                listContainer.appendChild(li);
+            });
+        }
+
+        // タブクリック時の挙動
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                tabs.forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                renderFilteredList(e.target.dataset.type);
+            });
+        });
+
+        // 初期状態はリストを空にして案内テキストを置いておく
+        listContainer.innerHTML = '<p style="text-align:center; color:#888; padding: 20px; font-weight:bold;">上のボタンを押すと、過去の履歴が表示されます。</p>';
     }
 });

@@ -880,6 +880,29 @@ body{
 }
 
 /* =========================================
+   フィルタータブのデザイン
+   ========================================= */
+.filter-tab {
+    padding: 6px 16px;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    background: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+    white-space: nowrap;
+    transition: 0.3s;
+    font-size: 13px;
+}
+.filter-tab:hover { background: #f0f0f0; }
+
+/* アクティブ（選択中）の時の色 */
+.filter-tab.active { background: #0d1b3f; color: #fff; border-color: #0d1b3f; }
+.filter-tab[data-type="ACTIVITY"].active { background: #e65100; border-color: #e65100; }
+.filter-tab[data-type="EVENT"].active { background: #dc3545; border-color: #dc3545; }
+.filter-tab[data-type="NEWS"].active { background: #007bff; border-color: #007bff; }
+
+/* =========================================
    スマホ専用の微調整（余白・文字サイズ・カレンダー）
    ========================================= */
 @media (max-width: 768px) {
