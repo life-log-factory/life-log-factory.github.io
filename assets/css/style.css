@@ -850,11 +850,6 @@ body{
     animation: scrollSlider 60s linear infinite; 
 }
 
-/* マウスを乗せたら動きを止める（任意） */
-.image-slider-track:hover {
-    animation-play-state: paused;
-}
-
 .slider-img {
     width: 250px;
     height: 160px;
