@@ -1,3 +1,37 @@
+// =========================================
+// 共通ヘッダー・フッターの自動読み込み
+// =========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // ヘッダーを配達してはめ込む
+    fetch('header.html')
+        .then(response => response.text())
+        .then(data => {
+            const headerPl = document.getElementById('header-placeholder');
+            if (headerPl) {
+                headerPl.innerHTML = data;
+                
+                // メニューボタンを押した時のアニメーション処理
+                const menuBtn = document.getElementById('menu-btn');
+                const headerNav = document.getElementById('header-nav');
+                
+                if (menuBtn && headerNav) {
+                    menuBtn.addEventListener('click', () => {
+                        menuBtn.classList.toggle('open'); // 三本線を「×」にする
+                        headerNav.classList.toggle('open'); // メニューを上から降ろす
+                    });
+                }
+            }
+        });
+
+    // フッターを配達してはめ込む
+    fetch('footer.html')
+        .then(response => response.text())
+        .then(data => {
+            const footerPl = document.getElementById('footer-placeholder');
+            if (footerPl) footerPl.innerHTML = data;
+        });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
 const canvas = document.getElementById('starfield');
   const ctx = canvas.getContext('2d');
