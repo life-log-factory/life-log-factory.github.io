@@ -442,10 +442,10 @@ body{
 
   /* メニューボタンを表示して右上に固定する！ */
   .menu-btn {
-    display: flex;
-    position: absolute; /* ▼ 確実に出すための絶対配置 */
-    right: 20px;        /* 右から20pxの位置 */
-    top: 20px;          /* 上から20pxの位置（中央揃え） */
+    display: flex !important;
+    position: absolute; 
+    right: 20px;        
+    top: 20px;          
   }
 
   /* ボタンが押されたら「×」になるアニメーション */
