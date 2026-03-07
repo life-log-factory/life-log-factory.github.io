@@ -497,9 +497,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // タブクリック時の挙動
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
-                tabs.forEach(t => t.classList.remove('active'));
-                e.target.classList.add('active');
-                renderFilteredList(e.target.dataset.type);
+                const clickedTab = e.target;
+                const type = clickedTab.dataset.type;
+
+                // もし「すでに選択されているタブ」を押したなら、閉じる（非表示に戻す）
+                if (clickedTab.classList.contains('active')) {
+                    clickedTab.classList.remove('active');
+                    listContainer.innerHTML = '<p style="text-align:center; color:#888; padding: 20px; font-weight:bold;">上のボタンを押すと、過去の履歴が表示されます。</p>';
+                } 
+                // そうでない（新しいタブを押した）なら、開いて表示する
+                else {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    clickedTab.classList.add('active');
+                    renderFilteredList(type);
+                }
             });
         });
 
