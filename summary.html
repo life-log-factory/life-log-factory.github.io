@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css?v=11">
+    <title>Schedule Sync - LIFE LOG Factory</title>
+    <link rel="icon" href="./assets/img/LLF-img/favicon.png">
+    <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
+    <style>
+        body { background-color: #f9f9f9; overscroll-behavior-y: none; }
+        .sync-page-section { flex: 1; padding: 100px 20px 60px; width: 100%; max-width: 950px; margin: 0 auto; box-sizing: border-box; }
+        .sync-container { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; padding-bottom: 20px; }
+        
+        /* 共通UI */
+        .auth-box { max-width: 400px; margin: 40px auto; padding: 20px; text-align: left; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 16px; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        .btn-primary { width: 100%; padding: 15px; background: #0d1b3f; color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { background: #1a367d; }
+        .error-msg { color: #dc3545; margin-top: 10px; display: none; font-weight: bold; font-size: 14px; text-align: center; }
+
+        /* 画面切り替え */
+        #screen-password { display: block; text-align: center; } /* ★パスワード画面追加 */
+        #screen-main { display: none; }
+
+        /* メインUI（変更なし） */
+        .controls-area { padding: 20px; background: #fafafa; border-bottom: 1px solid #eee; }
+        .week-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; gap: 15px; }
+        .week-btn { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 8px 15px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; }
+        .week-label { font-size: 18px; font-weight: bold; color: #0d1b3f; min-width: 200px; text-align: center; }
+        .filter-section { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .filter-title { font-weight: bold; color: #0d1b3f; margin-bottom: 10px; font-size: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px; display: flex; align-items: center;}
+        .btn-toggle-all { margin-left: 15px; font-size: 12px; padding: 4px 10px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #555; font-weight: bold;}
+        .btn-toggle-all:hover { background: #eee; }
+        .member-filters { display: flex; flex-wrap: wrap; gap: 10px; }
+        .filter-label { display: flex; align-items: center; font-size: 14px; background: #f0f4ff; padding: 5px 10px; border-radius: 20px; cursor: pointer; border: 1px solid #cce0ff; }
+        .filter-label input { margin-right: 5px; cursor: pointer; }
+        .online-toggle-wrapper { display: flex; justify-content: flex-end; align-items: center; padding: 0 20px 10px; }
+        .online-toggle { display: inline-flex; align-items: center; font-weight: bold; color: #d9534f; font-size: 13px; background: #fff0f0; padding: 6px 12px; border-radius: 4px; border: 1px dashed #d9534f; cursor: pointer; transition: 0.2s;}
+        .online-toggle:hover { background: #ffe6e6; }
+        .online-toggle input { margin-right: 6px; transform: scale(1.1); cursor: pointer;}
+        .recommendation-section { display: flex; flex-direction: column; gap: 10px; }
+        .rec-card { background: #fff; border: 2px solid #ffc107; border-radius: 6px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .rec-card:hover { background: #fffdf5; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .rec-type { font-weight: bold; font-size: 13px; color: #fff; padding: 3px 8px; border-radius: 4px; margin-bottom: 5px; display: inline-block;}
+        .type-face { background: #28a745; }
+        .type-online { background: #17a2b8; }
+        .type-hybrid { background: #6f42c1; }
+        .rec-info { flex: 1; }
+        .rec-time { font-size: 16px; font-weight: bold; color: #333; }
+        .rec-count { font-size: 14px; color: #666; margin-top: 3px; }
+        .rec-btn { background: #ffc107; color: #000; font-weight: bold; border: none; padding: 8px 15px; border-radius: 20px; font-size: 13px; pointer-events: none; }
+        .timetable-wrapper { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 55vh; border: 2px solid #888; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); -webkit-overflow-scrolling: touch; position: relative; scroll-behavior: smooth; }
+        .timetable { display: grid; grid-template-columns: 90px repeat(7, minmax(65px, 1fr)); width: 100%; min-width: 580px; }
+        .tt-cell { border-right: 1px solid #ccc; text-align: center; user-select: none; box-sizing: border-box; }
+        .tt-header { background: #f4f7f6; font-weight: bold; font-size: 16px; padding: 12px 0; color: #333; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #666; line-height: 1.4; }
+        .tt-corner { position: sticky; top: 0; left: 0; z-index: 15; background: #e9ecef; border-right: 2px solid #666; border-bottom: 2px solid #666; }
+        .half-border { border-bottom: 1px dotted #aaa; }
+        .hour-border { border-bottom: 1px solid #666 !important; }
+        .tt-time { background: #f4f7f6; font-size: 16px; font-weight: bold; color: #333; position: sticky; left: 0; z-index: 5; border-right: 2px solid #666; display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 8px; border-bottom: none !important; }
+        .tt-time span { position: relative; top: -12px; }
+        .tt-blackout { height: 22px; background-color: #444; border-bottom: 1px solid #222; border-right: 1px solid #222;}
+        .tt-blackout-time { height: 22px; background: #f4f7f6; border-right: 2px solid #666; border-bottom: none; position: sticky; left: 0; z-index: 5; display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 8px;}
+        .tt-blackout-time span { position: relative; top: -12px; font-size: 16px; font-weight: bold; color: #333;}
+        .tt-slot { height: 45px; background-color: #e2e6ea; cursor: crosshair; transition: 0.1s; position: relative; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #333; font-size: 14px;}
+        .tt-slot.selected { border: 3px solid #ffc107 !important; box-shadow: inset 0 0 10px rgba(255, 193, 7, 0.5); z-index: 2; color: #000; text-shadow: 0 0 3px #fff;}
+        .action-area { text-align: center; margin-top: 25px; padding: 0 20px; }
+        .btn-decide { padding: 15px 50px; background: #ff4757; color: #fff; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; opacity: 0.5; pointer-events: none; }
+        .btn-decide.active { opacity: 1; pointer-events: auto; }
+        .btn-decide.active:hover { transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); background: #ff6b81; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; width: 90%; max-width: 450px; border-radius: 8px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-title { font-size: 20px; font-weight: bold; color: #0d1b3f; margin-bottom: 15px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .selected-time-display { background: #f0f4ff; padding: 10px; border-radius: 4px; font-weight: bold; color: #007bff; text-align: center; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; font-size: 14px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; box-sizing: border-box; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .btn-cancel { flex: 1; padding: 12px; background: #eee; color: #555; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-submit { flex: 1; padding: 12px; background: #00cc00; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <section class="sync-page-section">
+        <div class="service-header" style="margin-bottom: 30px;">
+            <h1 class="service-main-title">Schedule Sync</h1>
+            <hr class="divider">
+        </div>
+
+        <div class="sync-container">
+            
+            <div id="screen-password">
+                <div class="auth-box">
+                    <h3 style="text-align:center; color:#0d1b3f; margin-bottom: 20px;">日程決定・管理ページ</h3>
+                    <div class="form-group">
+                        <label>合言葉（パスワード）</label>
+                        <input type="password" id="sys-password" class="form-control" placeholder="パスワードを入力">
+                    </div>
+                    <button class="btn-primary" onclick="checkPassword()">次へ</button>
+                    <p id="pass-error" class="error-msg">パスワードが違います。</p>
+                </div>
+            </div>
+
+            <div id="screen-main">
+                <div class="controls-area">
+                    <div class="week-nav">
+                        <button class="week-btn" onclick="changeWeek(-1)">＜ 前の週</button>
+                        <div class="week-label" id="week-label">--/-- (月) 〜 --/-- (日)</div>
+                        <button class="week-btn" onclick="changeWeek(1)">次の週 ＞</button>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-title">
+                            👤 招集メンバー
+                            <button class="btn-toggle-all" id="btn-toggle-all" onclick="toggleAllMembers()">全員はずす</button>
+                        </div>
+                        <div class="member-filters" id="member-checkboxes">
+                            </div>
+                    </div>
+
+                    <div class="filter-title" style="margin-bottom: 10px;">✨ 今週のおすすめ日時</div>
+                    <div class="recommendation-section" id="recommendation-container">
+                        </div>
+                </div>
+
+                <div class="online-toggle-wrapper">
+                    <label class="online-toggle">
+                        <input type="checkbox" id="online-filter" onchange="updateHeatmap()">
+                        表に「オンラインなら可能(△)」の人も含める
+                    </label>
+                </div>
+
+                <div class="timetable-wrapper" id="main-wrapper">
+                    <div class="timetable" id="main-timetable"></div>
+                </div>
+
+                <div class="action-area">
+                    <button class="btn-decide" id="btn-decide" onclick="openModal()">この時間で決定する</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="decision-modal">
+        <div class="modal-content">
+            <div class="modal-title">活動日時の決定</div>
+            <div class="selected-time-display" id="modal-time-display">--/-- (曜) 00:00 〜 00:00</div>
+            
+            <div class="form-group">
+                <label>活動の種別</label>
+                <select class="form-control" id="activity-type">
+                    <option value="ACTIVITY">ACTIVITY (通常の活動)</option>
+                    <option value="EVENT">EVENT (イベント・ハッカソン等)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>開催形式</label>
+                <select class="form-control" id="activity-format">
+                    <option value="対面">対面</option>
+                    <option value="オンライン">オンライン</option>
+                    <option value="ハイブリッド">ハイブリッド</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>場所（またはURL） <span style="font-weight:normal; font-size:12px; color:#888;">※任意</span></label>
+                <input type="text" class="form-control" id="activity-location" placeholder="例：工学部2号館 / Zoomリンク等">
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+                <button class="btn-submit" onclick="submitDecision()">予定を確定して通知</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="./assets/js/script.js?v=11" defer></script>
+    <script>
+        // --- パスワード制御 ---
+        function checkPassword() {
+            const pass = document.getElementById('sys-password').value;
+            // ★ パスワードを log に設定
+            if (pass === "log") {
+                document.getElementById('pass-error').style.display = 'none';
+                document.getElementById('screen-password').style.display = 'none';
+                document.getElementById('screen-main').style.display = 'block';
+                // パスワードが通ってからデータを読み込む
+                initApp();
+            } else {
+                document.getElementById('pass-error').style.display = 'block';
+            }
+        }
+
+        // --- 以下、ヒートマップロジック（変更なし） ---
+        const times = [];
+        for (let h = 9; h <= 21; h++) { times.push(`${h}:00`); times.push(`${h}:30`); }
+        const baseDays = ["月", "火", "水", "木", "金", "土", "日"];
+        const membersList = ["メンバーA", "メンバーB", "メンバーC", "メンバーD", "教授", "顧問"];
+        
+        let targetMonday = new Date();
+        const currentDay = targetMonday.getDay(); 
+        const diffToMonday = targetMonday.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
+        targetMonday.setDate(diffToMonday);
+        targetMonday.setHours(0, 0, 0, 0); 
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+
+        let scheduleData = [];
+        function generateDummyData() {
+            scheduleData = [];
+            for(let d=0; d<7; d++) {
+                scheduleData[d] = [];
+                for(let t=0; t<times.length; t++) {
+                    scheduleData[d][t] = [];
+                    for(let m=0; m<membersList.length; m++) {
+                        let r = Math.random();
+                        if(r > 0.6) scheduleData[d][t][m] = 2; 
+                        else if(r > 0.4) scheduleData[d][t][m] = 1; 
+                        else scheduleData[d][t][m] = 0; 
+                    }
+                }
+            }
+        }
+
+        function initApp() {
+            initFilters();
+            generateDummyData();
+            renderEmptyGrid();
+            updateWeeklyGrid();
+            setupSelectionEvents();
+        }
+
+        function initFilters() {
+            const container = document.getElementById('member-checkboxes');
+            container.innerHTML = ''; // 再読み込み対策
+            membersList.forEach((m, idx) => {
+                const label = document.createElement('label');
+                label.className = 'filter-label';
+                label.innerHTML = `<input type="checkbox" class="mem-filter" value="${idx}" checked onchange="updateFilters()"> ${m}`;
+                container.appendChild(label);
+            });
+        }
+
+        function toggleAllMembers() {
+            const checkboxes = document.querySelectorAll('.mem-filter');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+            updateFilters();
+        }
+
+        function updateFilters() {
+            const checkboxes = document.querySelectorAll('.mem-filter');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            document.getElementById('btn-toggle-all').textContent = allChecked ? "全員はずす" : "全員選択する";
+            updateHeatmap();
+        }
+
+        function updateWeeklyGrid() {
+            generateDummyData(); 
+            const format = d => `${d.getMonth()+1}/${d.getDate()}`;
+            const endSunday = new Date(targetMonday);
+            endSunday.setDate(targetMonday.getDate() + 6);
+            document.getElementById('week-label').textContent = `${format(targetMonday)}(月) 〜 ${format(endSunday)}(日)`;
+            updateHeatmap();
+        }
+
+        function createCell(className, text) {
+            const div = document.createElement('div');
+            div.className = className;
+            div.innerHTML = text;
+            return div;
+        }
+
+        function renderEmptyGrid() {
+            const tt = document.getElementById('main-timetable');
+            tt.innerHTML = ''; 
+            tt.appendChild(createCell('tt-corner', ''));
+            for(let i=0; i<7; i++) tt.appendChild(createCell('tt-header tt-cell', `<span id="header-day-${i}"></span>`));
+
+            tt.appendChild(createCell('tt-blackout-time', '')); 
+            for (let d = 0; d < 7; d++) tt.appendChild(createCell('tt-cell tt-blackout', ''));
+
+            for (let i = 0; i < times.length; i++) {
+                const timeLabel = times[i];
+                const borderClass = timeLabel.includes(":30") ? " hour-border" : " half-border";
+                tt.appendChild(createCell('tt-time' + borderClass, `<span>${timeLabel}</span>`));
+                for (let d = 0; d < 7; d++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'tt-cell tt-slot' + borderClass; 
+                    slot.id = `slot-${d}-${i}`;
+                    slot.dataset.day = d;
+                    slot.dataset.timeIndex = i;
+                    tt.appendChild(slot);
+                }
+            }
+            tt.appendChild(createCell('tt-blackout-time', '<span>22:00</span>'));
+            for (let d = 0; d < 7; d++) tt.appendChild(createCell('tt-cell tt-blackout', ''));
+        }
+
+        function updateHeatmap() {
+            const activeMemberIdxs = Array.from(document.querySelectorAll('.mem-filter:checked')).map(cb => parseInt(cb.value));
+            const includeOnline = document.getElementById('online-filter').checked;
+            
+            if(activeMemberIdxs.length === 0) {
+                document.querySelectorAll('.tt-slot').forEach(slot => { slot.style.backgroundColor = '#e2e6ea'; slot.textContent = ''; });
+                document.getElementById('recommendation-container').innerHTML = '<p style="color:#d9534f; text-align:center; padding: 10px;">メンバーを選択してください</p>';
+                return;
+            }
+
+            const format = d => `${d.getMonth()+1}/${d.getDate()}`;
+            for(let i = 0; i < 7; i++) {
+                let d = new Date(targetMonday);
+                d.setDate(targetMonday.getDate() + i);
+                document.getElementById(`header-day-${i}`).innerHTML = `${format(d)}<br>(${baseDays[i]})`;
+            }
+
+            let cellCounts = []; 
+            let maxCount = 0;
+
+            for(let d=0; d<7; d++) {
+                cellCounts[d] = [];
+                for(let t=0; t<times.length; t++) {
+                    let count = 0;
+                    activeMemberIdxs.forEach(m => {
+                        const status = scheduleData[d][t][m];
+                        if(status === 2 || (includeOnline && status === 1)) count++;
+                    });
+                    cellCounts[d][t] = count;
+                    if(count > maxCount) maxCount = count;
+                }
+            }
+
+            for(let d=0; d<7; d++) {
+                for(let t=0; t<times.length; t++) {
+                    const slot = document.getElementById(`slot-${d}-${t}`);
+                    const count = cellCounts[d][t];
+                    if(count === 0) {
+                        slot.style.backgroundColor = '#e2e6ea';
+                        slot.textContent = '';
+                    } else {
+                        const opacity = 0.2 + (0.8 * (count / maxCount));
+                        slot.style.backgroundColor = `rgba(0, 123, 255, ${opacity})`;
+                        slot.textContent = count + '人';
+                        slot.style.color = opacity > 0.6 ? '#fff' : '#000';
+                    }
+                }
+            }
+            calculateRecommendations(activeMemberIdxs);
+        }
+
+        function calculateRecommendations(activeMembers) {
+            const getScore = (type, d, t) => {
+                let faceCount = 0; let onlineCount = 0;
+                activeMembers.forEach(m => {
+                    if(scheduleData[d][t][m] === 2) faceCount++;
+                    else if(scheduleData[d][t][m] === 1) onlineCount++;
+                });
+                let total = faceCount + onlineCount;
+                if (type === 'face') return faceCount;
+                if (type === 'online') return total;
+                if (type === 'hybrid') { if(faceCount >= 2 && onlineCount >= 1) return total; return 0; }
+                return 0;
+            };
+
+            const findBestBlock = (type) => {
+                for (let targetPeople = activeMembers.length; targetPeople >= 1; targetPeople--) {
+                    let candidates = [];
+                    for (let d = 0; d < 7; d++) {
+                        let currentDayDate = new Date(targetMonday);
+                        currentDayDate.setDate(targetMonday.getDate() + d);
+                        if (currentDayDate <= today) continue; 
+
+                        let currentBlockStart = -1; let currentLength = 0;
+                        for (let t = 0; t <= times.length; t++) {
+                            let score = (t < times.length) ? getScore(type, d, t) : 0;
+                            if (score >= targetPeople) {
+                                if (currentBlockStart === -1) currentBlockStart = t;
+                                currentLength++;
+                            } else {
+                                if (currentLength >= 4) {
+                                    candidates.push({ day: d, start: currentBlockStart, length: currentLength, count: targetPeople });
+                                }
+                                currentBlockStart = -1; currentLength = 0;
+                            }
+                        }
+                    }
+                    if (candidates.length > 0) {
+                        candidates.sort((a, b) => {
+                            if (b.length !== a.length) return b.length - a.length; 
+                            if (a.day !== b.day) return a.day - b.day;           
+                            return a.start - b.start;                            
+                        });
+                        return candidates[0]; 
+                    }
+                }
+                return null; 
+            };
+
+            const recFace = findBestBlock('face');
+            const recOnline = findBestBlock('online');
+            const recHybrid = findBestBlock('hybrid');
+
+            const container = document.getElementById('recommendation-container');
+            container.innerHTML = '';
+            
+            const createCard = (typeLabel, typeClass, recResult, formatValue) => {
+                if(!recResult) return ''; 
+                const d = new Date(targetMonday); d.setDate(targetMonday.getDate() + recResult.day);
+                const dateStr = `${d.getMonth()+1}/${d.getDate()}(${baseDays[recResult.day]})`;
+                const timeStr = `${times[recResult.start]} 〜 ${times[recResult.start + recResult.length] || "22:00"}`;
+                const hours = recResult.length / 2;
+                return `
+                    <div class="rec-card" onclick="selectRecommended(${recResult.day}, ${recResult.start}, ${recResult.length}, '${formatValue}')">
+                        <div class="rec-info">
+                            <span class="rec-type ${typeClass}">${typeLabel}</span>
+                            <div class="rec-time">${dateStr} ${timeStr}</div>
+                            <div class="rec-count">💡 連続 <strong>${hours}時間</strong> / 最小 <strong>${recResult.count}人</strong> 参加可能</div>
+                        </div>
+                        <button class="rec-btn">選択 ＞</button>
+                    </div>
+                `;
+            };
+
+            let html = "";
+            html += createCard("対面が可能", "type-face", recFace, "対面");
+            html += createCard("オンラインが可能", "type-online", recOnline, "オンライン");
+            html += createCard("ハイブリッドが可能", "type-hybrid", recHybrid, "ハイブリッド");
+            
+            if(html === "") html = "<div style='padding:15px; text-align:center; background:#fff; border-radius:4px; color:#666;'>明日以降で2時間以上集まれる候補枠がありません。<br>フィルターを減らすか、週を変えてください。</div>";
+            container.innerHTML = html;
+        }
+
+        function selectRecommended(day, startIdx, length, formatValue) {
+            clearSelection();
+            let firstSlot = null;
+            for(let step=0; step<length; step++) {
+                const slot = document.getElementById(`slot-${day}-${startIdx+step}`);
+                if(slot) { slot.classList.add('selected'); if(!firstSlot) firstSlot = slot; }
+            }
+            document.getElementById('btn-decide').classList.add('active');
+            document.getElementById('activity-format').value = formatValue;
+
+            if(firstSlot) {
+                const wrapper = document.getElementById('main-wrapper');
+                const scrollToY = firstSlot.offsetTop - (wrapper.clientHeight / 2) + 20;
+                const scrollToX = firstSlot.offsetLeft - (wrapper.clientWidth / 2) + 40;
+                wrapper.scrollTo({ top: scrollToY, left: scrollToX, behavior: 'smooth' });
+            }
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.tt-slot.selected').forEach(el => el.classList.remove('selected'));
+            document.getElementById('btn-decide').classList.remove('active');
+        }
+
+        function setupSelectionEvents() {
+            const wrapper = document.getElementById('main-wrapper');
+            const startSelection = (e, clientX, clientY) => {
+                const target = document.elementFromPoint(clientX, clientY);
+                if (target && target.classList.contains('tt-slot')) {
+                    isSelecting = true; clearSelection();
+                    target.classList.add('selected'); document.getElementById('btn-decide').classList.add('active');
+                    if(e.cancelable) e.preventDefault(); 
+                }
+            };
+            const moveSelection = (clientX, clientY) => {
+                if (!isSelecting) return;
+                const target = document.elementFromPoint(clientX, clientY);
+                if (target && target.classList.contains('tt-slot')) {
+                    const firstSelected = document.querySelector('.tt-slot.selected');
+                    if (firstSelected && firstSelected.dataset.day === target.dataset.day) target.classList.add('selected');
+                }
+            };
+            wrapper.addEventListener('mousedown', (e) => startSelection(e, e.clientX, e.clientY));
+            wrapper.addEventListener('touchstart', (e) => startSelection(e, e.touches[0].clientX, e.touches[0].clientY), { passive: false });
+            document.addEventListener('mousemove', (e) => { if(isSelecting) { e.preventDefault(); moveSelection(e.clientX, e.clientY); }});
+            document.addEventListener('touchmove', (e) => { if(isSelecting) { if(e.cancelable) e.preventDefault(); moveSelection(e.touches[0].clientX, e.touches[0].clientY); }}, { passive: false });
+            document.addEventListener('mouseup', () => { isSelecting = false; });
+            document.addEventListener('touchend', () => { isSelecting = false; });
+        }
+
+        function openModal() {
+            const selectedSlots = document.querySelectorAll('.tt-slot.selected');
+            if (selectedSlots.length === 0) return;
+            const dayIndex = selectedSlots[0].dataset.day;
+            const dayName = baseDays[dayIndex];
+            let startIndex = 999; let endIndex = -1;
+            selectedSlots.forEach(slot => {
+                const idx = parseInt(slot.dataset.timeIndex);
+                if (idx < startIndex) startIndex = idx;
+                if (idx > endIndex) endIndex = idx;
+            });
+            const startTime = times[startIndex];
+            const endTime = times[endIndex + 1] || "22:00"; 
+            const selectedDate = new Date(targetMonday);
+            selectedDate.setDate(targetMonday.getDate() + parseInt(dayIndex));
+            document.getElementById('modal-time-display').textContent = `${selectedDate.getMonth()+1}/${selectedDate.getDate()} (${dayName}) ${startTime} 〜 ${endTime}`;
+            document.getElementById('decision-modal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('decision-modal').style.display = 'none'; }
+        
+        function submitDecision() {
+            const type = document.getElementById('activity-type').value;
+            const format = document.getElementById('activity-format').value;
+            const location = document.getElementById('activity-location').value || "未定"; 
+            const timeStr = document.getElementById('modal-time-display').textContent;
+            alert(`【確定・自動通知テスト】\n\n日時: ${timeStr}\n種別: ${type}\n形式: ${format}\n場所: ${location}`);
+            closeModal(); clearSelection();
+        }
+    </script>
+</body>
+</html>
