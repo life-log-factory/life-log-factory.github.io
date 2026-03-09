@@ -4,20 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="./assets/css/sanitize.css">
-    <link rel="stylesheet" href="./assets/css/style.css?v=6">
+    <link rel="stylesheet" href="./assets/css/style.css?v=13">
     <title>Schedule Sync - LIFE LOG Factory</title>
     <link rel="icon" href="./assets/img/LLF-img/favicon.png">
     <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
     <style>
-        /* =========================================
-           スケジュール調整 (sync.html) 専用スタイル
-           ========================================= */
         body { background-color: #f9f9f9; overscroll-behavior-y: none; }
-        
         .sync-page-section { flex: 1; padding: 100px 20px 60px; width: 100%; max-width: 900px; margin: 0 auto; box-sizing: border-box; }
-        .sync-container { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; }
-
-        /* --- 共通フォームスタイル --- */
+        .sync-container { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; padding-bottom: 20px;}
+        
         .auth-box { max-width: 400px; margin: 40px auto; padding: 20px; text-align: left; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 16px; }
@@ -25,71 +20,63 @@
         .btn-primary { width: 100%; padding: 15px; background: #0d1b3f; color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-primary:hover { background: #1a367d; }
         .error-msg { color: #dc3545; margin-top: 10px; display: none; font-weight: bold; font-size: 14px; text-align: center; }
+        .back-link { display: block; text-align: center; margin-top: 25px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
 
-        /* --- 画面の表示切り替え --- */
-        #screen-password { display: block; text-align: center; }
+        #screen-gateway { display: block; text-align: center; } 
+        #screen-password { display: none; text-align: center; }
         #screen-login { display: none; text-align: center; }
         #screen-main { display: none; }
-        
-        /* --- メイン画面ヘッダー＆タブ --- */
-        .sync-header { background: #0d1b3f; color: #fff; padding: 15px 20px; display: flex; justify-content: flex-start; align-items: center; }
+
+        /* ▼ ヘッダーにトップへ戻るボタンを追加 ▼ */
+        .sync-header { background: #0d1b3f; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .user-name-display { font-weight: bold; font-size: 16px; background: rgba(255,255,255,0.2); padding: 6px 15px; border-radius: 20px; }
+        .btn-home { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-home:hover { background: rgba(255,255,255,0.3); }
+
         .sync-tabs { display: flex; border-bottom: 2px solid #eee; background: #fafafa; }
         .sync-tab { flex: 1; text-align: center; padding: 15px 0; font-size: 16px; font-weight: bold; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
         .sync-tab.active { color: #0d1b3f; border-bottom-color: #0d1b3f; background: #fff; }
+        
+        .palette-container { padding: 15px; background: #fff; border-bottom: 2px solid #eee; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; position: sticky; top: 0; z-index: 20;}
+        .pen-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border: 2px solid #ddd; border-radius: 25px; background: #fff; cursor: pointer; font-weight: bold; font-size: 14px; color: #555; transition: 0.2s; }
+        .pen-btn:hover { background: #f9f9f9; }
+        .pen-btn.active { border-color: #0d1b3f; background: #f0f4ff; color: #0d1b3f; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transform: scale(1.05);}
+        .color-circle { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
+
         .tab-content { display: none; padding: 20px 10px; }
         .tab-content.active { display: block; }
-
-        /* --- 有効期限設定エリア --- */
-        .expiry-box { background: #f4f7f6; padding: 15px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 15px; text-align: center; }
+        
+        /* ▼ 有効期限ボックスのマージン調整 ▼ */
+        .expiry-box { background: #f4f7f6; padding: 15px; border-radius: 4px; border: 1px solid #ddd; margin-top: 20px; margin-bottom: 10px; text-align: center; }
         .expiry-box label { font-weight: bold; color: #555; font-size: 14px; display: block; margin-bottom: 8px; }
         .expiry-box input { width: auto; display: inline-block; padding: 8px 12px; text-align: center; font-size: 15px;}
-
-        /* --- 週切り替えナビゲーション --- */
+        
         .week-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 15px; gap: 15px; }
         .week-btn { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; }
         .week-btn:hover { background: #f0f0f0; }
         .week-label { font-size: 18px; font-weight: bold; color: #0d1b3f; min-width: 200px; text-align: center; }
         .instruction { font-size: 15px; color: #555; margin-bottom: 15px; text-align: center; line-height: 1.6; }
         
-        /* --- タイムテーブル（塗り絵UI） --- */
-        .timetable-wrapper {
-            width: 100%; overflow-x: auto; overflow-y: auto; max-height: 65vh; border: 2px solid #888; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); -webkit-overflow-scrolling: touch; 
-            position: relative;
-        }
-
+        .timetable-wrapper { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 60vh; border: 2px solid #888; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); -webkit-overflow-scrolling: touch; position: relative; }
         .timetable { display: grid; grid-template-columns: 90px repeat(7, minmax(65px, 1fr)); width: 100%; min-width: 580px; }
         .tt-cell { border-right: 1px solid #ccc; text-align: center; user-select: none; box-sizing: border-box; }
         .tt-header { background: #f4f7f6; font-weight: bold; font-size: 16px; padding: 12px 0; color: #333; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #666; line-height: 1.4; }
         .tt-corner { position: sticky; top: 0; left: 0; z-index: 15; background: #e9ecef; border-right: 2px solid #666; border-bottom: 2px solid #666; }
-        
-        /* 線と時刻のスタイル */
         .half-border { border-bottom: 1px dotted #aaa; }
         .hour-border { border-bottom: 1px solid #666 !important; }
-
-        .tt-time { 
-            background: #f4f7f6; font-size: 16px; font-weight: bold; color: #333; 
-            position: sticky; left: 0; z-index: 5; border-right: 2px solid #666; 
-            display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 8px; 
-            border-bottom: none !important; 
-        }
+        .tt-time { background: #f4f7f6; font-size: 16px; font-weight: bold; color: #333; position: sticky; left: 0; z-index: 5; border-right: 2px solid #666; display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 8px; border-bottom: none !important; }
         .tt-time span { position: relative; top: -12px; }
-
-        /* ▼ 黒塗り部分のスタイル（境界線をなくす） */
         .tt-blackout { height: 22px; background-color: #444; border-bottom: 1px solid #222; border-right: 1px solid #222;}
-        .tt-blackout-time { 
-            height: 22px; background: #f4f7f6; border-right: 2px solid #666; border-bottom: none; 
-            position: sticky; left: 0; z-index: 5;
-            display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 8px;
-        }
+        .tt-blackout-time { height: 22px; background: #f4f7f6; border-right: 2px solid #666; border-bottom: none; position: sticky; left: 0; z-index: 5; display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 8px;}
         .tt-blackout-time span { position: relative; top: -12px; font-size: 16px; font-weight: bold; color: #333;}
+        
+        .tt-slot { height: 45px; cursor: crosshair; transition: background-color 0.05s; }
+        .tt-slot.face { background-color: #007bff; opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
+        .tt-slot.online { background-color: #28a745; opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
+        .tt-slot.ng { background-color: #e2e6ea; } 
 
-        /* 入力マス */
-        .tt-slot { height: 45px; background-color: #e2e6ea; cursor: crosshair; transition: background-color 0.05s; }
-        .tt-slot.available { background-color: #007bff; opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
-        .tt-slot.unavailable { background-color: #e2e6ea; } 
-
-        .save-btn-wrapper { margin-top: 25px; text-align: center; }
+        .save-btn-wrapper { margin-top: 15px; text-align: center; }
         .btn-save { padding: 15px 50px; background: #00cc00; color: #fff; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; }
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); background: #00b300;}
     </style>
@@ -105,15 +92,25 @@
 
         <div class="sync-container">
             
+            <div id="screen-gateway">
+                <div class="auth-box" style="text-align: center; margin-top: 60px;">
+                    <h2 style="color:#0d1b3f; margin-bottom: 20px;">Schedule Sync</h2>
+                    <p style="margin-bottom: 40px; color: #555; font-weight: bold;">どちらの操作を行いますか？</p>
+                    <button class="btn-primary" style="margin-bottom: 20px; background: #007bff;" onclick="goToPassword()">自分の予定を入力する</button>
+                    <button class="btn-primary" style="background: #ff4757;" onclick="goToSummary()">活動・イベント日時を決める</button>
+                </div>
+            </div>
+
             <div id="screen-password">
                 <div class="auth-box">
-                    <h3 style="text-align:center; color:#0d1b3f; margin-bottom: 20px;">サークル専用ページ</h3>
+                    <h3 style="text-align:center; color:#0d1b3f; margin-bottom: 20px;">予定入力ページ</h3>
                     <div class="form-group">
                         <label>合言葉（パスワード）</label>
                         <input type="password" id="sys-password" class="form-control" placeholder="パスワードを入力">
                     </div>
                     <button class="btn-primary" onclick="checkPassword()">次へ</button>
                     <p id="pass-error" class="error-msg">パスワードが違います。</p>
+                    <a href="#" class="back-link" onclick="goToGateway()">← スケジュール調整トップに戻る</a>
                 </div>
             </div>
 
@@ -135,6 +132,7 @@
                     </div>
                     <button class="btn-primary" onclick="login()">スケジュールを入力する</button>
                     <p id="login-error" class="error-msg">名前を入力、または選択してください。</p>
+                    <a href="#" class="back-link" onclick="goToGateway()">← スケジュール調整トップに戻る</a>
                 </div>
             </div>
 
@@ -148,20 +146,35 @@
                     <div class="sync-tab" onclick="switchTab('weekly')">週別スケジュール</div>
                 </div>
 
+                <div class="palette-container">
+                    <button class="pen-btn active" data-pen="face" onclick="selectPen('face')">
+                        <span class="color-circle" style="background:#007bff;"></span> 対面OK
+                    </button>
+                    <button class="pen-btn" data-pen="online" onclick="selectPen('online')">
+                        <span class="color-circle" style="background:#28a745;"></span> オンラインならOK
+                    </button>
+                    <button class="pen-btn" data-pen="ng" onclick="selectPen('ng')">
+                        <span class="color-circle" style="background:#e2e6ea; border: 1px solid #ccc;"></span> 不可 (消しゴム)
+                    </button>
+                </div>
+
                 <div id="tab-base" class="tab-content active">
-                    <div class="expiry-box">
-                        <label for="base-expiry">この基本スケジュールの有効期限 (クォーター終了日など)</label>
-                        <input type="date" id="base-expiry" class="form-control">
-                    </div>
                     <p class="instruction">
-                        <strong>マスを指でなぞって</strong> <span style="color:#007bff; font-weight:bold;">青色（〇）</span>と グレー（×）を切り替えます。<br>
+                        <strong>上のペンを選んで、表を指でなぞって塗ってください。</strong>
                     </p>
                     <div class="timetable-wrapper" id="base-wrapper">
                         <div class="timetable" id="base-timetable"></div>
                     </div>
+                    
+                    <div class="expiry-box">
+                        <label for="base-expiry">この基本スケジュールの有効期限 (クォーター終了日など)</label>
+                        <input type="date" id="base-expiry" class="form-control">
+                    </div>
+
                     <div class="save-btn-wrapper">
                         <button class="btn-save" onclick="saveSchedule('base')">基本スケジュールを保存</button>
                     </div>
+                    <a href="#" class="back-link" onclick="goToGateway()">← スケジュール調整トップに戻る</a>
                 </div>
 
                 <div id="tab-weekly" class="tab-content">
@@ -170,13 +183,11 @@
                         <div class="week-label" id="week-label">--/-- (月) 〜 --/-- (日)</div>
                         <button class="week-btn" onclick="changeWeek(1)">次の週 ＞</button>
                     </div>
-                    <p class="instruction">
-                        特定の日付の予定を上書きできます。変更箇所だけなぞってください。
-                    </p>
+                    <p class="instruction">特定の日付の予定を上書きできます。変更箇所だけなぞってください。</p>
                     <div class="timetable-wrapper" id="weekly-wrapper">
                         <div class="timetable" id="weekly-timetable"></div>
                     </div>
-                    <div class="save-btn-wrapper">
+                    <div class="save-btn-wrapper" style="margin-top: 25px;">
                         <button class="btn-save" onclick="saveSchedule('weekly')">この週の予定を保存</button>
                     </div>
                 </div>
@@ -187,11 +198,30 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="./assets/js/script.js?v=6" defer></script>
+    <script src="./assets/js/script.js?v=13" defer></script>
     <script>
-        // =========================================
-        // 画面切り替え＆認証ロジック
-        // =========================================
+        function goToGateway() {
+            document.getElementById('screen-password').style.display = 'none';
+            document.getElementById('screen-login').style.display = 'none';
+            document.getElementById('screen-main').style.display = 'none';
+            
+            // パスワードや入力をリセット
+            document.getElementById('sys-password').value = '';
+            document.getElementById('pass-error').style.display = 'none';
+            document.getElementById('login-error').style.display = 'none';
+
+            document.getElementById('screen-gateway').style.display = 'block';
+        }
+
+        function goToPassword() {
+            document.getElementById('screen-gateway').style.display = 'none';
+            document.getElementById('screen-password').style.display = 'block';
+        }
+
+        function goToSummary() {
+            window.location.href = 'summary.html';
+        }
+
         function checkPassword() {
             const pass = document.getElementById('sys-password').value;
             if (pass === "life") {
@@ -228,15 +258,15 @@
             document.getElementById('tab-' + tabId).classList.add('active');
         }
 
-        // =========================================
-        // タイムテーブル生成
-        // =========================================
-        const times = [];
-        for (let h = 9; h <= 21; h++) {
-            times.push(`${h}:00`); 
-            times.push(`${h}:30`);
+        let currentPen = 'face'; 
+        function selectPen(penType) {
+            currentPen = penType;
+            document.querySelectorAll('.pen-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.pen-btn[data-pen="${penType}"]`).classList.add('active');
         }
-        // 22:00は下の黒塗り用に入れるため、times配列には含めない
+
+        const times = [];
+        for (let h = 9; h <= 21; h++) { times.push(`${h}:00`); times.push(`${h}:30`); }
         const baseDays = ["月", "火", "水", "木", "金", "土", "日"];
         
         let targetMonday = new Date();
@@ -261,15 +291,11 @@
         function renderGrid(containerId, headers) {
             const tt = document.getElementById(containerId);
             tt.innerHTML = ''; 
-
             tt.appendChild(createCell('tt-cell tt-corner', ''));
             headers.forEach(h => tt.appendChild(createCell('tt-cell tt-header', h)));
 
-            // ▼ 上部の黒塗り（9:00の上の半行）
-            tt.appendChild(createCell('tt-blackout-time', '')); // 線なし
-            for (let d = 0; d < 7; d++) {
-                tt.appendChild(createCell('tt-cell tt-blackout', ''));
-            }
+            tt.appendChild(createCell('tt-blackout-time', '')); 
+            for (let d = 0; d < 7; d++) tt.appendChild(createCell('tt-cell tt-blackout', ''));
 
             for (let i = 0; i < times.length; i++) {
                 const timeLabel = times[i];
@@ -277,21 +303,17 @@
                 const borderClass = isHourBorder ? " hour-border" : " half-border";
 
                 tt.appendChild(createCell('tt-time' + borderClass, `<span>${timeLabel}</span>`));
-
                 for (let d = 0; d < 7; d++) {
                     const slot = document.createElement('div');
-                    slot.className = 'tt-cell tt-slot unavailable' + borderClass; 
+                    slot.className = 'tt-cell tt-slot ng' + borderClass; 
                     slot.dataset.day = d;
                     slot.dataset.time = i;
                     tt.appendChild(slot);
                 }
             }
 
-            // ▼ 下部の黒塗り（22:00のラベル付き）
             tt.appendChild(createCell('tt-blackout-time', '<span>22:00</span>'));
-            for (let d = 0; d < 7; d++) {
-                tt.appendChild(createCell('tt-cell tt-blackout', ''));
-            }
+            for (let d = 0; d < 7; d++) tt.appendChild(createCell('tt-cell tt-blackout', ''));
         }
 
         function changeWeek(offset) {
@@ -303,7 +325,6 @@
             const format = d => `${d.getMonth()+1}/${d.getDate()}`;
             const endSunday = new Date(targetMonday);
             endSunday.setDate(targetMonday.getDate() + 6);
-            
             document.getElementById('week-label').textContent = `${format(targetMonday)}(月) 〜 ${format(endSunday)}(日)`;
             
             const weeklyHeaders = [];
@@ -315,149 +336,94 @@
             renderGrid('weekly-timetable', weeklyHeaders);
         }
 
-        // =========================================
-        // ★ 自動スクロール＆領域外ドラッグ対応 塗り絵ロジック
-        // =========================================
         let isDrawing = false;
-        let setMode = ''; 
+        let activeWrapper = null;
         let scrollInterval = null;
         let scrollSpeed = 0;
         let lastClientX = null;
         let lastClientY = null;
-        let activeWrapper = null;
+
+        function applyPenToSlot(slot) {
+            slot.classList.remove('face', 'online', 'ng');
+            slot.classList.add(currentPen);
+        }
 
         function startAutoScroll() {
             if (!scrollInterval && activeWrapper) {
                 scrollInterval = setInterval(() => {
                     activeWrapper.scrollTop += scrollSpeed;
-                    
-                    if (isDrawing && lastClientX !== null && lastClientY !== null) {
-                        applySlotFromPoint(lastClientX, lastClientY);
-                    }
+                    if (isDrawing && lastClientX !== null && lastClientY !== null) applySlotFromPoint(lastClientX, lastClientY);
                 }, 20); 
             }
         }
 
         function stopAutoScroll() {
-            if (scrollInterval) {
-                clearInterval(scrollInterval);
-                scrollInterval = null;
-            }
+            if (scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; }
         }
 
-        // 座標から的確にマスを取得して塗る関数
         function applySlotFromPoint(clientX, clientY) {
             if (!activeWrapper) return;
             const rect = activeWrapper.getBoundingClientRect();
-            
             let searchX = clientX;
             let searchY = clientY;
-
-            // ▼ 指が枠の外に出た場合、スクロール領域内のマスを強制的に狙う
-            if (searchX < rect.left) searchX = rect.left + 100; // 時間列を避けて月曜の列へ
+            if (searchX < rect.left) searchX = rect.left + 100; 
             if (searchX > rect.right) searchX = rect.right - 20;
-
-            if (clientY < rect.top + 70) searchY = rect.top + 80; // 曜日ヘッダーのすぐ下
-            if (clientY > rect.bottom - 40) searchY = rect.bottom - 20; // 枠の底
+            if (clientY < rect.top + 70) searchY = rect.top + 80; 
+            if (clientY > rect.bottom - 40) searchY = rect.bottom - 20; 
 
             const target = document.elementFromPoint(searchX, searchY);
-            if (target && target.classList.contains('tt-slot')) {
-                toggleSlot(target, setMode);
-            }
+            if (target && target.classList.contains('tt-slot')) applyPenToSlot(target);
         }
 
         function handleMove(clientX, clientY) {
             if (!isDrawing || !activeWrapper) return;
-            
             lastClientX = clientX;
             lastClientY = clientY;
-
             const rect = activeWrapper.getBoundingClientRect();
             
-            // スクロール開始の閾値
-            if (clientY < rect.top + 70) {
-                scrollSpeed = -15; 
-                startAutoScroll();
-            } else if (clientY > rect.bottom - 40) {
-                scrollSpeed = 15; 
-                startAutoScroll();
-            } else {
-                stopAutoScroll();
-            }
-
+            if (clientY < rect.top + 70) { scrollSpeed = -15; startAutoScroll(); } 
+            else if (clientY > rect.bottom - 40) { scrollSpeed = 15; startAutoScroll(); } 
+            else { stopAutoScroll(); }
             applySlotFromPoint(clientX, clientY);
         }
 
         function setupDrawingEvents() {
             const wrappers = document.querySelectorAll('.timetable-wrapper');
-
             wrappers.forEach(wrapper => {
-                // PC用開始
                 wrapper.addEventListener('mousedown', (e) => {
                     if (e.target.classList.contains('tt-slot')) {
-                        isDrawing = true;
-                        activeWrapper = wrapper;
-                        setMode = e.target.classList.contains('available') ? 'unavailable' : 'available';
-                        toggleSlot(e.target, setMode);
-                        e.preventDefault(); 
+                        isDrawing = true; activeWrapper = wrapper; applyPenToSlot(e.target); e.preventDefault(); 
                     }
                 });
-
-                // スマホ用開始
                 wrapper.addEventListener('touchstart', (e) => {
                     const touch = e.touches[0];
                     const target = document.elementFromPoint(touch.clientX, touch.clientY);
                     if (target && target.classList.contains('tt-slot')) {
-                        isDrawing = true;
-                        activeWrapper = wrapper;
+                        isDrawing = true; activeWrapper = wrapper; applyPenToSlot(target);
                         if(e.cancelable) e.preventDefault(); 
-                        setMode = target.classList.contains('available') ? 'unavailable' : 'available';
-                        toggleSlot(target, setMode);
                     }
                 }, { passive: false });
             });
             
-            // 全体での移動・終了を検知（表の外に出てもOK！）
-            document.addEventListener('mousemove', (e) => {
-                if (!isDrawing) return;
-                e.preventDefault();
-                handleMove(e.clientX, e.clientY);
-            });
-
-            document.addEventListener('touchmove', (e) => {
-                if (!isDrawing) return;
-                if(e.cancelable) e.preventDefault(); 
-                const touch = e.touches[0];
-                handleMove(touch.clientX, touch.clientY);
-            }, { passive: false });
-
+            document.addEventListener('mousemove', (e) => { if (!isDrawing) return; e.preventDefault(); handleMove(e.clientX, e.clientY); });
+            document.addEventListener('touchmove', (e) => { if (!isDrawing) return; if(e.cancelable) e.preventDefault(); handleMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
             document.addEventListener('mouseup', () => { isDrawing = false; stopAutoScroll(); });
             document.addEventListener('touchend', () => { isDrawing = false; stopAutoScroll(); });
-        }
-
-        function toggleSlot(slot, mode) {
-            if (mode === 'available') {
-                slot.classList.remove('unavailable');
-                slot.classList.add('available');
-            } else {
-                slot.classList.remove('available');
-                slot.classList.add('unavailable');
-            }
         }
 
         function saveSchedule(type) {
             const gridId = type === 'base' ? 'base-timetable' : 'weekly-timetable';
             const slots = document.querySelectorAll(`#${gridId} .tt-slot`);
-            let dataCount = 0;
-            slots.forEach(s => { if (s.classList.contains('available')) dataCount++; });
+            let faceCount = 0;
+            let onlineCount = 0;
             
-            let extraMsg = "";
-            if(type === 'base') {
-                const expiry = document.getElementById('base-expiry').value;
-                extraMsg = expiry ? `\n有効期限: ${expiry}` : "\n※有効期限が未設定です";
-            }
+            slots.forEach(s => { 
+                if (s.classList.contains('face')) faceCount++; 
+                else if (s.classList.contains('online')) onlineCount++; 
+            });
             
-            alert(`${type === 'base' ? '基本' : '週別'}スケジュールを記録しました！\n青色のマス: ${dataCount}個${extraMsg}`);
+            let extraMsg = type === 'base' ? (document.getElementById('base-expiry').value ? `\n有効期限: ${document.getElementById('base-expiry').value}` : "\n※有効期限が未設定です") : "";
+            alert(`${type === 'base' ? '基本' : '週別'}スケジュールを記録しました！\n対面OK: ${faceCount}コマ\nオンラインOK: ${onlineCount}コマ${extraMsg}`);
         }
     </script>
 </body>

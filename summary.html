@@ -13,7 +13,6 @@
         .sync-page-section { flex: 1; padding: 100px 20px 60px; width: 100%; max-width: 950px; margin: 0 auto; box-sizing: border-box; }
         .sync-container { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; min-height: 400px; padding-bottom: 20px; }
         
-        /* 共通UI */
         .auth-box { max-width: 400px; margin: 40px auto; padding: 20px; text-align: left; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 16px; }
@@ -21,12 +20,20 @@
         .btn-primary { width: 100%; padding: 15px; background: #0d1b3f; color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-primary:hover { background: #1a367d; }
         .error-msg { color: #dc3545; margin-top: 10px; display: none; font-weight: bold; font-size: 14px; text-align: center; }
+        
+        /* ▼ トップに戻るリンク ▼ */
+        .back-link { display: block; text-align: center; margin-top: 25px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
 
-        /* 画面切り替え */
-        #screen-password { display: block; text-align: center; } /* ★パスワード画面追加 */
+        #screen-password { display: block; text-align: center; } 
         #screen-main { display: none; }
 
-        /* メインUI（変更なし） */
+        /* ▼ ヘッダーにトップへ戻るボタンを追加 ▼ */
+        .sync-header { background: #0d1b3f; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-weight: bold; font-size: 18px; }
+        .btn-home { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; text-decoration: none;}
+        .btn-home:hover { background: rgba(255,255,255,0.3); }
+
         .controls-area { padding: 20px; background: #fafafa; border-bottom: 1px solid #eee; }
         .week-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; gap: 15px; }
         .week-btn { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 8px 15px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; }
@@ -103,10 +110,16 @@
                     </div>
                     <button class="btn-primary" onclick="checkPassword()">次へ</button>
                     <p id="pass-error" class="error-msg">パスワードが違います。</p>
+                    
+                    <a href="sync.html" class="back-link">← スケジュール調整トップに戻る</a>
                 </div>
             </div>
 
             <div id="screen-main">
+                <div class="sync-header">
+                    <div class="header-title">みんなの空き状況</div>
+                </div>
+
                 <div class="controls-area">
                     <div class="week-nav">
                         <button class="week-btn" onclick="changeWeek(-1)">＜ 前の週</button>
@@ -119,13 +132,11 @@
                             👤 招集メンバー
                             <button class="btn-toggle-all" id="btn-toggle-all" onclick="toggleAllMembers()">全員はずす</button>
                         </div>
-                        <div class="member-filters" id="member-checkboxes">
-                            </div>
+                        <div class="member-filters" id="member-checkboxes"></div>
                     </div>
 
                     <div class="filter-title" style="margin-bottom: 10px;">✨ 今週のおすすめ日時</div>
-                    <div class="recommendation-section" id="recommendation-container">
-                        </div>
+                    <div class="recommendation-section" id="recommendation-container"></div>
                 </div>
 
                 <div class="online-toggle-wrapper">
@@ -142,6 +153,7 @@
                 <div class="action-area">
                     <button class="btn-decide" id="btn-decide" onclick="openModal()">この時間で決定する</button>
                 </div>
+                <a href="sync.html" class="back-link">← スケジュール調整トップに戻る</a>
             </div>
         </div>
     </section>
@@ -187,12 +199,10 @@
         // --- パスワード制御 ---
         function checkPassword() {
             const pass = document.getElementById('sys-password').value;
-            // ★ パスワードを log に設定
             if (pass === "log") {
                 document.getElementById('pass-error').style.display = 'none';
                 document.getElementById('screen-password').style.display = 'none';
                 document.getElementById('screen-main').style.display = 'block';
-                // パスワードが通ってからデータを読み込む
                 initApp();
             } else {
                 document.getElementById('pass-error').style.display = 'block';
@@ -239,7 +249,7 @@
 
         function initFilters() {
             const container = document.getElementById('member-checkboxes');
-            container.innerHTML = ''; // 再読み込み対策
+            container.innerHTML = ''; 
             membersList.forEach((m, idx) => {
                 const label = document.createElement('label');
                 label.className = 'filter-label';
