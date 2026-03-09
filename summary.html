@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="./assets/css/sanitize.css">
-    <link rel="stylesheet" href="./assets/css/style.css?v=11">
+    <link rel="stylesheet" href="./assets/css/style.css?v=20">
     <title>Schedule Sync - LIFE LOG Factory</title>
     <link rel="icon" href="./assets/img/LLF-img/favicon.png">
     <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
@@ -16,19 +16,17 @@
         .auth-box { max-width: 400px; margin: 40px auto; padding: 20px; text-align: left; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 16px; }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; font-family: inherit;}
+        textarea.form-control { resize: vertical; }
         .btn-primary { width: 100%; padding: 15px; background: #0d1b3f; color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-primary:hover { background: #1a367d; }
         .error-msg { color: #dc3545; margin-top: 10px; display: none; font-weight: bold; font-size: 14px; text-align: center; }
-        
-        /* ▼ トップに戻るリンク ▼ */
         .back-link { display: block; text-align: center; margin-top: 25px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
         .back-link:hover { text-decoration: underline; }
 
         #screen-password { display: block; text-align: center; } 
         #screen-main { display: none; }
 
-        /* ▼ ヘッダーにトップへ戻るボタンを追加 ▼ */
         .sync-header { background: #0d1b3f; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .header-title { font-weight: bold; font-size: 18px; }
         .btn-home { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; text-decoration: none;}
@@ -45,21 +43,30 @@
         .member-filters { display: flex; flex-wrap: wrap; gap: 10px; }
         .filter-label { display: flex; align-items: center; font-size: 14px; background: #f0f4ff; padding: 5px 10px; border-radius: 20px; cursor: pointer; border: 1px solid #cce0ff; }
         .filter-label input { margin-right: 5px; cursor: pointer; }
+        .holiday-filter-label { display: flex; align-items: center; font-size: 14px; background: #fff3cd; padding: 5px 10px; border-radius: 20px; cursor: pointer; border: 1px solid #ffeeba; font-weight: bold; color: #856404; }
+        .holiday-filter-label input { margin-right: 5px; cursor: pointer; }
         .online-toggle-wrapper { display: flex; justify-content: flex-end; align-items: center; padding: 0 20px 10px; }
         .online-toggle { display: inline-flex; align-items: center; font-weight: bold; color: #d9534f; font-size: 13px; background: #fff0f0; padding: 6px 12px; border-radius: 4px; border: 1px dashed #d9534f; cursor: pointer; transition: 0.2s;}
         .online-toggle:hover { background: #ffe6e6; }
         .online-toggle input { margin-right: 6px; transform: scale(1.1); cursor: pointer;}
+
         .recommendation-section { display: flex; flex-direction: column; gap: 10px; }
-        .rec-card { background: #fff; border: 2px solid #ffc107; border-radius: 6px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .rec-card:hover { background: #fffdf5; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .rec-card { background: #fff; border: 2px solid #ccc; border-radius: 6px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; position: relative;}
+        .rec-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .rec-card.rank-1 { border-color: #ffc107; background: #fffdf5; box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2); }
+        .rank-badge { position: absolute; top: -10px; left: 10px; background: #ffc107; color: #000; font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 10px; border: 1px solid #e0a800;}
+        .rec-card.rank-2 .rank-badge { background: #e2e6ea; border-color: #ccc; color: #333; }
+        
         .rec-type { font-weight: bold; font-size: 13px; color: #fff; padding: 3px 8px; border-radius: 4px; margin-bottom: 5px; display: inline-block;}
         .type-face { background: #28a745; }
         .type-online { background: #17a2b8; }
         .type-hybrid { background: #6f42c1; }
-        .rec-info { flex: 1; }
+        .rec-info { flex: 1; margin-top: 5px;}
         .rec-time { font-size: 16px; font-weight: bold; color: #333; }
         .rec-count { font-size: 14px; color: #666; margin-top: 3px; }
-        .rec-btn { background: #ffc107; color: #000; font-weight: bold; border: none; padding: 8px 15px; border-radius: 20px; font-size: 13px; pointer-events: none; }
+        .rec-btn { background: #eee; color: #333; font-weight: bold; border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; font-size: 13px; pointer-events: none; }
+        .rec-card.rank-1 .rec-btn { background: #ffc107; color: #000; border: none; }
+
         .timetable-wrapper { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 55vh; border: 2px solid #888; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); -webkit-overflow-scrolling: touch; position: relative; scroll-behavior: smooth; }
         .timetable { display: grid; grid-template-columns: 90px repeat(7, minmax(65px, 1fr)); width: 100%; min-width: 580px; }
         .tt-cell { border-right: 1px solid #ccc; text-align: center; user-select: none; box-sizing: border-box; }
@@ -72,12 +79,22 @@
         .tt-blackout { height: 22px; background-color: #444; border-bottom: 1px solid #222; border-right: 1px solid #222;}
         .tt-blackout-time { height: 22px; background: #f4f7f6; border-right: 2px solid #666; border-bottom: none; position: sticky; left: 0; z-index: 5; display: flex; justify-content: flex-end; align-items: flex-start; padding-right: 8px;}
         .tt-blackout-time span { position: relative; top: -12px; font-size: 16px; font-weight: bold; color: #333;}
+        
         .tt-slot { height: 45px; background-color: #e2e6ea; cursor: crosshair; transition: 0.1s; position: relative; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #333; font-size: 14px;}
         .tt-slot.selected { border: 3px solid #ffc107 !important; box-shadow: inset 0 0 10px rgba(255, 193, 7, 0.5); z-index: 2; color: #000; text-shadow: 0 0 3px #fff;}
+        .tt-slot.disabled { background-color: #ddd !important; color: #999 !important; cursor: not-allowed; }
+        
+        .tt-slot.existing-event { background-color: #ffcccc !important; color: #c82333 !important; font-size: 11px; flex-direction: column; cursor: not-allowed; border: 1px solid #ff9999; z-index: 1;}
+        .tt-slot.existing-activity { background-color: #cce5ff !important; color: #004085 !important; font-size: 11px; flex-direction: column; cursor: not-allowed; border: 1px solid #99c2ff; z-index: 1;}
+        .tt-slot.existing-event, .tt-slot.existing-activity { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 0 2px; }
+        
+        .tt-slot.past-time { background-color: #222 !important; border-right: 1px solid #111 !important; border-bottom: 1px solid #111 !important; cursor: not-allowed; }
+
         .action-area { text-align: center; margin-top: 25px; padding: 0 20px; }
         .btn-decide { padding: 15px 50px; background: #ff4757; color: #fff; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; opacity: 0.5; pointer-events: none; }
         .btn-decide.active { opacity: 1; pointer-events: auto; }
         .btn-decide.active:hover { transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); background: #ff6b81; }
+        
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; display: none; justify-content: center; align-items: center; }
         .modal-content { background: #fff; width: 90%; max-width: 450px; border-radius: 8px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .modal-title { font-size: 20px; font-weight: bold; color: #0d1b3f; margin-bottom: 15px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
@@ -88,10 +105,19 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
         .btn-cancel { flex: 1; padding: 12px; background: #eee; color: #555; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-submit { flex: 1; padding: 12px; background: #00cc00; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0d1b3f; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div id="header-placeholder"></div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight:bold; color:#0d1b3f;">データを読み込み中...</div>
+    </div>
 
     <section class="sync-page-section">
         <div class="service-header" style="margin-bottom: 30px;">
@@ -100,7 +126,6 @@
         </div>
 
         <div class="sync-container">
-            
             <div id="screen-password">
                 <div class="auth-box">
                     <h3 style="text-align:center; color:#0d1b3f; margin-bottom: 20px;">日程決定・管理ページ</h3>
@@ -110,7 +135,6 @@
                     </div>
                     <button class="btn-primary" onclick="checkPassword()">次へ</button>
                     <p id="pass-error" class="error-msg">パスワードが違います。</p>
-                    
                     <a href="sync.html" class="back-link">← スケジュール調整トップに戻る</a>
                 </div>
             </div>
@@ -118,6 +142,7 @@
             <div id="screen-main">
                 <div class="sync-header">
                     <div class="header-title">みんなの空き状況</div>
+                    <a href="sync.html" class="btn-home">トップへ</a>
                 </div>
 
                 <div class="controls-area">
@@ -128,14 +153,19 @@
                     </div>
 
                     <div class="filter-section">
-                        <div class="filter-title">
-                            👤 招集メンバー
-                            <button class="btn-toggle-all" id="btn-toggle-all" onclick="toggleAllMembers()">全員はずす</button>
+                        <div class="filter-title" style="justify-content: space-between;">
+                            <div>
+                                招集メンバー
+                                <button class="btn-toggle-all" id="btn-toggle-all" onclick="toggleAllMembers()">全員はずす</button>
+                            </div>
+                            <label class="holiday-filter-label">
+                                <input type="checkbox" id="exclude-holiday-filter" onchange="updateHeatmap()" checked> 土日祝を除外
+                            </label>
                         </div>
                         <div class="member-filters" id="member-checkboxes"></div>
                     </div>
 
-                    <div class="filter-title" style="margin-bottom: 10px;">✨ 今週のおすすめ日時</div>
+                    <div class="filter-title" style="margin-bottom: 10px;">今週のおすすめ日時</div>
                     <div class="recommendation-section" id="recommendation-container"></div>
                 </div>
 
@@ -165,41 +195,54 @@
             
             <div class="form-group">
                 <label>活動の種別</label>
-                <select class="form-control" id="activity-type">
+                <select class="form-control" id="activity-type" onchange="toggleActivityType()">
                     <option value="ACTIVITY">ACTIVITY (通常の活動)</option>
                     <option value="EVENT">EVENT (イベント・ハッカソン等)</option>
                 </select>
             </div>
             
-            <div class="form-group">
+            <div class="form-group" id="format-group">
                 <label>開催形式</label>
                 <select class="form-control" id="activity-format">
-                    <option value="対面">対面</option>
-                    <option value="オンライン">オンライン</option>
-                    <option value="ハイブリッド">ハイブリッド</option>
+                    <option value="対面活動">対面活動</option>
+                    <option value="オンライン活動">オンライン活動</option>
+                    <option value="ハイブリッド活動">ハイブリッド活動</option>
                 </select>
+            </div>
+
+            <div class="form-group" id="event-name-group" style="display: none;">
+                <label>イベント名</label>
+                <input type="text" class="form-control" id="event-name" placeholder="例：〇〇大会">
+            </div>
+
+            <div class="form-group">
+                <label>内容 <span style="font-weight:normal; font-size:12px; color:#888;">※任意</span></label>
+                <textarea class="form-control" id="activity-detail" rows="2" placeholder="例：次年度の活動について"></textarea>
             </div>
 
             <div class="form-group">
                 <label>場所（またはURL） <span style="font-weight:normal; font-size:12px; color:#888;">※任意</span></label>
-                <input type="text" class="form-control" id="activity-location" placeholder="例：工学部2号館 / Zoomリンク等">
+                <input type="text" class="form-control" id="activity-location" placeholder="例：工学部2号館 / Zoom等">
             </div>
 
             <div class="modal-btns">
                 <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
-                <button class="btn-submit" onclick="submitDecision()">予定を確定して通知</button>
+                <button class="btn-submit" onclick="submitDecision()">予定を確定する</button>
             </div>
         </div>
     </div>
 
     <div id="footer-placeholder"></div>
 
-    <script src="./assets/js/script.js?v=11" defer></script>
+    <script src="./assets/js/script.js?v=20" defer></script>
     <script>
-        // --- パスワード制御 ---
+        const GAS_URL = "https://script.google.com/macros/s/AKfycby5fofJ_EMAWnpYDXLFLfQQD89Ta7gb0ZajMTjx9HeFeAIohgQDOg_k8JvXb3VVCsOz/exec";
+
+        function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
+
         function checkPassword() {
-            const pass = document.getElementById('sys-password').value;
-            if (pass === "log") {
+            if (document.getElementById('sys-password').value === "log") {
                 document.getElementById('pass-error').style.display = 'none';
                 document.getElementById('screen-password').style.display = 'none';
                 document.getElementById('screen-main').style.display = 'block';
@@ -209,11 +252,9 @@
             }
         }
 
-        // --- 以下、ヒートマップロジック（変更なし） ---
         const times = [];
         for (let h = 9; h <= 21; h++) { times.push(`${h}:00`); times.push(`${h}:30`); }
         const baseDays = ["月", "火", "水", "木", "金", "土", "日"];
-        const membersList = ["メンバーA", "メンバーB", "メンバーC", "メンバーD", "教授", "顧問"];
         
         let targetMonday = new Date();
         const currentDay = targetMonday.getDay(); 
@@ -222,70 +263,19 @@
         targetMonday.setHours(0, 0, 0, 0); 
         const today = new Date(); today.setHours(0, 0, 0, 0);
 
-        let scheduleData = [];
-        function generateDummyData() {
-            scheduleData = [];
-            for(let d=0; d<7; d++) {
-                scheduleData[d] = [];
-                for(let t=0; t<times.length; t++) {
-                    scheduleData[d][t] = [];
-                    for(let m=0; m<membersList.length; m++) {
-                        let r = Math.random();
-                        if(r > 0.6) scheduleData[d][t][m] = 2; 
-                        else if(r > 0.4) scheduleData[d][t][m] = 1; 
-                        else scheduleData[d][t][m] = 0; 
-                    }
-                }
-            }
-        }
+        let serverData = { users: {}, weekly: {}, schedules: [], holidays: [] };
+        let scheduleData = []; 
+        let membersList = [];
 
         function initApp() {
-            initFilters();
-            generateDummyData();
             renderEmptyGrid();
-            updateWeeklyGrid();
+            loadSummaryData();
             setupSelectionEvents();
-        }
-
-        function initFilters() {
-            const container = document.getElementById('member-checkboxes');
-            container.innerHTML = ''; 
-            membersList.forEach((m, idx) => {
-                const label = document.createElement('label');
-                label.className = 'filter-label';
-                label.innerHTML = `<input type="checkbox" class="mem-filter" value="${idx}" checked onchange="updateFilters()"> ${m}`;
-                container.appendChild(label);
-            });
-        }
-
-        function toggleAllMembers() {
-            const checkboxes = document.querySelectorAll('.mem-filter');
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            checkboxes.forEach(cb => cb.checked = !allChecked);
-            updateFilters();
-        }
-
-        function updateFilters() {
-            const checkboxes = document.querySelectorAll('.mem-filter');
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            document.getElementById('btn-toggle-all').textContent = allChecked ? "全員はずす" : "全員選択する";
-            updateHeatmap();
-        }
-
-        function updateWeeklyGrid() {
-            generateDummyData(); 
-            const format = d => `${d.getMonth()+1}/${d.getDate()}`;
-            const endSunday = new Date(targetMonday);
-            endSunday.setDate(targetMonday.getDate() + 6);
-            document.getElementById('week-label').textContent = `${format(targetMonday)}(月) 〜 ${format(endSunday)}(日)`;
-            updateHeatmap();
         }
 
         function createCell(className, text) {
             const div = document.createElement('div');
-            div.className = className;
-            div.innerHTML = text;
-            return div;
+            div.className = className; div.innerHTML = text; return div;
         }
 
         function renderEmptyGrid() {
@@ -314,21 +304,157 @@
             for (let d = 0; d < 7; d++) tt.appendChild(createCell('tt-cell tt-blackout', ''));
         }
 
+        function changeWeek(offset) {
+            targetMonday.setDate(targetMonday.getDate() + (offset * 7));
+            loadSummaryData();
+        }
+
+        function loadSummaryData() {
+            showLoading();
+            const y = targetMonday.getFullYear();
+            const m = String(targetMonday.getMonth() + 1).padStart(2, '0');
+            const d = String(targetMonday.getDate()).padStart(2, '0');
+            const targetMondayStr = `${y}/${m}/${d}`;
+
+            document.getElementById('week-label').textContent = `${m}/${d}(月) 〜 ${String(targetMonday.getMonth() + 1)}/${targetMonday.getDate()+6}(日)`;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'getSummaryData', targetMondayStr: targetMondayStr })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    serverData = data.data;
+                    buildScheduleData();
+                    buildFilters();
+                    updateHeatmap();
+                } else {
+                    alert("データ取得エラー: " + data.message);
+                }
+            })
+            .catch(err => { console.error(err); alert("通信エラー"); })
+            .finally(() => hideLoading());
+        }
+
+        function buildScheduleData() {
+            membersList = Object.keys(serverData.users);
+            scheduleData = [];
+            for(let d=0; d<7; d++) {
+                scheduleData[d] = [];
+                let currentDate = new Date(targetMonday);
+                currentDate.setDate(targetMonday.getDate() + d);
+                currentDate.setHours(0, 0, 0, 0);
+
+                for(let t=0; t<times.length; t++) {
+                    scheduleData[d][t] = [];
+                    const index = (d * 26) + t;
+                    for(let m=0; m<membersList.length; m++) {
+                        const name = membersList[m];
+                        const uInfo = serverData.users[name];
+                        const wStr = serverData.weekly[name];
+                        
+                        let valStr = "0";
+                        if (wStr) {
+                            valStr = wStr.charAt(index) || "0";
+                        } else {
+                            let expiry = uInfo.expiry ? new Date(uInfo.expiry) : null;
+                            if (expiry) expiry.setHours(23, 59, 59, 999);
+                            if (!expiry || currentDate <= expiry) {
+                                valStr = uInfo.base ? (uInfo.base.charAt(index) || "0") : "0";
+                            }
+                        }
+                        scheduleData[d][t][m] = parseInt(valStr);
+                    }
+                }
+            }
+        }
+
+        function buildFilters() {
+            const container = document.getElementById('member-checkboxes');
+            const existingChecked = Array.from(document.querySelectorAll('.mem-filter:checked')).map(cb => cb.dataset.name);
+            const isFirstLoad = container.innerHTML === '';
+            
+            container.innerHTML = ''; 
+            membersList.forEach((m, idx) => {
+                const isChecked = isFirstLoad || existingChecked.includes(m) ? 'checked' : '';
+                const label = document.createElement('label');
+                label.className = 'filter-label';
+                label.innerHTML = `<input type="checkbox" class="mem-filter" value="${idx}" data-name="${m}" ${isChecked} onchange="updateFilters()"> ${m}`;
+                container.appendChild(label);
+            });
+            updateFiltersBtnText();
+        }
+
+        function toggleAllMembers() {
+            const checkboxes = document.querySelectorAll('.mem-filter');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+            updateFilters();
+        }
+
+        function updateFilters() {
+            updateFiltersBtnText();
+            updateHeatmap();
+        }
+        
+        function updateFiltersBtnText() {
+            const checkboxes = document.querySelectorAll('.mem-filter');
+            const allChecked = checkboxes.length > 0 && Array.from(checkboxes).every(cb => cb.checked);
+            document.getElementById('btn-toggle-all').textContent = allChecked ? "全員はずす" : "全員選択する";
+        }
+
+        function parseTimeRange(timeStr) {
+            // ★時間が空欄の場合は1日中として扱う
+            if (!timeStr || timeStr.trim() === "" || timeStr.trim() === "-") {
+                return { start: 0, end: times.length }; 
+            }
+            const match = timeStr.match(/(\d{1,2}:\d{2})\s*[-~〜]\s*(\d{1,2}:\d{2})/);
+            if (!match) return { start: 0, end: times.length }; 
+            let sIdx = times.indexOf(match[1]);
+            let eIdx = times.indexOf(match[2]);
+            if(sIdx === -1) sIdx = 0;
+            if(eIdx === -1) eIdx = times.length; 
+            return { start: sIdx, end: eIdx };
+        }
+
         function updateHeatmap() {
             const activeMemberIdxs = Array.from(document.querySelectorAll('.mem-filter:checked')).map(cb => parseInt(cb.value));
             const includeOnline = document.getElementById('online-filter').checked;
+            const excludeHoliday = document.getElementById('exclude-holiday-filter').checked;
             
             if(activeMemberIdxs.length === 0) {
-                document.querySelectorAll('.tt-slot').forEach(slot => { slot.style.backgroundColor = '#e2e6ea'; slot.textContent = ''; });
+                document.querySelectorAll('.tt-slot').forEach(slot => { 
+                    slot.style.backgroundColor = '#e2e6ea'; slot.textContent = ''; slot.className = 'tt-cell tt-slot ng';
+                });
                 document.getElementById('recommendation-container').innerHTML = '<p style="color:#d9534f; text-align:center; padding: 10px;">メンバーを選択してください</p>';
                 return;
             }
 
             const format = d => `${d.getMonth()+1}/${d.getDate()}`;
-            for(let i = 0; i < 7; i++) {
-                let d = new Date(targetMonday);
-                d.setDate(targetMonday.getDate() + i);
-                document.getElementById(`header-day-${i}`).innerHTML = `${format(d)}<br>(${baseDays[i]})`;
+            const holidayDates = serverData.holidays || [];
+            const now = new Date();
+            
+            const blockMap = {}; 
+            if (serverData.schedules) {
+                serverData.schedules.forEach(sch => {
+                    let sDate = new Date(sch.date);
+                    sDate.setHours(0,0,0,0);
+                    let dIndex = Math.floor((sDate - targetMonday) / 86400000);
+                    if(dIndex >= 0 && dIndex < 7) {
+                        let tRange = parseTimeRange(sch.time);
+                        if(tRange) {
+                            for(let t = tRange.start; t < tRange.end; t++) {
+                                // ★タイトルをセットして表示させるように変更
+                                blockMap[`${dIndex}_${t}`] = {
+                                    category: sch.category.toUpperCase(),
+                                    title: sch.title
+                                };
+                            }
+                        }
+                    }
+                });
             }
 
             let cellCounts = []; 
@@ -336,7 +462,37 @@
 
             for(let d=0; d<7; d++) {
                 cellCounts[d] = [];
+                let currentDate = new Date(targetMonday);
+                currentDate.setDate(targetMonday.getDate() + d);
+                let dateStr = Utilities_formatDateLocal(currentDate); 
+                
+                let isHoliday = false;
+                if (excludeHoliday) {
+                    if (d === 5 || d === 6) isHoliday = true; 
+                    if (holidayDates.includes(dateStr)) isHoliday = true; 
+                }
+                
+                let dayColor = isHoliday ? 'color:#dc3545;' : '';
+                document.getElementById(`header-day-${d}`).innerHTML = `<span style="${dayColor}">${format(currentDate)}<br>(${baseDays[d]})</span>`;
+
                 for(let t=0; t<times.length; t++) {
+                    const timeParts = times[t].split(':');
+                    const cellDateTime = new Date(currentDate);
+                    cellDateTime.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]), 0, 0);
+
+                    const existingBlock = blockMap[`${d}_${t}`];
+
+                    // ★予定が入っていない過去の時間は-2とする
+                    if (cellDateTime < now && !existingBlock) {
+                        cellCounts[d][t] = -2; 
+                        continue;
+                    }
+
+                    if (isHoliday || existingBlock) {
+                        cellCounts[d][t] = -1; 
+                        continue;
+                    }
+
                     let count = 0;
                     activeMemberIdxs.forEach(m => {
                         const status = scheduleData[d][t][m];
@@ -351,9 +507,32 @@
                 for(let t=0; t<times.length; t++) {
                     const slot = document.getElementById(`slot-${d}-${t}`);
                     const count = cellCounts[d][t];
-                    if(count === 0) {
-                        slot.style.backgroundColor = '#e2e6ea';
+                    const existingBlock = blockMap[`${d}_${t}`];
+                    
+                    slot.className = 'tt-cell tt-slot';
+                    if (times[t].includes(":30")) slot.classList.add('hour-border');
+                    else slot.classList.add('half-border');
+
+                    if (count === -2) {
+                        slot.classList.add('past-time');
                         slot.textContent = '';
+                        slot.style.backgroundColor = ''; slot.style.color = '';
+                    } else if (existingBlock) {
+                        if (existingBlock.category.includes('EVENT') || existingBlock.category.includes('NEWS') || existingBlock.category.includes('OTHER')) {
+                            slot.classList.add('existing-event');
+                        } else {
+                            slot.classList.add('existing-activity');
+                        }
+                        slot.textContent = existingBlock.title; // ★ACTIVITYではなくタイトルを表示
+                        slot.style.backgroundColor = ''; slot.style.color = '';
+                    } else if(count === -1) {
+                        slot.classList.add('disabled');
+                        slot.textContent = '休';
+                        slot.style.backgroundColor = ''; slot.style.color = '';
+                    } else if(count === 0) {
+                        slot.classList.add('ng');
+                        slot.textContent = '';
+                        slot.style.backgroundColor = '#e2e6ea'; slot.style.color = '#333';
                     } else {
                         const opacity = 0.2 + (0.8 * (count / maxCount));
                         slot.style.backgroundColor = `rgba(0, 123, 255, ${opacity})`;
@@ -362,11 +541,19 @@
                     }
                 }
             }
-            calculateRecommendations(activeMemberIdxs);
+            calculateRecommendations(activeMemberIdxs, cellCounts);
         }
 
-        function calculateRecommendations(activeMembers) {
+        function Utilities_formatDateLocal(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}/${m}/${d}`;
+        }
+
+        function calculateRecommendations(activeMembers, cellCountsMap) {
             const getScore = (type, d, t) => {
+                if (cellCountsMap[d][t] === -1 || cellCountsMap[d][t] === -2) return 0; 
                 let faceCount = 0; let onlineCount = 0;
                 activeMembers.forEach(m => {
                     if(scheduleData[d][t][m] === 2) faceCount++;
@@ -379,7 +566,7 @@
                 return 0;
             };
 
-            const findBestBlock = (type) => {
+            const findTop2Blocks = (type) => {
                 for (let targetPeople = activeMembers.length; targetPeople >= 1; targetPeople--) {
                     let candidates = [];
                     for (let d = 0; d < 7; d++) {
@@ -394,7 +581,7 @@
                                 if (currentBlockStart === -1) currentBlockStart = t;
                                 currentLength++;
                             } else {
-                                if (currentLength >= 4) {
+                                if (currentLength >= 4) { 
                                     candidates.push({ day: d, start: currentBlockStart, length: currentLength, count: targetPeople });
                                 }
                                 currentBlockStart = -1; currentLength = 0;
@@ -407,31 +594,48 @@
                             if (a.day !== b.day) return a.day - b.day;           
                             return a.start - b.start;                            
                         });
-                        return candidates[0]; 
+                        
+                        let best = candidates[0];
+                        let second = null;
+                        for(let i=1; i<candidates.length; i++) {
+                            let c = candidates[i];
+                            let overlap = false;
+                            if(best.day === c.day) {
+                                if(Math.max(best.start, c.start) < Math.min(best.start+best.length, c.start+c.length)) {
+                                    overlap = true;
+                                }
+                            }
+                            if(!overlap) { second = c; break; }
+                        }
+                        return [best, second]; 
                     }
                 }
-                return null; 
+                return [null, null]; 
             };
 
-            const recFace = findBestBlock('face');
-            const recOnline = findBestBlock('online');
-            const recHybrid = findBestBlock('hybrid');
+            const [face1, face2] = findTop2Blocks('face');
+            const [online1, online2] = findTop2Blocks('online');
+            const [hybrid1, hybrid2] = findTop2Blocks('hybrid');
 
             const container = document.getElementById('recommendation-container');
             container.innerHTML = '';
             
-            const createCard = (typeLabel, typeClass, recResult, formatValue) => {
+            const createCard = (typeLabel, typeClass, recResult, formatValue, rank) => {
                 if(!recResult) return ''; 
                 const d = new Date(targetMonday); d.setDate(targetMonday.getDate() + recResult.day);
                 const dateStr = `${d.getMonth()+1}/${d.getDate()}(${baseDays[recResult.day]})`;
                 const timeStr = `${times[recResult.start]} 〜 ${times[recResult.start + recResult.length] || "22:00"}`;
                 const hours = recResult.length / 2;
+                const rankClass = rank === 1 ? 'rank-1' : 'rank-2';
+                const rankBadge = rank === 1 ? '第一候補' : '第二候補';
+
                 return `
-                    <div class="rec-card" onclick="selectRecommended(${recResult.day}, ${recResult.start}, ${recResult.length}, '${formatValue}')">
+                    <div class="rec-card ${rankClass}" onclick="selectRecommended(${recResult.day}, ${recResult.start}, ${recResult.length}, '${formatValue}')">
+                        <div class="rank-badge">${rankBadge}</div>
                         <div class="rec-info">
                             <span class="rec-type ${typeClass}">${typeLabel}</span>
                             <div class="rec-time">${dateStr} ${timeStr}</div>
-                            <div class="rec-count">💡 連続 <strong>${hours}時間</strong> / 最小 <strong>${recResult.count}人</strong> 参加可能</div>
+                            <div class="rec-count">連続 <strong>${hours}時間</strong> / 最小 <strong>${recResult.count}人</strong> 参加可能</div>
                         </div>
                         <button class="rec-btn">選択 ＞</button>
                     </div>
@@ -439,12 +643,26 @@
             };
 
             let html = "";
-            html += createCard("対面が可能", "type-face", recFace, "対面");
-            html += createCard("オンラインが可能", "type-online", recOnline, "オンライン");
-            html += createCard("ハイブリッドが可能", "type-hybrid", recHybrid, "ハイブリッド");
+            if (face1) html += createCard("対面が可能", "type-face", face1, "対面活動", 1);
+            if (face2) html += createCard("対面が可能", "type-face", face2, "対面活動", 2);
+            if (online1) html += createCard("オンラインが可能", "type-online", online1, "オンライン活動", 1);
+            if (online2) html += createCard("オンラインが可能", "type-online", online2, "オンライン活動", 2);
+            if (hybrid1) html += createCard("ハイブリッドが可能", "type-hybrid", hybrid1, "ハイブリッド活動", 1);
+            if (hybrid2) html += createCard("ハイブリッドが可能", "type-hybrid", hybrid2, "ハイブリッド活動", 2);
             
-            if(html === "") html = "<div style='padding:15px; text-align:center; background:#fff; border-radius:4px; color:#666;'>明日以降で2時間以上集まれる候補枠がありません。<br>フィルターを減らすか、週を変えてください。</div>";
+            if(html === "") html = "<div style='padding:15px; text-align:center; background:#fff; border-radius:4px; color:#666;'>条件に合う候補枠が見つかりません。</div>";
             container.innerHTML = html;
+        }
+
+        function toggleActivityType() {
+            const type = document.getElementById('activity-type').value;
+            if (type === 'ACTIVITY') {
+                document.getElementById('format-group').style.display = 'block';
+                document.getElementById('event-name-group').style.display = 'none';
+            } else {
+                document.getElementById('format-group').style.display = 'none';
+                document.getElementById('event-name-group').style.display = 'block';
+            }
         }
 
         function selectRecommended(day, startIdx, length, formatValue) {
@@ -452,12 +670,18 @@
             let firstSlot = null;
             for(let step=0; step<length; step++) {
                 const slot = document.getElementById(`slot-${day}-${startIdx+step}`);
-                if(slot) { slot.classList.add('selected'); if(!firstSlot) firstSlot = slot; }
+                if(slot && !slot.classList.contains('disabled') && !slot.classList.contains('existing-activity') && !slot.classList.contains('existing-event') && !slot.classList.contains('past-time')) { 
+                    slot.classList.add('selected'); 
+                    if(!firstSlot) firstSlot = slot; 
+                }
             }
-            document.getElementById('btn-decide').classList.add('active');
-            document.getElementById('activity-format').value = formatValue;
-
             if(firstSlot) {
+                document.getElementById('btn-decide').classList.add('active');
+                
+                document.getElementById('activity-type').value = 'ACTIVITY';
+                toggleActivityType();
+                document.getElementById('activity-format').value = formatValue;
+
                 const wrapper = document.getElementById('main-wrapper');
                 const scrollToY = firstSlot.offsetTop - (wrapper.clientHeight / 2) + 20;
                 const scrollToX = firstSlot.offsetLeft - (wrapper.clientWidth / 2) + 40;
@@ -465,6 +689,7 @@
             }
         }
 
+        let isSelecting = false;
         function clearSelection() {
             document.querySelectorAll('.tt-slot.selected').forEach(el => el.classList.remove('selected'));
             document.getElementById('btn-decide').classList.remove('active');
@@ -474,7 +699,7 @@
             const wrapper = document.getElementById('main-wrapper');
             const startSelection = (e, clientX, clientY) => {
                 const target = document.elementFromPoint(clientX, clientY);
-                if (target && target.classList.contains('tt-slot')) {
+                if (target && target.classList.contains('tt-slot') && !target.classList.contains('disabled') && !target.classList.contains('existing-activity') && !target.classList.contains('existing-event') && !target.classList.contains('past-time')) {
                     isSelecting = true; clearSelection();
                     target.classList.add('selected'); document.getElementById('btn-decide').classList.add('active');
                     if(e.cancelable) e.preventDefault(); 
@@ -483,7 +708,7 @@
             const moveSelection = (clientX, clientY) => {
                 if (!isSelecting) return;
                 const target = document.elementFromPoint(clientX, clientY);
-                if (target && target.classList.contains('tt-slot')) {
+                if (target && target.classList.contains('tt-slot') && !target.classList.contains('disabled') && !target.classList.contains('existing-activity') && !target.classList.contains('existing-event') && !target.classList.contains('past-time')) {
                     const firstSelected = document.querySelector('.tt-slot.selected');
                     if (firstSelected && firstSelected.dataset.day === target.dataset.day) target.classList.add('selected');
                 }
@@ -511,19 +736,84 @@
             const endTime = times[endIndex + 1] || "22:00"; 
             const selectedDate = new Date(targetMonday);
             selectedDate.setDate(targetMonday.getDate() + parseInt(dayIndex));
-            document.getElementById('modal-time-display').textContent = `${selectedDate.getMonth()+1}/${selectedDate.getDate()} (${dayName}) ${startTime} 〜 ${endTime}`;
+            
+            const y = selectedDate.getFullYear();
+            const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+            const dStr = String(selectedDate.getDate()).padStart(2, '0');
+            
+            const displayEl = document.getElementById('modal-time-display');
+            displayEl.textContent = `${m}/${dStr} (${dayName}) ${startTime} 〜 ${endTime}`;
+            displayEl.dataset.date = `${y}/${m}/${dStr}`;
+            displayEl.dataset.startTime = startTime;
+            displayEl.dataset.endTime = endTime;
+
+            document.getElementById('activity-detail').value = '';
+            document.getElementById('activity-location').value = '';
+            document.getElementById('event-name').value = '';
+            toggleActivityType();
+
             document.getElementById('decision-modal').style.display = 'flex';
         }
 
         function closeModal() { document.getElementById('decision-modal').style.display = 'none'; }
         
         function submitDecision() {
+            const btn = document.querySelector('.btn-submit');
+            const originalText = btn.textContent;
+            btn.textContent = '確定中...';
+            btn.disabled = true;
+
             const type = document.getElementById('activity-type').value;
-            const format = document.getElementById('activity-format').value;
-            const location = document.getElementById('activity-location').value || "未定"; 
-            const timeStr = document.getElementById('modal-time-display').textContent;
-            alert(`【確定・自動通知テスト】\n\n日時: ${timeStr}\n種別: ${type}\n形式: ${format}\n場所: ${location}`);
-            closeModal(); clearSelection();
+            let title = "";
+            if (type === 'ACTIVITY') {
+                title = document.getElementById('activity-format').value;
+            } else {
+                title = document.getElementById('event-name').value || "名称未定";
+            }
+            
+            const detailInput = document.getElementById('activity-detail').value.trim();
+            const locationInput = document.getElementById('activity-location').value.trim();
+            
+            let detailText = detailInput;
+            if (locationInput) {
+                if (detailText) detailText += `\n（場所：${locationInput}）`;
+                else detailText = `（場所：${locationInput}）`;
+            }
+            
+            const displayEl = document.getElementById('modal-time-display');
+            
+            const payload = {
+                action: 'saveDecision',
+                date: displayEl.dataset.date,
+                startTime: displayEl.dataset.startTime,
+                endTime: displayEl.dataset.endTime,
+                type: type,
+                title: title,
+                detail: detailText
+            };
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    alert("スケジュールが確定されました！");
+                    closeModal(); 
+                    clearSelection();
+                    loadSummaryData(); 
+                } else {
+                    alert('確定に失敗しました: ' + data.message);
+                }
+            })
+            .catch(err => { 
+                console.error(err); alert('通信エラーが発生しました'); 
+            })
+            .finally(() => { 
+                btn.textContent = originalText; btn.disabled = false; 
+            });
         }
     </script>
 </body>
