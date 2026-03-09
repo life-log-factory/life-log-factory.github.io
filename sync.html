@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="./assets/css/sanitize.css">
-    <link rel="stylesheet" href="./assets/css/style.css?v=13">
+    <link rel="stylesheet" href="./assets/css/style.css?v=15">
     <title>Schedule Sync - LIFE LOG Factory</title>
     <link rel="icon" href="./assets/img/LLF-img/favicon.png">
     <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
@@ -28,7 +28,6 @@
         #screen-login { display: none; text-align: center; }
         #screen-main { display: none; }
 
-        /* ▼ ヘッダーにトップへ戻るボタンを追加 ▼ */
         .sync-header { background: #0d1b3f; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .user-name-display { font-weight: bold; font-size: 16px; background: rgba(255,255,255,0.2); padding: 6px 15px; border-radius: 20px; }
         .btn-home { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
@@ -47,7 +46,6 @@
         .tab-content { display: none; padding: 20px 10px; }
         .tab-content.active { display: block; }
         
-        /* ▼ 有効期限ボックスのマージン調整 ▼ */
         .expiry-box { background: #f4f7f6; padding: 15px; border-radius: 4px; border: 1px solid #ddd; margin-top: 20px; margin-bottom: 10px; text-align: center; }
         .expiry-box label { font-weight: bold; color: #555; font-size: 14px; display: block; margin-bottom: 8px; }
         .expiry-box input { width: auto; display: inline-block; padding: 8px 12px; text-align: center; font-size: 15px;}
@@ -75,14 +73,32 @@
         .tt-slot.face { background-color: #007bff; opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
         .tt-slot.online { background-color: #28a745; opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
         .tt-slot.ng { background-color: #e2e6ea; } 
+        
+        /* ▼ 過去の時間の黒塗りスタイル ▼ */
+        .tt-slot.past-time { background-color: #222 !important; border-right: 1px solid #111 !important; border-bottom: 1px solid #111 !important; cursor: not-allowed; }
 
         .save-btn-wrapper { margin-top: 15px; text-align: center; }
         .btn-save { padding: 15px 50px; background: #00cc00; color: #fff; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s; }
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); background: #00b300;}
+
+        /* ローディング画面とトースト通知 */
+        #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0d1b3f; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #toast-msg { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 30px; padding: 12px 20px; position: fixed; z-index: 10000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 15px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
+        #toast-msg.show { visibility: visible; opacity: 1; bottom: 50px; }
+        #toast-msg.error { background-color: #dc3545; }
     </style>
 </head>
 <body>
     <div id="header-placeholder"></div>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight:bold; color:#0d1b3f;">データを読み込み中...</div>
+    </div>
+    <div id="toast-msg"></div>
 
     <section class="sync-page-section">
         <div class="service-header" style="margin-bottom: 30px;">
@@ -125,9 +141,7 @@
                     <div class="form-group">
                         <label>登録済みの方</label>
                         <select id="exist-username" class="form-control">
-                            <option value="">-- 選択してください --</option>
-                            <option value="メンバーA">メンバーA</option>
-                            <option value="メンバーB">メンバーB</option>
+                            <option value="">-- 読み込み中 --</option>
                         </select>
                     </div>
                     <button class="btn-primary" onclick="login()">スケジュールを入力する</button>
@@ -139,6 +153,7 @@
             <div id="screen-main">
                 <div class="sync-header">
                     <div class="user-name-display" id="display-name">ユーザー名 さん</div>
+                    <button class="btn-home" onclick="goToGateway()">トップへ</button>
                 </div>
 
                 <div class="sync-tabs">
@@ -174,7 +189,6 @@
                     <div class="save-btn-wrapper">
                         <button class="btn-save" onclick="saveSchedule('base')">基本スケジュールを保存</button>
                     </div>
-                    <a href="#" class="back-link" onclick="goToGateway()">← スケジュール調整トップに戻る</a>
                 </div>
 
                 <div id="tab-weekly" class="tab-content">
@@ -198,33 +212,63 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="./assets/js/script.js?v=13" defer></script>
+    <script src="./assets/js/script.js?v=15" defer></script>
     <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycby5fofJ_EMAWnpYDXLFLfQQD89Ta7gb0ZajMTjx9HeFeAIohgQDOg_k8JvXb3VVCsOz/exec"; 
+
+        // --- ★未保存チェッカーフラグ ---
+        let isDirty = false;
+
+        // --- UI制御 ---
+        function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById("toast-msg");
+            toast.textContent = msg;
+            if(isError) toast.classList.add("error");
+            else toast.classList.remove("error");
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
+
+        // 初期メンバー読み込み
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getMembers' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const select = document.getElementById('exist-username');
+                    select.innerHTML = '<option value="">-- 選択してください --</option>';
+                    data.data.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m; opt.textContent = m; select.appendChild(opt);
+                    });
+                }
+            }).catch(e => console.error(e));
+        });
+
+        // 画面遷移（未保存警告つき）
         function goToGateway() {
+            if (isDirty && document.getElementById('screen-main').style.display === 'block') {
+                if (!confirm("変更が保存されていません。トップに戻ってもよろしいですか？")) return;
+            }
+            isDirty = false;
             document.getElementById('screen-password').style.display = 'none';
             document.getElementById('screen-login').style.display = 'none';
             document.getElementById('screen-main').style.display = 'none';
-            
-            // パスワードや入力をリセット
             document.getElementById('sys-password').value = '';
             document.getElementById('pass-error').style.display = 'none';
             document.getElementById('login-error').style.display = 'none';
-
             document.getElementById('screen-gateway').style.display = 'block';
         }
-
-        function goToPassword() {
-            document.getElementById('screen-gateway').style.display = 'none';
-            document.getElementById('screen-password').style.display = 'block';
-        }
-
-        function goToSummary() {
-            window.location.href = 'summary.html';
-        }
+        function goToPassword() { document.getElementById('screen-gateway').style.display = 'none'; document.getElementById('screen-password').style.display = 'block'; }
+        function goToSummary() { window.location.href = 'summary.html'; }
 
         function checkPassword() {
-            const pass = document.getElementById('sys-password').value;
-            if (pass === "life") {
+            if (document.getElementById('sys-password').value === "life") {
                 document.getElementById('pass-error').style.display = 'none';
                 document.getElementById('screen-password').style.display = 'none';
                 document.getElementById('screen-login').style.display = 'block';
@@ -237,21 +281,22 @@
             const newName = document.getElementById('new-username').value.trim();
             const existName = document.getElementById('exist-username').value;
             let finalName = newName !== "" ? newName : existName;
+            if (finalName === "") { document.getElementById('login-error').style.display = 'block'; return; }
             
-            if (finalName === "") {
-                document.getElementById('login-error').style.display = 'block';
-                return;
-            }
-
             document.getElementById('login-error').style.display = 'none';
             document.getElementById('screen-login').style.display = 'none';
             document.getElementById('screen-main').style.display = 'block';
             document.getElementById('display-name').textContent = finalName + " さん";
             
             initTimetables();
+            loadScheduleData(); 
         }
 
         function switchTab(tabId) {
+            if (isDirty) {
+                if (!confirm("変更が保存されていません。タブを切り替えてもよろしいですか？")) return;
+            }
+            isDirty = false;
             document.querySelectorAll('.sync-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             event.target.classList.add('active');
@@ -276,52 +321,73 @@
         targetMonday.setHours(0, 0, 0, 0); 
 
         function initTimetables() {
-            renderGrid('base-timetable', baseDays);
-            updateWeeklyGrid();
+            renderGrid('base-timetable', baseDays, 'base');
+            updateWeeklyGrid(false); 
             setupDrawingEvents();
         }
 
         function createCell(className, text) {
             const div = document.createElement('div');
-            div.className = className;
-            div.innerHTML = text;
-            return div;
+            div.className = className; div.innerHTML = text; return div;
         }
 
-        function renderGrid(containerId, headers) {
+        // --- ★過去ブラックアウト判定を含めたGrid描画 ---
+        function renderGrid(containerId, headers, gridType) {
             const tt = document.getElementById(containerId);
             tt.innerHTML = ''; 
             tt.appendChild(createCell('tt-cell tt-corner', ''));
             headers.forEach(h => tt.appendChild(createCell('tt-cell tt-header', h)));
-
             tt.appendChild(createCell('tt-blackout-time', '')); 
             for (let d = 0; d < 7; d++) tt.appendChild(createCell('tt-cell tt-blackout', ''));
 
+            const now = new Date();
+
             for (let i = 0; i < times.length; i++) {
                 const timeLabel = times[i];
+                const timeParts = timeLabel.split(':');
+                const hour = parseInt(timeParts[0]);
+                const min = parseInt(timeParts[1]);
+
                 const isHourBorder = timeLabel.includes(":30");
                 const borderClass = isHourBorder ? " hour-border" : " half-border";
 
                 tt.appendChild(createCell('tt-time' + borderClass, `<span>${timeLabel}</span>`));
                 for (let d = 0; d < 7; d++) {
                     const slot = document.createElement('div');
-                    slot.className = 'tt-cell tt-slot ng' + borderClass; 
+                    
+                    // 過去判定（週別タブのみ）
+                    let isPast = false;
+                    if (gridType === 'weekly') {
+                        let cellDate = new Date(targetMonday);
+                        cellDate.setDate(targetMonday.getDate() + d);
+                        cellDate.setHours(hour, min, 0, 0);
+                        if (cellDate < now) isPast = true;
+                    }
+
+                    let classes = 'tt-cell tt-slot ng' + borderClass;
+                    if (isPast) classes += ' past-time'; // 黒塗りクラス付与
+
+                    slot.className = classes; 
                     slot.dataset.day = d;
                     slot.dataset.time = i;
+                    slot.id = `${gridType}-slot-${d}-${i}`;
                     tt.appendChild(slot);
                 }
             }
-
             tt.appendChild(createCell('tt-blackout-time', '<span>22:00</span>'));
             for (let d = 0; d < 7; d++) tt.appendChild(createCell('tt-cell tt-blackout', ''));
         }
 
         function changeWeek(offset) {
+            if (isDirty) {
+                if (!confirm("変更が保存されていません。別の週に移動してよろしいですか？")) return;
+            }
+            isDirty = false;
             targetMonday.setDate(targetMonday.getDate() + (offset * 7));
-            updateWeeklyGrid();
+            updateWeeklyGrid(true); 
         }
 
-        function updateWeeklyGrid() {
+        function updateWeeklyGrid(doLoad) {
             const format = d => `${d.getMonth()+1}/${d.getDate()}`;
             const endSunday = new Date(targetMonday);
             endSunday.setDate(targetMonday.getDate() + 6);
@@ -329,58 +395,129 @@
             
             const weeklyHeaders = [];
             for(let i = 0; i < 7; i++) {
-                let d = new Date(targetMonday);
-                d.setDate(targetMonday.getDate() + i);
+                let d = new Date(targetMonday); d.setDate(targetMonday.getDate() + i);
                 weeklyHeaders.push(`${format(d)}<br>(${baseDays[i]})`);
             }
-            renderGrid('weekly-timetable', weeklyHeaders);
+            renderGrid('weekly-timetable', weeklyHeaders, 'weekly');
+            if(doLoad) loadScheduleData();
         }
 
-        let isDrawing = false;
-        let activeWrapper = null;
-        let scrollInterval = null;
-        let scrollSpeed = 0;
-        let lastClientX = null;
-        let lastClientY = null;
-
-        function applyPenToSlot(slot) {
-            slot.classList.remove('face', 'online', 'ng');
-            slot.classList.add(currentPen);
-        }
-
-        function startAutoScroll() {
-            if (!scrollInterval && activeWrapper) {
-                scrollInterval = setInterval(() => {
-                    activeWrapper.scrollTop += scrollSpeed;
-                    if (isDrawing && lastClientX !== null && lastClientY !== null) applySlotFromPoint(lastClientX, lastClientY);
-                }, 20); 
+        // --- データ読み込み・反映（★有効期限ロジック搭載） ---
+        function applyDataToGrid(gridType, dataStr) {
+            let index = 0;
+            for (let d = 0; d < 7; d++) {
+                for (let t = 0; t < 26; t++) {
+                    const slot = document.getElementById(`${gridType}-slot-${d}-${t}`);
+                    if (slot) {
+                        // 過去のマスは色を塗らずに黒のままにしておく
+                        if (!slot.classList.contains('past-time')) {
+                            slot.classList.remove('face', 'online', 'ng');
+                            if (dataStr && index < dataStr.length) {
+                                const val = dataStr.charAt(index);
+                                if (val === '2') slot.classList.add('face');
+                                else if (val === '1') slot.classList.add('online');
+                                else slot.classList.add('ng');
+                            } else {
+                                slot.classList.add('ng');
+                            }
+                        }
+                    }
+                    index++;
+                }
             }
         }
 
-        function stopAutoScroll() {
-            if (scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; }
+        function loadScheduleData() {
+            showLoading();
+            const userName = document.getElementById('display-name').textContent.replace(' さん', '').trim();
+            const y = targetMonday.getFullYear();
+            const m = String(targetMonday.getMonth() + 1).padStart(2, '0');
+            const d = String(targetMonday.getDate()).padStart(2, '0');
+            const targetMondayStr = `${y}/${m}/${d}`;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSchedule', name: userName, targetMondayStr: targetMondayStr })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const res = data.data;
+                    applyDataToGrid('base', res.base);
+                    if(res.expiry) document.getElementById('base-expiry').value = res.expiry;
+                    
+                    // ★ 週別データがなければ、基本データを有効期限を考慮して展開する
+                    let weeklyDataToApply = "";
+                    if (res.weekly) {
+                        weeklyDataToApply = res.weekly; // すでに保存されていればそれを優先
+                    } else {
+                        let expiryDate = res.expiry ? new Date(res.expiry) : null;
+                        if (expiryDate) expiryDate.setHours(23, 59, 59, 999);
+
+                        let modifiedBase = "";
+                        let baseIndex = 0;
+                        for (let d = 0; d < 7; d++) {
+                            let currentDate = new Date(targetMonday);
+                            currentDate.setDate(targetMonday.getDate() + d);
+                            currentDate.setHours(0, 0, 0, 0);
+                            
+                            // その日が有効期限を過ぎていたら不可(0)にする
+                            let isExpired = expiryDate && (currentDate > expiryDate);
+                            
+                            for (let t = 0; t < 26; t++) {
+                                if (isExpired) {
+                                    modifiedBase += "0";
+                                } else {
+                                    modifiedBase += (res.base && baseIndex < res.base.length) ? res.base.charAt(baseIndex) : "0";
+                                }
+                                baseIndex++;
+                            }
+                        }
+                        weeklyDataToApply = modifiedBase;
+                    }
+                    applyDataToGrid('weekly', weeklyDataToApply);
+
+                } else {
+                    showToast("読み込みに失敗しました", true);
+                }
+            })
+            .catch(err => {
+                console.error(err); showToast("通信エラーが発生しました", true);
+            })
+            .finally(() => hideLoading());
         }
+
+        // --- 塗り絵アクション（★未保存フラグと過去マスブロック） ---
+        let isDrawing = false; let activeWrapper = null; let scrollInterval = null; let scrollSpeed = 0; let lastClientX = null; let lastClientY = null;
+
+        function applyPenToSlot(slot) { 
+            // 過去の黒塗りマスは塗れないようにガード
+            if (slot.classList.contains('past-time')) return;
+
+            slot.classList.remove('face', 'online', 'ng'); 
+            slot.classList.add(currentPen); 
+            isDirty = true; // ★変更されたのでフラグを立てる
+        }
+        
+        function startAutoScroll() { if (!scrollInterval && activeWrapper) { scrollInterval = setInterval(() => { activeWrapper.scrollTop += scrollSpeed; if (isDrawing && lastClientX !== null && lastClientY !== null) applySlotFromPoint(lastClientX, lastClientY); }, 20); } }
+        function stopAutoScroll() { if (scrollInterval) { clearInterval(scrollInterval); scrollInterval = null; } }
 
         function applySlotFromPoint(clientX, clientY) {
             if (!activeWrapper) return;
             const rect = activeWrapper.getBoundingClientRect();
-            let searchX = clientX;
-            let searchY = clientY;
+            let searchX = clientX; let searchY = clientY;
             if (searchX < rect.left) searchX = rect.left + 100; 
             if (searchX > rect.right) searchX = rect.right - 20;
             if (clientY < rect.top + 70) searchY = rect.top + 80; 
             if (clientY > rect.bottom - 40) searchY = rect.bottom - 20; 
-
             const target = document.elementFromPoint(searchX, searchY);
             if (target && target.classList.contains('tt-slot')) applyPenToSlot(target);
         }
 
         function handleMove(clientX, clientY) {
             if (!isDrawing || !activeWrapper) return;
-            lastClientX = clientX;
-            lastClientY = clientY;
+            lastClientX = clientX; lastClientY = clientY;
             const rect = activeWrapper.getBoundingClientRect();
-            
             if (clientY < rect.top + 70) { scrollSpeed = -15; startAutoScroll(); } 
             else if (clientY > rect.bottom - 40) { scrollSpeed = 15; startAutoScroll(); } 
             else { stopAutoScroll(); }
@@ -390,40 +527,58 @@
         function setupDrawingEvents() {
             const wrappers = document.querySelectorAll('.timetable-wrapper');
             wrappers.forEach(wrapper => {
-                wrapper.addEventListener('mousedown', (e) => {
-                    if (e.target.classList.contains('tt-slot')) {
-                        isDrawing = true; activeWrapper = wrapper; applyPenToSlot(e.target); e.preventDefault(); 
-                    }
-                });
-                wrapper.addEventListener('touchstart', (e) => {
-                    const touch = e.touches[0];
-                    const target = document.elementFromPoint(touch.clientX, touch.clientY);
-                    if (target && target.classList.contains('tt-slot')) {
-                        isDrawing = true; activeWrapper = wrapper; applyPenToSlot(target);
-                        if(e.cancelable) e.preventDefault(); 
-                    }
-                }, { passive: false });
+                wrapper.addEventListener('mousedown', (e) => { if (e.target.classList.contains('tt-slot')) { isDrawing = true; activeWrapper = wrapper; applyPenToSlot(e.target); e.preventDefault(); } });
+                wrapper.addEventListener('touchstart', (e) => { const touch = e.touches[0]; const target = document.elementFromPoint(touch.clientX, touch.clientY); if (target && target.classList.contains('tt-slot')) { isDrawing = true; activeWrapper = wrapper; applyPenToSlot(target); if(e.cancelable) e.preventDefault(); } }, { passive: false });
             });
-            
             document.addEventListener('mousemove', (e) => { if (!isDrawing) return; e.preventDefault(); handleMove(e.clientX, e.clientY); });
             document.addEventListener('touchmove', (e) => { if (!isDrawing) return; if(e.cancelable) e.preventDefault(); handleMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
             document.addEventListener('mouseup', () => { isDrawing = false; stopAutoScroll(); });
             document.addEventListener('touchend', () => { isDrawing = false; stopAutoScroll(); });
         }
 
+        // --- データ保存処理 ---
         function saveSchedule(type) {
-            const gridId = type === 'base' ? 'base-timetable' : 'weekly-timetable';
-            const slots = document.querySelectorAll(`#${gridId} .tt-slot`);
-            let faceCount = 0;
-            let onlineCount = 0;
-            
-            slots.forEach(s => { 
-                if (s.classList.contains('face')) faceCount++; 
-                else if (s.classList.contains('online')) onlineCount++; 
-            });
-            
-            let extraMsg = type === 'base' ? (document.getElementById('base-expiry').value ? `\n有効期限: ${document.getElementById('base-expiry').value}` : "\n※有効期限が未設定です") : "";
-            alert(`${type === 'base' ? '基本' : '週別'}スケジュールを記録しました！\n対面OK: ${faceCount}コマ\nオンラインOK: ${onlineCount}コマ${extraMsg}`);
+            const btn = event.target; const originalText = btn.textContent;
+            btn.textContent = '保存中...'; btn.disabled = true;
+
+            let scheduleStr = "";
+            for (let d = 0; d < 7; d++) {
+                for (let t = 0; t < 26; t++) { 
+                    const slot = document.getElementById(`${type}-slot-${d}-${t}`);
+                    if (slot) {
+                        if (slot.classList.contains('face')) scheduleStr += "2";
+                        else if (slot.classList.contains('online')) scheduleStr += "1";
+                        else scheduleStr += "0";
+                    } else { scheduleStr += "0"; }
+                }
+            }
+
+            const userName = document.getElementById('display-name').textContent.replace(' さん', '').trim();
+            let payload = {};
+
+            if (type === 'base') {
+                payload = { action: 'saveBase', name: userName, scheduleStr: scheduleStr, expiryDate: document.getElementById('base-expiry').value };
+            } else if (type === 'weekly') {
+                const y = targetMonday.getFullYear(); const m = String(targetMonday.getMonth() + 1).padStart(2, '0'); const d = String(targetMonday.getDate()).padStart(2, '0');
+                payload = { action: 'saveWeekly', name: userName, targetMondayStr: `${y}/${m}/${d}`, scheduleStr: scheduleStr };
+            }
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    isDirty = false; // ★保存成功で警告フラグをリセット
+                    showToast("保存が完了しました");
+                    if(type === 'base') loadScheduleData(); 
+                } else {
+                    showToast('保存に失敗しました: ' + data.message, true);
+                }
+            })
+            .catch(err => { console.error(err); showToast('通信エラーが発生しました', true); })
+            .finally(() => { btn.textContent = originalText; btn.disabled = false; });
         }
     </script>
 </body>
