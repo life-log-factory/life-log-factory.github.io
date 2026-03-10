@@ -368,8 +368,8 @@ body{
 .footer {
   display: flex;
   justify-content: space-between; /* 左・中央・右に分割 */
-  align-items: flex-start ;       /* 上揃え */
-  padding: 20px 40px;
+  align-items: center;            /* 縦の中央揃えに変更 */
+  padding: 30px 40px;             /* 上下余白を少し広げる */
   background-color: #f9f9f9;
   border-top: 1px solid #ddd;
 }
@@ -378,40 +378,34 @@ body{
 .footer-left {
   display: flex;
   gap: 30px;
+  align-items: center; /* 縦の中央揃え */
 }
 .footer-logo {
   width: 150px;
-  margin-bottom: 8px;
+  height: auto; /* margin-bottomを削除し高さを自動化 */
 }
 
-/* 中央 リンク */
+/* 中央 リンク（SNSアイコン） */
 .footer-center {
   display: flex;
-  flex-wrap: wrap;   /* 折り返し可能 */
   justify-content: center;
-  gap: 15px;         /* 間隔 */
-  max-width: 500px;  /* 長すぎ防止 */
-  text-align: center;
+  gap: 15px; 
+  flex: 1; /* 中央のスペースを確保 */
 }
-.footer-center a {
-  color: #333;
-  font-size: 14px;
-  text-decoration: none;
-}
-.footer-center a:hover {
-  text-decoration: underline;
-}
-
-/* 右 SNSアイコン */
-.footer-right {
-  align-self: center;
-}
-.footer-right a {
-  margin-left: 15px;
-}
-.footer-right img {
+.footer-center img {
   width: 30px;
   height: 30px;
+  transition: transform 0.3s;
+}
+.footer-center img:hover {
+  transform: scale(1.1); /* ホバーで少し拡大 */
+}
+
+/* 右 SNSアイコン（管理ボタン） */
+.footer-right {
+  display: flex;
+  gap: 15px;
+  align-items: center;
 }
 
 /* =========================================
@@ -584,17 +578,35 @@ body{
 
   /* --- フッター --- */
   .footer {
-    flex-direction: column;
+    flex-direction: column; /* 3カラムを縦並びに */
     align-items: center;
-    padding: 30px 20px;
-    gap: 30px;
+    padding: 40px 20px;
+    gap: 40px; /* 各要素の間隔を広げる */
     text-align: center;
   }
 
   .footer-left {
     flex-direction: column;
     align-items: center;
+    gap: 20px;
+  }
+  .footer-logo {
+    width: 130px; /* スマホ用にロゴサイズを調整 */
+  }
+
+  .footer-center {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .footer-right {
+    flex-direction: column; /* ボタンも縦並びに */
+    width: 100%;
     gap: 15px;
+  }
+  .admin-link {
+    width: 80%; /* ボタン幅を広げてタップしやすく */
+    margin: 0;  /* 既存の左マージンをリセット */
   }
 }
 
