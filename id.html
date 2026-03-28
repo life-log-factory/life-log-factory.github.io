@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理的効果を用いた工業デザイン - LIFE LOG Factory</title>
+    
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+    <meta property="og:site_name" content="LIFE LOG Factory">
+    <meta property="og:title" content="心理的効果を用いた工業デザイン | LIFE LOG Factory">
+    <meta property="og:description" content="心理的効果を用いた工業デザインのプロジェクトページです。">
+    <meta property="og:type" content="article">
+    <link rel="icon" href="./assets/img/LLF-img/favicon.png">
+    <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
+
+    <style>
+        /* --- 動画エリア --- */
+        .simple-video-section {
+            background: #fff;
+            padding: 100px 0 40px; 
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .simple-video-section {
+                padding-top: 180px; 
+            }
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- コンテンツエリアのカードデザイン --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+            margin-top: 40px;
+            margin-bottom: 60px;
+        }
+
+        .card-section {
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 50px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .title-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #0d1b3f;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: inline-block;
+            border-bottom: 2px solid #0d1b3f;
+            padding-bottom: 5px;
+        }
+
+        .highlight-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #0d1b3f;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .section-body {
+            line-height: 1.8;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .section-body.center {
+            text-align: center;
+        }
+
+        /* --- 体験ボタン --- */
+        .test-card {
+            text-align: center;
+            background-color: #fdfdfd;
+        }
+
+        .home-button {
+            display: inline-block;
+            background-color: #0d1b3f;
+            color: #fff;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            transition: opacity 0.3s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .home-button:hover {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
+
+        /* --- サイドの図形 --- */
+        .side-images {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            pointer-events: none;
+            z-index: 1; 
+            overflow: hidden;
+        }
+
+        .image-wrapper {
+            position: absolute;
+        }
+    </style>
+</head>
+<body class="home-page"> 
+    <div id="header-placeholder"></div>
+
+    <section class="simple-video-section">
+        <div class="video-container">
+            <iframe 
+                id="yt-pv-video"
+                src="https://www.youtube.com/embed/48NKHvmoFRI?autoplay=1&mute=1&enablejsapi=1" 
+                title="心理的効果を用いた工業デザイン" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </section>
+
+    <div class="side-images left" id="side-images-left"></div>
+    <div class="side-images right" id="side-images-right"></div>
+
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 50px; color: #0d1b3f;">心理的効果を用いた工業デザイン</h1>
+        
+        <div class="card-section">
+            <div class="title-wrapper"><h2 class="section-title">プロジェクトの背景・目的</h2></div>
+            <p class="highlight-text">
+                つまらない・たいくつ<br>
+                「早く時間が過ぎてほしい･･･！」
+            </p>
+            <p class="section-body">
+                皆さんは、つまらない・たいくつ・ひまだ、と感じるとき、「早く時間が過ぎてほしい」と思ったことはありませんか？<br><br>
+                そんな思いに対して、私たちは「時間が早く過ぎた」と感じるようなアイテムを作りたいと思い、プロジェクトを始めました。スピードを速く感じる色・音を調べ、その心理的効果を使った工業デザインを実践しています。
+            </p>
+        </div>
+
+        <div class="card-section">
+            <div class="title-wrapper"><h2 class="section-title">心理的効果とは</h2></div>
+            <img src="https://bb54125213.github.io/image/imageA.png" alt="心理的効果 イメージ" style="width:100%; max-width:400px; display:block; margin: 0 auto 20px auto;">
+            <p class="section-body center">
+                この心理的効果とは、五感や記憶、経験から得た情報が脳で処理され、<br>
+                感情や思考、行動などに影響を与える効果のことです。
+            </p>
+        </div>
+
+        <div class="card-section">
+            <div class="title-wrapper"><h2 class="section-title">工業デザインとは</h2></div>
+            <p class="highlight-text">
+                デザインを工夫して付加価値を与える
+            </p>
+            <p class="section-body center">
+                もともとある工業製品のデザイン（色や音など）を工夫して、<br>
+                新しい付加価値を与えることを言います。
+            </p>
+        </div>
+
+        <div class="card-section">
+            <div class="title-wrapper"><h2 class="section-title">発展・展望</h2></div>
+            <p class="highlight-text">
+                社会課題の解決へ
+            </p>
+            <p class="section-body">
+                例えば、流れるように動く縞模様の色や背景色、コントラストを調整することによって変わる「スピード感覚」の結果を、リハビリ用の歩行訓練に応用します。これにより、「早く歩けるようになった」という経験が得られ、モチベーションの維持に役立つのではないかと考えています。<br><br>
+                また、静音性の高い電気自動車など「接近に気づきにくい」といった社会課題に対しても、新たに接近感覚のテストを行うことで課題解決に応用できるのではないかと考え、これらのテストや工業製品を作っています。
+            </p>
+        </div>
+
+        <div class="card-section test-card">
+            <div class="title-wrapper"><h2 class="section-title">体験してみる</h2></div>
+            <p class="section-body center" style="margin-bottom: 20px;">
+                実際に私たちが開発した「心理的効果計測テスト」や<br>「工業デザイン」を試してみませんか？
+            </p>
+            <a href="https://bb54125213.github.io/" target="_blank" class="home-button">テストを体験してみる (外部サイトへ)</a>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="./assets/js/script.js" defer></script>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-pv-video', {
+                events: {
+                    'onStateChange': function(event) {
+                        // 動画が最後まで再生されたら（ステータス：0 = ENDED）
+                        if (event.data === YT.PlayerState.ENDED) {
+                            player.playVideo(); // もう一度最初から再生
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script>
+        window.addEventListener('load', function() {
+            const imageMaxWidthRatio = 0.5; 
+            const horizontalOffsetRatio = -0.5;
+
+            const leftContainer = document.getElementById('side-images-left');
+            const rightContainer = document.getElementById('side-images-right');
+            
+            const imageBaseUrl = 'https://bb54125213.github.io/image/';
+            const sources = [
+                { src: `${imageBaseUrl}image11.png` }, 
+                { src: `${imageBaseUrl}image21.png` }, 
+                { src: `${imageBaseUrl}image31.png` }
+            ];
+
+            function generateImages() {
+                const docHeight = document.documentElement.scrollHeight;
+                
+                leftContainer.style.height = `${docHeight}px`;
+                rightContainer.style.height = `${docHeight}px`;
+                leftContainer.innerHTML = '';
+                rightContainer.innerHTML = '';
+
+                const numImages = Math.max(3, Math.floor(docHeight / 600));
+                const slotHeight = docHeight / numImages;
+
+                for(let i = 0; i < numImages; i++) {
+                    let wrapperL = document.createElement('div');
+                    wrapperL.className = 'image-wrapper';
+                    let imgL = document.createElement('img');
+                    imgL.src = sources[Math.floor(Math.random() * sources.length)].src;
+                    imgL.style.animationDelay = `-${(Math.random() * 20).toFixed(2)}s`;
+                    imgL.style.animationDuration = `${(15 + Math.random() * 10).toFixed(2)}s`;
+                    imgL.style.maxWidth = `${imageMaxWidthRatio * 100}vw`; 
+                    imgL.style.display = 'block';
+                    wrapperL.appendChild(imgL);
+                    
+                    wrapperL.style.top = `${(i * slotHeight) + (slotHeight / 2)}px`;
+                    wrapperL.style.left = '0';
+                    wrapperL.style.transform = `translateX(${horizontalOffsetRatio * 100}%) translateY(-50%)`;
+                    leftContainer.appendChild(wrapperL);
+
+                    let wrapperR = document.createElement('div');
+                    wrapperR.className = 'image-wrapper';
+                    let imgR = document.createElement('img');
+                    imgR.src = sources[Math.floor(Math.random() * sources.length)].src;
+                    imgR.style.animationDelay = `-${(Math.random() * 20).toFixed(2)}s`;
+                    imgR.style.animationDuration = `${(15 + Math.random() * 10).toFixed(2)}s`;
+                    imgR.style.maxWidth = `${imageMaxWidthRatio * 100}vw`; 
+                    imgR.style.display = 'block';
+                    wrapperR.appendChild(imgR);
+                    
+                    wrapperR.style.top = `${(i * slotHeight) + (slotHeight / 2)}px`;
+                    wrapperR.style.right = '0';
+                    wrapperR.style.transform = `translateX(${-horizontalOffsetRatio * 100}%) translateY(-50%)`;
+                    rightContainer.appendChild(wrapperR);
+                }
+            }
+
+            setTimeout(generateImages, 100);
+
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(generateImages, 300);
+            });
+
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                leftContainer.style.transform = `translateY(-${scrollY * 0.15}px)`;
+                rightContainer.style.transform = `translateY(-${scrollY * 0.15}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
