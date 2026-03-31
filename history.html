@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <title>HISTORY - LIFE LOG Factory</title>
+    <meta property="og:site_name" content="LIFE LOG Factory">
+    <meta property="og:title" content="HISTORY - LIFE LOG Factory">
+    <meta property="og:description" content="LIFE LOG Factoryのこれまでの活動記録です。">
+    <link rel="icon" href="./assets/img/LLF-img/favicon.png">
+    <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
+    <style>
+        /* =========================================
+           レイアウト・フッター固定用
+        ========================================= */
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #fafafa;
+            overflow-x: hidden; 
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-page-section {
+            flex: 1; 
+            padding: 100px 0 80px; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .service-header-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .gallery-page-section .fade-in-target {
+            opacity: 1;
+            transform: none;
+            text-align: left;
+            padding: 0;
+        }
+
+        /* =========================================
+           タイムライン全体
+        ========================================= */
+        .gallery-list {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin-top: 100px;
+            padding: 50px 0;
+            width: 100%;
+        }
+
+        /* =========================================
+           超巨大な年号（背景透かし） - 色を濃く修正
+        ========================================= */
+        .year-divider {
+            text-align: center;
+            font-size: 35vw; /* 少し大きく */
+            font-weight: 900;
+            color: rgba(13, 27, 63, 0.08); /* ▼変更：0.03から0.08へ濃くし、見えやすくしました */
+            margin: 0;
+            line-height: 0;
+            position: relative;
+            z-index: 0;
+            pointer-events: none;
+            font-family: 'Times New Roman', Times, serif;
+            letter-spacing: -2vw; 
+            top: 100px; 
+        }
+
+        /* =========================================
+           アイテム共通
+        ========================================= */
+        .gallery-item {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            position: relative;
+            margin-bottom: 120px; 
+            z-index: 3;
+        }
+
+        .gallery-item.left { justify-content: flex-start; }
+        .gallery-item.right { justify-content: flex-end; }
+
+        /* ▼変更：軸線上のポイント（目的地となる大きな点） */
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 24px;   /* 点を少し大きく */
+            height: 24px;
+            background-color: #fafafa;
+            border: 6px solid #0d1b3f; /* フチを太くして存在感を出す */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* ▼追加：目的地から画像へ繋がる点線 */
+        .dashed-line {
+            position: absolute;
+            top: 50%;
+            height: 0;
+            border-top: 3px dashed #0d1b3f; /* テーマカラーの点線 */
+            opacity: 0.4;
+            z-index: 2;
+            transition: all 0.8s ease;
+        }
+
+        /* =========================================
+           画像とテキスト
+        ========================================= */
+        .gallery-img-wrapper {
+            width: 50vw; /* 画像幅を50%に固定し、残りの50%で点線とテキストを展開 */
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            position: relative;
+            background-color: #eee;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: scale(0.95);
+            filter: grayscale(60%);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .gallery-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ▼変更：テキストエリア（緑枠）の位置と幅 */
+        .gallery-info {
+            position: absolute;
+            top: 50%;
+            width: 20vw; /* 幅を20vwにして外側に配置 */
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10%);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .gallery-date {
+            display: block;
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 5px; 
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ▼変更：タイトルの主張をさらに抑える */
+        .gallery-title {
+            font-size: 1.1rem; 
+            color: #333; 
+            margin: 0;
+            line-height: 1.4;
+            font-weight: 600; /* 少し細く */
+            background: none; 
+            padding: 0; 
+            text-shadow: none; /* 影も消して完全にフラットに */
+        }
+
+        /* -----------------------------------------
+           ★ 左画像アイテム（.left）
+           ----------------------------------------- */
+        .gallery-item.left .gallery-img-wrapper {
+            border-radius: 0 24px 24px 0; 
+            transform-origin: left center;
+        }
+
+        /* テキスト（緑枠）を点線の外側（74vw地点）に配置 */
+        .gallery-item.left .gallery-info {
+            left: 74vw; 
+            text-align: left;
+        }
+
+        /* 点線：画像(50vw)から点(70vw)へ繋ぐ */
+        .gallery-item.left .dashed-line {
+            left: 50vw;
+            width: 20vw;
+            transform: translateY(-50%);
+        }
+
+        /* 左画像用：中央(50)から右(70)へ膨らむ太いS字道 */
+        .gallery-item.left::before {
+            content: '';
+            position: absolute;
+            top: -60px; bottom: -60px; 
+            left: 0; width: 100vw;
+            /* 手書きの赤線に合わせて、内側(70vw)でピークを迎えるカーブ */
+            background-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,0 C65,20 70,30 70,50 C70,70 65,80 50,100' fill='none' stroke='%230d1b3f' stroke-opacity='0.25' stroke-width='16' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-size: 100% 100%;
+            z-index: 1; pointer-events: none;
+        }
+
+        /* 丸ポッチを曲線のピーク(70vw)に配置 */
+        .gallery-item.left::after {
+            left: 70vw; 
+        }
+
+        /* -----------------------------------------
+           ★ 右画像アイテム（.right）
+           ----------------------------------------- */
+        .gallery-item.right .gallery-img-wrapper {
+            border-radius: 24px 0 0 24px; 
+            transform-origin: right center;
+        }
+
+        /* テキスト（緑枠）を点線の外側（右から74vw地点）に配置 */
+        .gallery-item.right .gallery-info {
+            right: 74vw; 
+            text-align: right;
+        }
+
+        /* 点線：画像(右から50vw)から点(右から70vw)へ繋ぐ */
+        .gallery-item.right .dashed-line {
+            right: 50vw;
+            width: 20vw;
+            transform: translateY(-50%);
+        }
+
+        /* 右画像用：中央(50)から左(30)へ膨らむ太いS字道 */
+        .gallery-item.right::before {
+            content: '';
+            position: absolute;
+            top: -60px; bottom: -60px;
+            left: 0; width: 100vw;
+            /* 手書きの赤線に合わせて、内側(30vw)でピークを迎えるカーブ */
+            background-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,0 C35,20 30,30 30,50 C30,70 35,80 50,100' fill='none' stroke='%230d1b3f' stroke-opacity='0.25' stroke-width='16' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-size: 100% 100%;
+            z-index: 1; pointer-events: none;
+        }
+
+        /* 丸ポッチを曲線のピーク(30vw)に配置 */
+        .gallery-item.right::after {
+            left: 30vw; 
+        }
+
+        /* =========================================
+           ★ スクロール連動
+        ========================================= */
+        .gallery-item.is-active .gallery-img-wrapper {
+            transform: scale(1);
+            filter: grayscale(0%);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item.is-active .gallery-info {
+            opacity: 1;
+            transform: translateY(-50%); 
+        }
+
+        /* アクティブになったら丸ポッチがテーマカラーに点灯 */
+        .gallery-item.is-active::after {
+            background-color: #007bff; 
+            border-color: #007bff;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        /* アクティブになったら点線もくっきり表示 */
+        .gallery-item.is-active .dashed-line {
+            opacity: 0.8;
+            border-color: #007bff; /* 青色に変化させる場合はここを調整 */
+        }
+
+        /* =========================================
+           スマホ向けレスポンシブ
+        ========================================= */
+        @media (max-width: 768px) {
+            .gallery-page-section { padding-top: 80px; }
+            .service-header-wrapper { padding: 0 20px; }
+            
+            /* スマホでは複雑な曲線を消して、シンプルな直線軸にする */
+            .gallery-list::before { 
+                display: block; 
+                content: '';
+                position: absolute;
+                top: 0; bottom: 0; left: 30px;
+                width: 4px;
+                background-color: rgba(13, 27, 63, 0.15);
+                transform: translateX(-50%);
+                z-index: 1;
+            }
+            .gallery-item.left::before, .gallery-item.right::before { display: none; }
+            .dashed-line { display: none; } /* 点線も消す */
+            
+            .year-divider { font-size: 40vw; text-align: left; left: 60px; top: 60px; letter-spacing: -1vw; color: rgba(13, 27, 63, 0.08); }
+            
+            .gallery-item {
+                flex-direction: column;
+                margin-bottom: 80px;
+                padding-left: 0; 
+            }
+            
+            .gallery-item.left, .gallery-item.right {
+                justify-content: flex-start; 
+                padding-left: 60px; 
+                box-sizing: border-box;
+            }
+            
+            .gallery-img-wrapper { 
+                width: 100% !important; 
+                border-radius: 0 20px 20px 0 !important; 
+                transform-origin: left center !important;
+                margin-bottom: 15px;
+            }
+
+            .gallery-item.left::after, .gallery-item.right::after { 
+                left: 30px; 
+                width: 16px; height: 16px; border-width: 4px; /* スマホではポッチを少し小さく */
+            }
+            
+            .gallery-info {
+                position: relative;
+                width: 100%;
+                top: auto !important;
+                margin-left: 0;
+                padding-top: 0;
+                transform: translateY(10px); 
+            }
+            
+            .gallery-item.left .gallery-info,
+            .gallery-item.right .gallery-info {
+                left: auto; right: auto; text-align: left;
+            }
+            
+            .gallery-item.is-active .gallery-info {
+                transform: translateY(0);
+            }
+
+            .gallery-title { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <section class="gallery-page-section">
+        <div class="service-header-wrapper">
+            <div class="service-header">
+                <h1 class="service-main-title">HISTORY</h1>
+                <hr class="divider">
+            </div>
+        </div>
+
+        <div class="gallery-list" id="gallery-list">
+            <p id="loading-text" style="text-align: center; color: #888; padding: 40px 0;">データを読み込んでいます...</p>
+        </div>
+
+        <div class="service-header-wrapper" style="margin-top: 60px; text-align: right;">
+            <a href="index.html" class="more-link">>>Home</a>
+        </div>
+    </section>
+
+    <div id="footer-placeholder"></div>
+    <script src="./assets/js/script.js" defer></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const GAS_URL = "https://script.google.com/macros/s/AKfycby5fofJ_EMAWnpYDXLFLfQQD89Ta7gb0ZajMTjx9HeFeAIohgQDOg_k8JvXb3VVCsOz/exec?type=json";
+            const galleryList = document.getElementById('gallery-list');
+
+            try {
+                const response = await fetch(GAS_URL, { redirect: "follow" });
+                const text = await response.text();
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error("データの取得に失敗しました。");
+                }
+
+                // URLが存在するデータのみ
+                const galleryItems = data.filter(item => item.imageUrl && item.imageUrl.trim() !== "");
+                galleryItems.sort((a, b) => new Date(a.date) - new Date(b.date)); 
+
+                galleryList.innerHTML = ''; 
+
+                if (galleryItems.length === 0) {
+                    galleryList.innerHTML = '<p style="text-align: center; color: #888;">表示できるデータがありません。</p>';
+                    return;
+                }
+
+                let currentYear = "";
+                let itemIndex = 0; 
+
+                galleryItems.forEach((item, index) => {
+                    const dateObj = new Date(item.date);
+                    const year = dateObj.getFullYear();
+                    
+                    if (year !== currentYear) {
+                        currentYear = year;
+                        const yearBg = document.createElement('div');
+                        yearBg.className = 'year-divider';
+                        yearBg.textContent = year;
+                        galleryList.appendChild(yearBg);
+                    }
+
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = `gallery-item ${itemIndex % 2 === 0 ? 'left' : 'right'}`; 
+                    itemIndex++; 
+                    
+                    const formattedDate = item.date.replace(/-/g, '/');
+                    let highResUrl = item.imageUrl.replace('sz=w800', 'sz=w1600');
+
+                    // ▼追加：HTML構造に <div class="dashed-line"></div> を追加
+                    galleryItem.innerHTML = `
+                        <div class="gallery-img-wrapper">
+                            <img src="${highResUrl}" alt="${item.title}" loading="lazy">
+                        </div>
+                        <div class="dashed-line"></div>
+                        <div class="gallery-info">
+                            <span class="gallery-date">${formattedDate}</span>
+                            <h3 class="gallery-title">${item.title}</h3>
+                        </div>
+                    `;
+                    galleryList.appendChild(galleryItem);
+                });
+
+                const observerOptions = {
+                    root: null,
+                    rootMargin: "-35% 0px -35% 0px",
+                    threshold: 0
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-active');
+                        } else {
+                            entry.target.classList.remove('is-active');
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    observer.observe(item);
+                });
+
+            } catch (error) {
+                console.error("エラー:", error);
+                galleryList.innerHTML = `<p style="text-align: center; color: red;">データの読み込みに失敗しました。</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
