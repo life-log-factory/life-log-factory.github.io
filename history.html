@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./assets/css/sanitize.css">
     <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <title>HISTORY - LIFE LOG Factory</title>
     <meta name="description" content="LIFE LOG Factoryのこれまでの活動記録です。">
     <meta property="og:site_name" content="LIFE LOG Factory">
@@ -66,13 +68,13 @@
             text-align: center;
             font-size: 35vw; /* 少し大きく */
             font-weight: 900;
-            color: rgba(13, 27, 63, 0.08); /* ▼変更：0.03から0.08へ濃くし、見えやすくしました */
+            color: rgba(0, 104, 122, 0.08); /* ▼変更：0.03から0.08へ濃くし、見えやすくしました */
             margin: 0;
             line-height: 0;
             position: relative;
             z-index: 0;
             pointer-events: none;
-            font-family: 'Times New Roman', Times, serif;
+            font-family: var(--llf-font-heading-en), var(--llf-font-heading-ja);
             letter-spacing: -2vw; 
             top: 100px; 
         }
@@ -100,7 +102,7 @@
             width: 24px;   /* 点を少し大きく */
             height: 24px;
             background-color: #fafafa;
-            border: 6px solid #0d1b3f; /* フチを太くして存在感を出す */
+            border: 6px solid var(--llf-primary); /* フチを太くして存在感を出す */
             border-radius: 50%;
             transform: translate(-50%, -50%);
             z-index: 4;
@@ -112,7 +114,7 @@
             position: absolute;
             top: 50%;
             height: 0;
-            border-top: 3px dashed #0d1b3f; /* テーマカラーの点線 */
+            border-top: 3px dashed var(--llf-primary); /* テーマカラーの点線 */
             opacity: 0.4;
             z-index: 2;
             transition: all 0.8s ease;
@@ -199,7 +201,7 @@
             top: -60px; bottom: -60px; 
             left: 0; width: 100vw;
             /* 手書きの赤線に合わせて、内側(70vw)でピークを迎えるカーブ */
-            background-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,0 C65,20 70,30 70,50 C70,70 65,80 50,100' fill='none' stroke='%230d1b3f' stroke-opacity='0.25' stroke-width='16' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,0 C65,20 70,30 70,50 C70,70 65,80 50,100' fill='none' stroke='%2300687a' stroke-opacity='0.25' stroke-width='16' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3C/svg%3E");
             background-size: 100% 100%;
             z-index: 1; pointer-events: none;
         }
@@ -237,7 +239,7 @@
             top: -60px; bottom: -60px;
             left: 0; width: 100vw;
             /* 手書きの赤線に合わせて、内側(30vw)でピークを迎えるカーブ */
-            background-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,0 C35,20 30,30 30,50 C30,70 35,80 50,100' fill='none' stroke='%230d1b3f' stroke-opacity='0.25' stroke-width='16' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,0 C35,20 30,30 30,50 C30,70 35,80 50,100' fill='none' stroke='%2300687a' stroke-opacity='0.25' stroke-width='16' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3C/svg%3E");
             background-size: 100% 100%;
             z-index: 1; pointer-events: none;
         }
@@ -263,16 +265,16 @@
 
         /* アクティブになったら丸ポッチがテーマカラーに点灯 */
         .gallery-item.is-active::after {
-            background-color: #007bff; 
-            border-color: #007bff;
-            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+            background-color: var(--llf-primary); 
+            border-color: var(--llf-primary);
+            box-shadow: 0 0 15px rgba(0, 104, 122, 0.4);
             transform: translate(-50%, -50%) scale(1.1);
         }
         
         /* アクティブになったら点線もくっきり表示 */
         .gallery-item.is-active .dashed-line {
             opacity: 0.8;
-            border-color: #007bff; /* 青色に変化させる場合はここを調整 */
+            border-color: var(--llf-primary); /* 青色に変化させる場合はここを調整 */
         }
 
         /* =========================================
@@ -289,14 +291,14 @@
                 position: absolute;
                 top: 0; bottom: 0; left: 30px;
                 width: 4px;
-                background-color: rgba(13, 27, 63, 0.15);
+                background-color: rgba(0, 104, 122, 0.15);
                 transform: translateX(-50%);
                 z-index: 1;
             }
             .gallery-item.left::before, .gallery-item.right::before { display: none; }
             .dashed-line { display: none; } /* 点線も消す */
             
-            .year-divider { font-size: 40vw; text-align: left; left: 60px; top: 60px; letter-spacing: -1vw; color: rgba(13, 27, 63, 0.08); }
+            .year-divider { font-size: 40vw; text-align: left; left: 60px; top: 60px; letter-spacing: -1vw; color: rgba(0, 104, 122, 0.08); }
             
             .gallery-item {
                 flex-direction: column;

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="./assets/css/sanitize.css">
     <link rel="stylesheet" href="./assets/css/style.css?v=15">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <title>Schedule Sync - LIFE LOG Factory</title>
     <link rel="icon" href="./assets/img/LLF-img/favicon.png">
     <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
@@ -17,10 +19,10 @@
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 16px; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-        .btn-primary { width: 100%; padding: 15px; background: #0d1b3f; color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-primary:hover { background: #1a367d; }
+        .btn-primary { width: 100%; padding: 15px; background: var(--llf-primary); color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { filter: brightness(0.85); }
         .error-msg { color: #dc3545; margin-top: 10px; display: none; font-weight: bold; font-size: 14px; text-align: center; }
-        .back-link { display: block; text-align: center; margin-top: 25px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .back-link { display: block; text-align: center; margin-top: 25px; color: var(--llf-primary); text-decoration: none; font-weight: bold; font-size: 14px; }
         .back-link:hover { text-decoration: underline; }
 
         #screen-gateway { display: block; text-align: center; } 
@@ -28,19 +30,19 @@
         #screen-login { display: none; text-align: center; }
         #screen-main { display: none; }
 
-        .sync-header { background: #0d1b3f; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .sync-header { background: var(--llf-primary); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .user-name-display { font-weight: bold; font-size: 16px; background: rgba(255,255,255,0.2); padding: 6px 15px; border-radius: 20px; }
         .btn-home { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-home:hover { background: rgba(255,255,255,0.3); }
 
         .sync-tabs { display: flex; border-bottom: 2px solid #eee; background: #fafafa; }
         .sync-tab { flex: 1; text-align: center; padding: 15px 0; font-size: 16px; font-weight: bold; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
-        .sync-tab.active { color: #0d1b3f; border-bottom-color: #0d1b3f; background: #fff; }
+        .sync-tab.active { color: var(--llf-primary); border-bottom-color: var(--llf-primary); background: #fff; }
         
         .palette-container { padding: 15px; background: #fff; border-bottom: 2px solid #eee; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; position: sticky; top: 0; z-index: 20;}
         .pen-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border: 2px solid #ddd; border-radius: 25px; background: #fff; cursor: pointer; font-weight: bold; font-size: 14px; color: #555; transition: 0.2s; }
         .pen-btn:hover { background: #f9f9f9; }
-        .pen-btn.active { border-color: #0d1b3f; background: #f0f4ff; color: #0d1b3f; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transform: scale(1.05);}
+        .pen-btn.active { border-color: var(--llf-primary); background: var(--llf-teal-100); color: var(--llf-primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); transform: scale(1.05);}
         .color-circle { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
 
         .tab-content { display: none; padding: 20px 10px; }
@@ -53,7 +55,7 @@
         .week-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 15px; gap: 15px; }
         .week-btn { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; }
         .week-btn:hover { background: #f0f0f0; }
-        .week-label { font-size: 18px; font-weight: bold; color: #0d1b3f; min-width: 200px; text-align: center; }
+        .week-label { font-size: 18px; font-weight: bold; color: var(--llf-primary); min-width: 200px; text-align: center; }
         .instruction { font-size: 15px; color: #555; margin-bottom: 15px; text-align: center; line-height: 1.6; }
         
         .timetable-wrapper { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 60vh; border: 2px solid #888; border-radius: 4px; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); -webkit-overflow-scrolling: touch; position: relative; }
@@ -70,7 +72,7 @@
         .tt-blackout-time span { position: relative; top: -12px; font-size: 16px; font-weight: bold; color: #333;}
         
         .tt-slot { height: 45px; cursor: crosshair; transition: background-color 0.05s; }
-        .tt-slot.face { background-color: #007bff; opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
+        .tt-slot.face { background-color: var(--llf-primary); opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
         .tt-slot.online { background-color: #28a745; opacity: 0.8; border-right: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.3) !important; } 
         .tt-slot.ng { background-color: #e2e6ea; } 
         
@@ -83,7 +85,7 @@
 
         /* ローディング画面とトースト通知 */
         #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0d1b3f; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--llf-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         #toast-msg { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 30px; padding: 12px 20px; position: fixed; z-index: 10000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 15px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
@@ -96,7 +98,7 @@
 
     <div id="loading-overlay">
         <div class="spinner"></div>
-        <div style="font-weight:bold; color:#0d1b3f;">データを読み込み中...</div>
+        <div style="font-weight:bold; color:var(--llf-primary);">データを読み込み中...</div>
     </div>
     <div id="toast-msg"></div>
 
@@ -110,16 +112,16 @@
             
             <div id="screen-gateway">
                 <div class="auth-box" style="text-align: center; margin-top: 60px;">
-                    <h2 style="color:#0d1b3f; margin-bottom: 20px;">Schedule Sync</h2>
+                    <h2 style="color:var(--llf-primary); margin-bottom: 20px;">Schedule Sync</h2>
                     <p style="margin-bottom: 40px; color: #555; font-weight: bold;">どちらの操作を行いますか？</p>
-                    <button class="btn-primary" style="margin-bottom: 20px; background: #007bff;" onclick="goToPassword()">自分の予定を入力する</button>
+                    <button class="btn-primary" style="margin-bottom: 20px; background: var(--llf-primary);" onclick="goToPassword()">自分の予定を入力する</button>
                     <button class="btn-primary" style="background: #ff4757;" onclick="goToSummary()">活動・イベント日時を決める</button>
                 </div>
             </div>
 
             <div id="screen-password">
                 <div class="auth-box">
-                    <h3 style="text-align:center; color:#0d1b3f; margin-bottom: 20px;">予定入力ページ</h3>
+                    <h3 style="text-align:center; color:var(--llf-primary); margin-bottom: 20px;">予定入力ページ</h3>
                     <div class="form-group">
                         <label>合言葉（パスワード）</label>
                         <input type="password" id="sys-password" class="form-control" placeholder="パスワードを入力">
@@ -132,7 +134,7 @@
 
             <div id="screen-login">
                 <div class="auth-box">
-                    <h3 style="text-align:center; color:#0d1b3f; margin-bottom: 20px;">メンバー確認</h3>
+                    <h3 style="text-align:center; color:var(--llf-primary); margin-bottom: 20px;">メンバー確認</h3>
                     <div class="form-group">
                         <label>初めて入力する方</label>
                         <input type="text" id="new-username" class="form-control" placeholder="名前を入力して登録">
@@ -163,7 +165,7 @@
 
                 <div class="palette-container">
                     <button class="pen-btn active" data-pen="face" onclick="selectPen('face')">
-                        <span class="color-circle" style="background:#007bff;"></span> 対面OK
+                        <span class="color-circle" style="background:var(--llf-primary);"></span> 対面OK
                     </button>
                     <button class="pen-btn" data-pen="online" onclick="selectPen('online')">
                         <span class="color-circle" style="background:#28a745;"></span> オンラインならOK

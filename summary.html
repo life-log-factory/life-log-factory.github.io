@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="./assets/css/sanitize.css">
     <link rel="stylesheet" href="./assets/css/style.css?v=20">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <title>Schedule Sync - LIFE LOG Factory</title>
     <link rel="icon" href="./assets/img/LLF-img/favicon.png">
     <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
@@ -18,16 +20,16 @@
         .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 16px; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; font-family: inherit;}
         textarea.form-control { resize: vertical; }
-        .btn-primary { width: 100%; padding: 15px; background: #0d1b3f; color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-primary:hover { background: #1a367d; }
+        .btn-primary { width: 100%; padding: 15px; background: var(--llf-primary); color: #fff; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { filter: brightness(0.85); }
         .error-msg { color: #dc3545; margin-top: 10px; display: none; font-weight: bold; font-size: 14px; text-align: center; }
-        .back-link { display: block; text-align: center; margin-top: 25px; color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .back-link { display: block; text-align: center; margin-top: 25px; color: var(--llf-primary); text-decoration: none; font-weight: bold; font-size: 14px; }
         .back-link:hover { text-decoration: underline; }
 
         #screen-password { display: block; text-align: center; } 
         #screen-main { display: none; }
 
-        .sync-header { background: #0d1b3f; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .sync-header { background: var(--llf-primary); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .header-title { font-weight: bold; font-size: 18px; }
         .btn-home { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; text-decoration: none;}
         .btn-home:hover { background: rgba(255,255,255,0.3); }
@@ -35,9 +37,9 @@
         .controls-area { padding: 20px; background: #fafafa; border-bottom: 1px solid #eee; }
         .week-nav { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; gap: 15px; }
         .week-btn { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 8px 15px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; }
-        .week-label { font-size: 18px; font-weight: bold; color: #0d1b3f; min-width: 200px; text-align: center; }
+        .week-label { font-size: 18px; font-weight: bold; color: var(--llf-primary); min-width: 200px; text-align: center; }
         .filter-section { background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-        .filter-title { font-weight: bold; color: #0d1b3f; margin-bottom: 10px; font-size: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px; display: flex; align-items: center;}
+        .filter-title { font-weight: bold; color: var(--llf-primary); margin-bottom: 10px; font-size: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px; display: flex; align-items: center;}
         .btn-toggle-all { margin-left: 15px; font-size: 12px; padding: 4px 10px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; color: #555; font-weight: bold;}
         .btn-toggle-all:hover { background: #eee; }
         .member-filters { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -97,8 +99,8 @@
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; display: none; justify-content: center; align-items: center; }
         .modal-content { background: #fff; width: 90%; max-width: 450px; border-radius: 8px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .modal-title { font-size: 20px; font-weight: bold; color: #0d1b3f; margin-bottom: 15px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .selected-time-display { background: #f0f4ff; padding: 10px; border-radius: 4px; font-weight: bold; color: #007bff; text-align: center; margin-bottom: 20px; }
+        .modal-title { font-size: 20px; font-weight: bold; color: var(--llf-primary); margin-bottom: 15px; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .selected-time-display { background: var(--llf-teal-100); padding: 10px; border-radius: 4px; font-weight: bold; color: var(--llf-primary); text-align: center; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; font-size: 14px; }
         .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; box-sizing: border-box; }
@@ -107,7 +109,7 @@
         .btn-submit { flex: 1; padding: 12px; background: #00cc00; color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
         #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0d1b3f; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--llf-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -116,7 +118,7 @@
 
     <div id="loading-overlay">
         <div class="spinner"></div>
-        <div style="font-weight:bold; color:#0d1b3f;">データを読み込み中...</div>
+        <div style="font-weight:bold; color:var(--llf-primary);">データを読み込み中...</div>
     </div>
 
     <section class="sync-page-section">
@@ -128,7 +130,7 @@
         <div class="sync-container">
             <div id="screen-password">
                 <div class="auth-box">
-                    <h3 style="text-align:center; color:#0d1b3f; margin-bottom: 20px;">日程決定・管理ページ</h3>
+                    <h3 style="text-align:center; color:var(--llf-primary); margin-bottom: 20px;">日程決定・管理ページ</h3>
                     <div class="form-group">
                         <label>合言葉（パスワード）</label>
                         <input type="password" id="sys-password" class="form-control" placeholder="パスワードを入力">
