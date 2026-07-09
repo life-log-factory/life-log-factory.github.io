@@ -112,23 +112,6 @@
         .bg-pos-left   { top: 62%; left: -3%; font-size: 15vw; }
         .bg-pos-top    { top: 6%; left: 50%; transform: translateX(-50%); font-size: 12vw; }
 
-        #kazoo-caption {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 9%;
-            z-index: 3;
-            text-align: center;
-            color: #fff;
-            font-family: var(--llf-font-heading-en), var(--llf-font-heading-ja);
-            font-size: clamp(1rem, 2.4vw, 1.5rem);
-            letter-spacing: 0.03em;
-            text-shadow: 0 2px 14px rgba(0,0,0,0.7);
-            padding: 0 24px;
-            opacity: 0;
-            transition: opacity 0.35s ease;
-            pointer-events: none;
-        }
         #kazoo-scroll-hint {
             position: absolute;
             left: 50%;
@@ -156,25 +139,7 @@
             100% { transform: scaleY(1); opacity: 0; }
         }
 
-        /* --- 説明書（折りたたみ） --- */
-        .manual-details {
-            margin-top: 50px;
-        }
-        .manual-details summary {
-            cursor: pointer;
-            text-align: center;
-            color: var(--llf-primary);
-            font-weight: bold;
-            font-size: 0.95rem;
-            padding: 12px;
-            list-style: none;
-        }
-        .manual-details summary::-webkit-details-marker {
-            display: none;
-        }
-        .manual-details summary::before {
-            content: '📋 ';
-        }
+        /* --- 説明書 --- */
         .manual-card {
             background: #111;
             border-radius: 16px;
@@ -213,18 +178,14 @@
         <div id="kazoo-sticky">
             <div id="kazoo-bg-text"><span id="kazoo-bg-word" class="bg-pos-center"></span></div>
             <canvas id="kazoo-canvas"></canvas>
-            <div id="kazoo-caption"></div>
             <div id="kazoo-scroll-hint">SCROLL</div>
         </div>
     </section>
 
     <section class="kazoo-section">
-        <details class="manual-details">
-            <summary>くわしい組み立て方・お手入れ方法を見る</summary>
-            <div class="manual-card">
-                <img src="assets/img/Projects/Kazoo/説明書.png" alt="LIFE LOG Factoryオリジナル「Kazoo」説明書：部品一覧・組み立て方・使い方・メンテナンス・ご使用上の注意">
-            </div>
-        </details>
+        <div class="manual-card">
+            <img src="assets/img/Projects/Kazoo/説明書.png" alt="LIFE LOG Factoryオリジナル「Kazoo」説明書：部品一覧・組み立て方・使い方・メンテナンス・ご使用上の注意">
+        </div>
     </section>
 
     <div class="fade-in-target" style="max-width: 900px; margin: 0 auto; padding: 0 20px 60px; text-align: right;">
@@ -248,13 +209,12 @@
 
         const stickyEl = document.getElementById('kazoo-sticky');
         const canvas = document.getElementById('kazoo-canvas');
-        const captionEl = document.getElementById('kazoo-caption');
         const bgWordEl = document.getElementById('kazoo-bg-word');
         const hintEl = document.getElementById('kazoo-scroll-hint');
         const scrollySection = document.getElementById('kazoo-scrolly');
 
         // シーケンスの節目（0〜1のスクロール進行度）
-        const STAGE = { A: 0.15, B: 0.30, C: 0.48, D: 0.62, E: 0.85, F1: 0.93, F: 1.0 };
+        const STAGE = { A: 0.15, B: 0.28, C: 0.42, R: 0.52, D: 0.66, E: 0.74, F: 1.0 };
 
         function stageT(p, a, b) {
             return Math.min(1, Math.max(0, (p - a) / (b - a)));
@@ -264,8 +224,9 @@
         }
 
         if (!window.WebGLRenderingContext) {
-            captionEl.textContent = 'お使いの環境では3D表示に対応していません。';
-            captionEl.style.opacity = 1;
+            bgWordEl.textContent = '3D非対応';
+            bgWordEl.className = 'bg-pos-center';
+            bgWordEl.style.opacity = 1;
         } else {
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 2000);
@@ -292,10 +253,8 @@
             const breathRings = [];
             const basePath = 'assets/img/Projects/Kazoo/';
             let ready = false;
-            let centerOffset = new THREE.Vector3();
+            let localCenter = new THREE.Vector3();
             let radiusBase = 60, radiusBaseSlide = 80, radiusFull = 100;
-            const mouthLocalPos = new THREE.Vector3();
-            const coverLocalPos = new THREE.Vector3();
 
             // 縦向き（土台のロゴ面をカメラに向けた状態）と、通常の横向き
             // 幅広の端を上、ノッチのある端を下にするため、ロゴを見せる向きに
@@ -346,7 +305,7 @@
                 // カメラは終始「固定の中心」を見続け、パーツ自体が画面外から動いてくる
                 // 演出にするため、静止状態(オフセット0)のジオメトリから半径を先に求めておく
                 const restFull = new THREE.Box3().setFromObject(group);
-                centerOffset = restFull.getCenter(new THREE.Vector3()).negate();
+                localCenter = restFull.getCenter(new THREE.Vector3());
                 radiusFull = restFull.getBoundingSphere(new THREE.Sphere()).radius;
 
                 const restBase = new THREE.Box3().setFromObject(parts.base);
@@ -369,7 +328,6 @@
                     breathAnchor.add(ring);
                     breathRings.push(ring);
                 }
-                mouthLocalPos.copy(breathAnchor.position);
 
                 // 音が鳴る「カバー」側から、外に広がる音の輪を追加
                 const coverBox = new THREE.Box3().setFromObject(parts.cover);
@@ -386,7 +344,29 @@
                     soundAnchor.add(ring);
                     soundRings.push(ring);
                 }
-                coverLocalPos.copy(soundAnchor.position);
+
+                // 部品Aとカバーの間に張る「膜」（ポリ袋のイメージ）
+                const membraneRadius = ((coverBox.max.x - coverBox.min.x) / 2) * 0.85;
+                const membrane = new THREE.Mesh(
+                    new THREE.CircleGeometry(membraneRadius, 24),
+                    new THREE.MeshStandardMaterial({
+                        color: 0xffffff,
+                        transparent: true,
+                        opacity: 0,
+                        roughness: 0.2,
+                        metalness: 0,
+                        side: THREE.DoubleSide,
+                        depthWrite: false
+                    })
+                );
+                membrane.rotation.x = Math.PI / 2;
+                membrane.position.set(
+                    (coverBox.min.x + coverBox.max.x) / 2,
+                    coverBox.min.y + 0.3,
+                    (coverBox.min.z + coverBox.max.z) / 2
+                );
+                parts.slide.add(membrane);
+                parts.membrane = membrane;
 
                 ready = true;
                 resize();
@@ -397,6 +377,9 @@
                 const h = stickyEl.clientHeight;
                 if (!w || !h) return;
                 camera.aspect = w / h;
+                // 縦長の画面ほど水平FOVが極端に狭くなり寄りすぎてしまうため、
+                // アスペクト比が1未満のときはFOV自体を広げて画面比の影響を和らげる
+                camera.fov = THREE.MathUtils.clamp(38 / camera.aspect, 38, 75);
                 camera.updateProjectionMatrix();
                 renderer.setSize(w, h, false);
             }
@@ -408,17 +391,6 @@
                 const total = scrollySection.offsetHeight - window.innerHeight;
                 if (total <= 0) return 0;
                 return Math.min(1, Math.max(0, -rect.top / total));
-            }
-
-            let lastCaption = '';
-            function setCaption(text) {
-                if (text === lastCaption) return;
-                lastCaption = text;
-                captionEl.style.opacity = 0;
-                setTimeout(() => {
-                    captionEl.textContent = text;
-                    captionEl.style.opacity = text ? 1 : 0;
-                }, text === lastCaption ? 0 : 180);
             }
 
             let lastBgWord = '';
@@ -450,10 +422,14 @@
                 const orientT = easeInOut(stageT(progress, STAGE.A, STAGE.B));
                 group.quaternion.copy(qVertical).slerp(qHorizontal, orientT);
 
+                // 中心を原点に置く。回転してから平行移動するため、中心点も現在の
+                // 向き(group.quaternion)で回転させてから打ち消す必要がある
+                // （回転前のオフセットのままだと、横向きになったときに中心がずれる）
+                group.position.copy(localCenter).applyQuaternion(group.quaternion).multiplyScalar(-1);
+
                 // 土台が下から上がってくる（Aの間だけ画面外相当まで大きくオフセット）
                 const riseT = easeInOut(stageT(progress, 0, STAGE.A));
                 const introRise = (1 - riseT) * radiusBase * 2.4;
-                group.position.copy(centerOffset);
                 group.position.y -= introRise;
 
                 // 部品Aが画面外(左)からスライドしてきて合体（B→C）。土台の向きが確定する
@@ -464,11 +440,14 @@
                 const slideT = easeInOut(stageT(progress, STAGE.B, STAGE.C));
                 parts.slide.position.set(0, 0, -(1 - slideT) * radiusBaseSlide * 2.6);
 
-                // カバーが画面外(上)から降りてきて、半回転しながら穴にはまる（C→D）
-                parts.cover.visible = progress >= STAGE.C;
-                const coverT = easeInOut(stageT(progress, STAGE.C, STAGE.D));
+                // 膜（部品Aとカバーの間）: カバーが降りてくる前半で先に張られる
+                const membraneT = easeInOut(stageT(progress, STAGE.R, STAGE.R + (STAGE.D - STAGE.R) * 0.5));
+                if (parts.membrane) parts.membrane.material.opacity = membraneT * 0.4;
+
+                // カバーが画面外(真上)から真下に降りてきてはまる（R→D）。膜が張られた後に登場
+                parts.cover.visible = progress >= STAGE.R;
+                const coverT = easeInOut(stageT(progress, STAGE.R, STAGE.D));
                 parts.cover.position.set(0, (1 - coverT) * radiusFull * 2.2, 0);
-                parts.cover.rotation.y = (1 - coverT) * Math.PI;
 
                 // カメラは常に中心(原点)を見続ける。パーツの一時的な移動に追随させると
                 // 「画面外から来る」演出が相殺されてしまうため、半径は見せ場ごとの
@@ -477,38 +456,37 @@
                 if (progress < STAGE.B) radius = radiusBase;
                 else if (progress < STAGE.D) radius = radiusBaseSlide;
                 else radius = radiusFull;
-
-                // カメラが見る先: 組み立て中は中心、Fで「吹き口→カバー」の順に寄っていく
-                // （どこから声を入れ、どこから音が出るのかを場所そのもので示す）
-                const mouthWorld = mouthLocalPos.clone().applyQuaternion(qHorizontal).add(centerOffset);
-                const coverWorld = coverLocalPos.clone().applyQuaternion(qHorizontal).add(centerOffset);
                 const target = new THREE.Vector3(0, 0, 0);
-                if (progress >= STAGE.E && progress < STAGE.F1) {
-                    target.lerp(mouthWorld, easeInOut(stageT(progress, STAGE.E, STAGE.F1)));
-                } else if (progress >= STAGE.F1) {
-                    target.copy(mouthWorld).lerp(coverWorld, easeInOut(stageT(progress, STAGE.F1, STAGE.F)));
-                }
 
                 // カメラの向き: 組み立て中は正面固定（斜めだとスライドが斜めに見えるため）、
-                // E区間で1回転しつつロゴを覗く
+                // 少し見下ろす角度でカバー側も見えるようにする。C→Rでスライドとカバーの
+                // 間に一度だけ半回転し、R→Dで保持、D→Eで短く元の正面へ戻す
+                const baseElevation = 0.227; // 約13度、以前より5度ほど深め
                 let azimuth = 0;
-                let elevation = 0.14;
-                if (progress >= STAGE.D && progress < STAGE.E) {
-                    const eT = stageT(progress, STAGE.D, STAGE.E);
-                    azimuth = eT * Math.PI * 2;
-                    elevation = 0.14 + 0.34 * Math.cos(eT * Math.PI * 2 - Math.PI);
+                let elevation = baseElevation;
+                if (progress >= STAGE.C && progress < STAGE.R) {
+                    const rT = stageT(progress, STAGE.C, STAGE.R);
+                    azimuth = easeInOut(rT) * Math.PI;
+                    // 真横向き(90度)になる瞬間は薄い板が消えて見えるため、その間だけ
+                    // 見下ろす角度を強めて上面が見えるようにする
+                    elevation = baseElevation + 0.5 * Math.sin(rT * Math.PI);
+                } else if (progress >= STAGE.R && progress < STAGE.D) {
+                    azimuth = Math.PI;
+                } else if (progress >= STAGE.D && progress < STAGE.E) {
+                    azimuth = Math.PI + easeInOut(stageT(progress, STAGE.D, STAGE.E)) * Math.PI;
                 } else if (progress >= STAGE.E) {
-                    azimuth = 0.15;
-                    elevation = 0.16;
+                    azimuth = Math.PI * 2;
                 }
 
                 const vFovHalf = THREE.MathUtils.degToRad(camera.fov) / 2;
                 const hFovHalf = Math.atan(Math.tan(vFovHalf) * camera.aspect);
+                // 常に全体が収まる方(狭い方)に合わせる。画面比が変わったときの寄り方の
+                // 差はresize()側でFOVそのものを調整して和らげている
                 const fitTan = Math.min(Math.tan(vFovHalf), Math.tan(hFovHalf));
                 // Aの間は土台を大きく見せるため寄り気味に、それ以外は少し余裕を持たせる
                 const margin = progress < STAGE.A ? 1.05 : 1.4;
                 let dist = (radius / fitTan) * margin;
-                if (progress >= STAGE.E) dist *= 1 - 0.55 * stageT(progress, STAGE.E, STAGE.F);
+                if (progress >= STAGE.E) dist *= 1 - 0.15 * stageT(progress, STAGE.E, STAGE.F);
 
                 camera.position.set(
                     target.x + Math.sin(azimuth) * dist * Math.cos(elevation),
@@ -517,7 +495,7 @@
                 );
                 camera.lookAt(target);
 
-                // 声を吹き込む(E→F1) → 音がカバーから鳴る(F1→F) の2段階演出
+                // 声を吹き込む→カバーから音が鳴る、の2段階演出（Fの間ずっと重ねて表示）
                 const breathP = stageT(progress, STAGE.E, STAGE.F);
                 breathRings.forEach((ring, i) => {
                     if (breathP <= 0.01) { ring.visible = false; return; }
@@ -526,7 +504,7 @@
                     ring.scale.setScalar(1.8 - phase * 1.1); // 吸い込まれるように縮む
                     ring.material.opacity = breathP * phase * 0.85;
                 });
-                const soundP = stageT(progress, STAGE.F1, STAGE.F);
+                const soundP = stageT(progress, STAGE.E, STAGE.F);
                 soundRings.forEach((ring, i) => {
                     if (soundP <= 0.01) { ring.visible = false; return; }
                     ring.visible = true;
@@ -535,22 +513,17 @@
                     ring.material.opacity = soundP * (1 - phase) * 0.9;
                 });
 
-                // 背景の大きな文字と、締めのキャプション
+                // 背景の大きな文字
                 if (progress < STAGE.A) {
                     setBgWord('Kazoo', 'bg-pos-center');
-                    setCaption('');
                 } else if (progress < STAGE.C) {
                     setBgWord('SLIDE', 'bg-pos-right');
-                    setCaption('');
                 } else if (progress < STAGE.D) {
                     setBgWord('COVER', 'bg-pos-left');
-                    setCaption('');
-                } else if (progress < STAGE.F1) {
+                } else if (progress < STAGE.E) {
                     setBgWord('', 'bg-pos-center');
-                    setCaption(progress >= STAGE.E ? '口から声を吹き込む' : '');
                 } else {
-                    setBgWord('', 'bg-pos-center');
-                    setCaption('音はカバーから鳴る');
+                    setBgWord('Kazoo', 'bg-pos-center');
                 }
 
                 renderer.render(scene, camera);
