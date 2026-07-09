@@ -20,15 +20,55 @@
         .shop-section {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 100px 20px 60px;
+            padding: 0 20px 60px;
         }
-        .shop-lead {
+
+        .shop-filters {
+            margin-bottom: 32px;
+        }
+        .shop-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 16px;
+            border: 1px solid var(--llf-teal-200);
+            border-radius: 24px;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+        }
+        .shop-search:focus {
+            outline: none;
+            border-color: var(--llf-primary);
+        }
+        .shop-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .shop-tag-btn {
+            border: 1px solid var(--llf-teal-200);
+            background: var(--llf-white);
+            color: var(--llf-primary);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .shop-tag-btn:hover {
+            background: var(--llf-teal-100);
+        }
+        .shop-tag-btn.active {
+            background: var(--llf-primary);
+            color: #fff;
+            border-color: var(--llf-primary);
+        }
+
+        .shop-empty {
             text-align: center;
-            font-size: 1rem;
-            line-height: 1.8;
-            color: #333;
-            max-width: 640px;
-            margin: 0 auto 40px;
+            color: #888;
+            padding: 40px 0;
+            font-size: 0.9rem;
         }
 
         .shop-grid {
@@ -151,16 +191,23 @@
 <body>
     <div id="header-placeholder"></div>
 
-    <section class="shop-section">
-        <div class="service-header fade-in-target" style="text-align:center; margin-bottom: 10px;">
-            <h1 class="service-main-title" style="font-size: 2.2rem;">Shop</h1>
-            <hr class="divider" style="max-width: 200px; margin: 15px auto 0;">
-        </div>
-        <p class="shop-lead">
-            LIFE LOG Factoryが製作したグッズやアプリをご紹介します。
-        </p>
+    <section class="service-section" style="padding-top: 100px;">
+        <div class="shop-section">
+            <div class="service-header fade-in-target">
+                <div class="service-title-group">
+                    <h1 class="service-main-title">Shop</h1>
+                </div>
+                <hr class="divider">
+            </div>
 
-        <div class="shop-grid" id="shop-grid"></div>
+            <div class="shop-filters fade-in-target">
+                <input type="text" id="shop-search" class="shop-search" placeholder="キーワードで検索（商品名・説明）">
+                <div class="shop-tags" id="shop-tags"></div>
+            </div>
+
+            <div class="shop-grid" id="shop-grid"></div>
+            <p class="shop-empty" id="shop-empty" style="display:none;">該当する商品・アプリが見つかりませんでした。</p>
+        </div>
     </section>
 
     <div id="footer-placeholder"></div>
@@ -231,7 +278,50 @@
             `;
         }
 
-        document.getElementById('shop-grid').innerHTML = PRODUCTS.map(renderCard).join('');
+        // --- タグ絞り込み・キーワード検索 ---
+        const gridEl = document.getElementById('shop-grid');
+        const emptyEl = document.getElementById('shop-empty');
+        const searchEl = document.getElementById('shop-search');
+        const tagsEl = document.getElementById('shop-tags');
+
+        const allTags = [...new Set(PRODUCTS.flatMap((p) => p.tags || []))];
+        const activeTags = new Set();
+
+        function renderTagButtons() {
+            tagsEl.innerHTML = allTags.map((tag) => `<button type="button" class="shop-tag-btn" data-tag="${tag}">${tag}</button>`).join('');
+            tagsEl.querySelectorAll('.shop-tag-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const tag = btn.dataset.tag;
+                    if (activeTags.has(tag)) {
+                        activeTags.delete(tag);
+                        btn.classList.remove('active');
+                    } else {
+                        activeTags.add(tag);
+                        btn.classList.add('active');
+                    }
+                    update();
+                });
+            });
+        }
+
+        function matchesFilters(p) {
+            const keyword = searchEl.value.trim().toLowerCase();
+            const matchesKeyword = !keyword
+                || p.name.toLowerCase().includes(keyword)
+                || p.description.toLowerCase().includes(keyword);
+            const matchesTags = [...activeTags].every((tag) => (p.tags || []).includes(tag));
+            return matchesKeyword && matchesTags;
+        }
+
+        function update() {
+            const filtered = PRODUCTS.filter(matchesFilters);
+            gridEl.innerHTML = filtered.map(renderCard).join('');
+            emptyEl.style.display = filtered.length ? 'none' : 'block';
+        }
+
+        searchEl.addEventListener('input', update);
+        renderTagButtons();
+        update();
     </script>
 </body>
 </html>

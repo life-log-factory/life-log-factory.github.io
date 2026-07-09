@@ -8,6 +8,7 @@
 //   id          : 一意なID（英数字）
 //   name        : 表示名
 //   type        : 'physical'（物販） | 'app'（アプリ/Webアプリ）
+//   tags        : 絞り込み・検索用のタグ配列（自由に追加してよい）
 //   price       : 税込価格（円）。無料なら 0
 //   image       : カード用の画像パス
 //   description : 1〜2文の説明
@@ -23,6 +24,7 @@ const PRODUCTS = [
         id: 'kazoo',
         name: 'Kazoo',
         type: 'physical',
+        tags: ['グッズ', '楽器', '3Dプリント'],
         price: 500,
         image: 'assets/img/Projects/Kazoo/Kazoo.png',
         description: '分解して丸洗いできる、オリジナル膜鳴楽器。3Dプリンターで製作したパーツを自分で組み立てます。',
@@ -34,6 +36,7 @@ const PRODUCTS = [
         id: 'bremons',
         name: 'BREMONS',
         type: 'app',
+        tags: ['アプリ', 'ゲーム', '無料'],
         price: 0,
         image: 'bremons/nightgame/BREMONS.png',
         description: '息を吹いてモンスターを育てる、呼吸機能トレーニングゲーム。スマホのホーム画面に追加してアプリのように使えます。',

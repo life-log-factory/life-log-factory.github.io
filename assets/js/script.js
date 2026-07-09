@@ -50,6 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', function() {
 const canvas = document.getElementById('starfield');
+// starfieldはトップページのヒーローにしかないため、無いページでは
+// このブロックを丸ごとスキップする（無いと後続のfade-in監視まで
+// 止まってしまうため）
+if (canvas) {
   const ctx = canvas.getContext('2d');
   let stars = [];
   let width, height;
@@ -144,6 +148,7 @@ const canvas = document.getElementById('starfield');
   }
 
   animate();
+}
 
   // fade-inターゲット監視
   const targets = document.querySelectorAll('.fade-in-target');
