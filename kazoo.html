@@ -205,7 +205,7 @@
             <hr class="divider" style="max-width: 200px; margin: 15px auto 0;">
         </div>
         <p class="kazoo-lead">
-            呼吸を使った道具として、膜鳴楽器であるKazooを製作しています。このオリジナルKazooは分解することができ衛生的で、膜も身近なポリ袋等を用いて簡単に張り替えることができます。
+            呼吸を使った道具として、膜鳴楽器であるKazooを製作しました。このオリジナルKazooは分解することができ衛生的で、膜も身近なポリ袋等を用いて簡単に張り替えることができます。
         </p>
     </section>
 
@@ -254,7 +254,7 @@
         const scrollySection = document.getElementById('kazoo-scrolly');
 
         // シーケンスの節目（0〜1のスクロール進行度）
-        const STAGE = { A: 0.15, B: 0.30, C: 0.48, D: 0.62, E: 0.85, F: 1.0 };
+        const STAGE = { A: 0.15, B: 0.30, C: 0.48, D: 0.62, E: 0.85, F1: 0.93, F: 1.0 };
 
         function stageT(p, a, b) {
             return Math.min(1, Math.max(0, (p - a) / (b - a)));
@@ -294,9 +294,15 @@
             let ready = false;
             let centerOffset = new THREE.Vector3();
             let radiusBase = 60, radiusBaseSlide = 80, radiusFull = 100;
+            const mouthLocalPos = new THREE.Vector3();
+            const coverLocalPos = new THREE.Vector3();
 
             // 縦向き（土台のロゴ面をカメラに向けた状態）と、通常の横向き
-            const qVertical = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+            // 幅広の端を上、ノッチのある端を下にするため、ロゴを見せる向きに
+            // さらにカメラ視線軸(Z)まわりに180度の回転を重ねる
+            const qVertical = new THREE.Quaternion()
+                .setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI)
+                .multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0)));
             const qHorizontal = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
 
             function loadPart(name, file, color, opacity) {
@@ -319,9 +325,9 @@
                 });
             }
 
-            function makeRing(color) {
+            function makeRing(color, inner, outer) {
                 return new THREE.Mesh(
-                    new THREE.RingGeometry(1, 1.5, 32),
+                    new THREE.RingGeometry(inner, outer, 32),
                     new THREE.MeshBasicMaterial({
                         color,
                         transparent: true,
@@ -349,7 +355,7 @@
                 const restBaseSlide = restBase.clone().union(new THREE.Box3().setFromObject(parts.slide));
                 radiusBaseSlide = restBaseSlide.getBoundingSphere(new THREE.Sphere()).radius;
 
-                // 声を出す「吹き口」側（部品Aの根元）に、吸い込まれるような輪を追加
+                // 声を吹き込む「吹き口」側（部品Aの根元）に、吸い込まれるような輪を追加
                 const slideBox = new THREE.Box3().setFromObject(parts.slide);
                 const breathAnchor = new THREE.Group();
                 breathAnchor.position.set(
@@ -358,11 +364,12 @@
                     slideBox.min.z - 2
                 );
                 parts.slide.add(breathAnchor);
-                for (let i = 0; i < 2; i++) {
-                    const ring = makeRing(0x8ebcc4);
+                for (let i = 0; i < 3; i++) {
+                    const ring = makeRing(0x8ebcc4, 1, 1.8);
                     breathAnchor.add(ring);
                     breathRings.push(ring);
                 }
+                mouthLocalPos.copy(breathAnchor.position);
 
                 // 音が鳴る「カバー」側から、外に広がる音の輪を追加
                 const coverBox = new THREE.Box3().setFromObject(parts.cover);
@@ -374,11 +381,12 @@
                 );
                 soundAnchor.rotation.x = Math.PI / 2;
                 parts.cover.add(soundAnchor);
-                for (let i = 0; i < 3; i++) {
-                    const ring = makeRing(0x00687A);
+                for (let i = 0; i < 4; i++) {
+                    const ring = makeRing(0x00687A, 1, 2.2);
                     soundAnchor.add(ring);
                     soundRings.push(ring);
                 }
+                coverLocalPos.copy(soundAnchor.position);
 
                 ready = true;
                 resize();
@@ -448,17 +456,19 @@
                 group.position.copy(centerOffset);
                 group.position.y -= introRise;
 
-                // 部品Aが画面外からスライドしてきて合体（B→C）。土台の向きが確定する
+                // 部品Aが画面外(左)からスライドしてきて合体（B→C）。土台の向きが確定する
                 // Bまでは非表示にしておく（回転中は「画面外」オフセットの向きも一緒に
                 // 回ってしまい、意図せず画面内に入ってしまうため）
+                // ローカルZ軸が画面の水平方向(ワールドX)に対応するため、Z方向に動かす
                 parts.slide.visible = progress >= STAGE.B;
                 const slideT = easeInOut(stageT(progress, STAGE.B, STAGE.C));
-                parts.slide.position.set((1 - slideT) * radiusBaseSlide * 2.6, 0, 0);
+                parts.slide.position.set(0, 0, -(1 - slideT) * radiusBaseSlide * 2.6);
 
-                // カバーが画面外から降りてきて合体（C→D）。同じ理由でCまでは非表示
+                // カバーが画面外(上)から降りてきて、半回転しながら穴にはまる（C→D）
                 parts.cover.visible = progress >= STAGE.C;
                 const coverT = easeInOut(stageT(progress, STAGE.C, STAGE.D));
                 parts.cover.position.set(0, (1 - coverT) * radiusFull * 2.2, 0);
+                parts.cover.rotation.y = (1 - coverT) * Math.PI;
 
                 // カメラは常に中心(原点)を見続ける。パーツの一時的な移動に追随させると
                 // 「画面外から来る」演出が相殺されてしまうため、半径は見せ場ごとの
@@ -467,25 +477,38 @@
                 if (progress < STAGE.B) radius = radiusBase;
                 else if (progress < STAGE.D) radius = radiusBaseSlide;
                 else radius = radiusFull;
-                const target = new THREE.Vector3(0, 0, 0);
 
-                // カメラの向き: 組み立て中は安定した角度、E区間で1回転しつつロゴを覗く
-                let azimuth = 0.3;
+                // カメラが見る先: 組み立て中は中心、Fで「吹き口→カバー」の順に寄っていく
+                // （どこから声を入れ、どこから音が出るのかを場所そのもので示す）
+                const mouthWorld = mouthLocalPos.clone().applyQuaternion(qHorizontal).add(centerOffset);
+                const coverWorld = coverLocalPos.clone().applyQuaternion(qHorizontal).add(centerOffset);
+                const target = new THREE.Vector3(0, 0, 0);
+                if (progress >= STAGE.E && progress < STAGE.F1) {
+                    target.lerp(mouthWorld, easeInOut(stageT(progress, STAGE.E, STAGE.F1)));
+                } else if (progress >= STAGE.F1) {
+                    target.copy(mouthWorld).lerp(coverWorld, easeInOut(stageT(progress, STAGE.F1, STAGE.F)));
+                }
+
+                // カメラの向き: 組み立て中は正面固定（斜めだとスライドが斜めに見えるため）、
+                // E区間で1回転しつつロゴを覗く
+                let azimuth = 0;
                 let elevation = 0.14;
                 if (progress >= STAGE.D && progress < STAGE.E) {
                     const eT = stageT(progress, STAGE.D, STAGE.E);
-                    azimuth = 0.3 + eT * Math.PI * 2;
+                    azimuth = eT * Math.PI * 2;
                     elevation = 0.14 + 0.34 * Math.cos(eT * Math.PI * 2 - Math.PI);
                 } else if (progress >= STAGE.E) {
-                    azimuth = 0.3 + Math.PI * 2;
+                    azimuth = 0.15;
                     elevation = 0.16;
                 }
 
                 const vFovHalf = THREE.MathUtils.degToRad(camera.fov) / 2;
                 const hFovHalf = Math.atan(Math.tan(vFovHalf) * camera.aspect);
                 const fitTan = Math.min(Math.tan(vFovHalf), Math.tan(hFovHalf));
-                let dist = (radius / fitTan) * 1.4;
-                if (progress >= STAGE.E) dist *= 1 - 0.12 * stageT(progress, STAGE.E, STAGE.F);
+                // Aの間は土台を大きく見せるため寄り気味に、それ以外は少し余裕を持たせる
+                const margin = progress < STAGE.A ? 1.05 : 1.4;
+                let dist = (radius / fitTan) * margin;
+                if (progress >= STAGE.E) dist *= 1 - 0.55 * stageT(progress, STAGE.E, STAGE.F);
 
                 camera.position.set(
                     target.x + Math.sin(azimuth) * dist * Math.cos(elevation),
@@ -494,21 +517,22 @@
                 );
                 camera.lookAt(target);
 
-                // 声を出す・音が鳴る演出（F区間）
-                const voiceP = stageT(progress, STAGE.E, STAGE.F);
+                // 声を吹き込む(E→F1) → 音がカバーから鳴る(F1→F) の2段階演出
+                const breathP = stageT(progress, STAGE.E, STAGE.F);
                 breathRings.forEach((ring, i) => {
-                    if (voiceP <= 0.01) { ring.visible = false; return; }
+                    if (breathP <= 0.01) { ring.visible = false; return; }
                     ring.visible = true;
                     const phase = ((t * 0.7) + i / breathRings.length) % 1;
-                    ring.scale.setScalar(1.6 - phase * 0.9); // 吸い込まれるように縮む
-                    ring.material.opacity = voiceP * phase * 0.6;
+                    ring.scale.setScalar(1.8 - phase * 1.1); // 吸い込まれるように縮む
+                    ring.material.opacity = breathP * phase * 0.85;
                 });
+                const soundP = stageT(progress, STAGE.F1, STAGE.F);
                 soundRings.forEach((ring, i) => {
-                    if (voiceP <= 0.01) { ring.visible = false; return; }
+                    if (soundP <= 0.01) { ring.visible = false; return; }
                     ring.visible = true;
                     const phase = ((t * 0.55) + i / soundRings.length) % 1;
-                    ring.scale.setScalar(1 + phase * 5); // 音が広がるように大きくなる
-                    ring.material.opacity = voiceP * (1 - phase) * 0.75;
+                    ring.scale.setScalar(1 + phase * 6); // 音が広がるように大きくなる
+                    ring.material.opacity = soundP * (1 - phase) * 0.9;
                 });
 
                 // 背景の大きな文字と、締めのキャプション
@@ -521,12 +545,12 @@
                 } else if (progress < STAGE.D) {
                     setBgWord('COVER', 'bg-pos-left');
                     setCaption('');
-                } else if (progress < STAGE.E) {
-                    setBgWord('TURN', 'bg-pos-top');
-                    setCaption('');
+                } else if (progress < STAGE.F1) {
+                    setBgWord('', 'bg-pos-center');
+                    setCaption(progress >= STAGE.E ? '口から声を吹き込む' : '');
                 } else {
                     setBgWord('', 'bg-pos-center');
-                    setCaption('口から声を出すと、カバーから音が鳴る');
+                    setCaption('音はカバーから鳴る');
                 }
 
                 renderer.render(scene, camera);
