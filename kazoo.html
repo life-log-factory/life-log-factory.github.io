@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Kazoo - LIFE LOG Factory</title>
+    <meta name="description" content="LIFE LOG Factoryオリジナルの膜鳴楽器「Kazoo」。3Dプリンターで出力した3つの部品からできています。3Dモデルを実際に動かして構造を確認できます。">
+    <meta property="og:site_name" content="LIFE LOG Factory">
+    <meta property="og:title" content="Kazoo | LIFE LOG Factory">
+    <meta property="og:description" content="LIFE LOG Factoryオリジナルの膜鳴楽器「Kazoo」。3Dプリンターで出力した3つの部品からできています。">
+    <meta property="og:type" content="article">
+    <link rel="icon" href="./assets/img/LLF-img/favicon.png">
+    <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
+
+    <style>
+        .kazoo-hero {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            max-height: 70vh;
+            overflow: hidden;
+            background: #000;
+        }
+        .kazoo-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0.9;
+        }
+        .kazoo-hero-title {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            padding: 20px;
+        }
+        .kazoo-hero-title h1 {
+            font-family: var(--llf-font-heading-en), var(--llf-font-heading-ja);
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin: 0;
+            letter-spacing: 0.05em;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        .kazoo-hero-title p {
+            margin: 10px 0 0;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            letter-spacing: 0.1em;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+        }
+
+        .kazoo-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        .kazoo-section + .kazoo-section {
+            padding-top: 0;
+        }
+        .kazoo-lead {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: #333;
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* --- 3Dビューア --- */
+        .viewer-card {
+            background: var(--llf-white);
+            border: 1px solid var(--llf-teal-200);
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 104, 122, 0.08);
+            padding: 24px;
+            margin-top: 40px;
+        }
+        #kazoo-viewer {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            max-height: 480px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, var(--llf-teal-100) 0%, #ffffff 70%);
+            overflow: hidden;
+        }
+        #kazoo-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab;
+        }
+        #kazoo-canvas:active {
+            cursor: grabbing;
+        }
+        #kazoo-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--llf-primary);
+            background: var(--llf-teal-100);
+        }
+        .viewer-hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888;
+            margin: 12px 0 0;
+        }
+
+        .viewer-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--llf-teal-200);
+        }
+        .explode-control {
+            flex: 1 1 260px;
+        }
+        .explode-control label {
+            display: block;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--llf-primary);
+            margin-bottom: 10px;
+        }
+        #explode-slider {
+            width: 100%;
+            accent-color: var(--llf-primary);
+        }
+        .explode-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .part-toggles {
+            flex: 1 1 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .part-toggles legend {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--llf-primary);
+            margin-bottom: 4px;
+            padding: 0;
+        }
+        .part-toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #333;
+            cursor: pointer;
+        }
+        .part-toggle-row input {
+            accent-color: var(--llf-primary);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .part-swatch {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            display: inline-block;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* --- 組み立てステップ --- */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .step-card {
+            background: var(--llf-teal-100);
+            border-radius: 12px;
+            padding: 24px 18px;
+            text-align: center;
+        }
+        .step-number {
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            border-radius: 50%;
+            background: var(--llf-primary);
+            color: #fff;
+            font-weight: bold;
+            margin: 0 auto 12px;
+            font-family: var(--llf-font-heading-en);
+        }
+        .step-card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+            .viewer-card {
+                padding: 16px;
+            }
+            #kazoo-viewer {
+                max-height: 320px;
+            }
+        }
+
+        /* --- 説明書 --- */
+        .manual-card {
+            background: #111;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 40px;
+        }
+        .manual-card img {
+            width: 100%;
+            display: block;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="kazoo-hero">
+        <img src="assets/img/Projects/Kazoo/Kazoo.png" alt="LIFE LOG Factoryオリジナル Kazoo">
+        <div class="kazoo-hero-title">
+            <h1>Kazoo</h1>
+            <p>3Dプリンターでつくる、オリジナル膜鳴楽器</p>
+        </div>
+    </div>
+
+    <section class="kazoo-section">
+        <div class="service-header fade-in-target" style="text-align:center; margin-bottom: 10px;">
+            <h1 class="service-main-title" style="font-size: 2rem;">About the Project</h1>
+            <hr class="divider" style="max-width: 200px; margin: 15px auto 0;">
+        </div>
+        <p class="kazoo-lead">
+            呼吸を使った道具として、膜鳴楽器である「Kazoo」を製作しています。3Dプリンターで出力した3つの部品を組み合わせるだけで作れるオリジナル設計で、分解できるので衛生的。膜も身近なポリ袋などで簡単に張り替えられます。
+        </p>
+    </section>
+
+    <section class="kazoo-section">
+        <div class="viewer-card">
+            <div id="kazoo-viewer">
+                <canvas id="kazoo-canvas"></canvas>
+                <div id="kazoo-loading">3Dモデルを読み込み中...</div>
+            </div>
+            <p class="viewer-hint">ドラッグで回転 ・ ホイールでズーム</p>
+
+            <div class="viewer-controls">
+                <div class="explode-control">
+                    <label for="explode-slider">組み立て ⇔ 分解</label>
+                    <input type="range" id="explode-slider" min="0" max="100" value="0">
+                    <div class="explode-labels">
+                        <span>組み立て</span>
+                        <span>分解</span>
+                    </div>
+                </div>
+
+                <fieldset class="part-toggles" style="border:none; margin:0;">
+                    <legend>部品ごとの表示</legend>
+                    <label class="part-toggle-row">
+                        <input type="checkbox" class="part-toggle" data-part="base" checked>
+                        <span class="part-swatch" style="background:#AACDD3;"></span>
+                        部品B（土台）
+                    </label>
+                    <label class="part-toggle-row">
+                        <input type="checkbox" class="part-toggle" data-part="slide" checked>
+                        <span class="part-swatch" style="background:#00687A;"></span>
+                        部品A（スライド部）
+                    </label>
+                    <label class="part-toggle-row">
+                        <input type="checkbox" class="part-toggle" data-part="cover" checked>
+                        <span class="part-swatch" style="background:#E3EEF0;"></span>
+                        カバー
+                    </label>
+                </fieldset>
+            </div>
+        </div>
+    </section>
+
+    <section class="kazoo-section">
+        <div class="service-header fade-in-target" style="text-align:center; margin-bottom: 10px;">
+            <h1 class="service-main-title" style="font-size: 2rem;">組み立て方</h1>
+            <hr class="divider" style="max-width: 200px; margin: 15px auto 0;">
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <p>膜（ポリ袋など）を部品Aの穴にかぶせ、カバーで抑える。</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <p>膜を指で軽く押して、少したゆませる。</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <p>部品Bに部品Aをスライドさせてはめ込めば完成。</p>
+            </div>
+        </div>
+
+        <div class="manual-card">
+            <img src="assets/img/Projects/Kazoo/説明書.png" alt="LIFE LOG Factoryオリジナル「Kazoo」説明書：部品一覧・組み立て方・使い方・メンテナンス・ご使用上の注意">
+        </div>
+    </section>
+
+    <div class="fade-in-target" style="max-width: 900px; margin: 0 auto; padding: 0 20px 60px; text-align: right;">
+        <a href="index.html" class="more-link">>>Home</a>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="./assets/js/script.js" defer></script>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const wrapper = document.getElementById('kazoo-viewer');
+        const canvas = document.getElementById('kazoo-canvas');
+        const loadingEl = document.getElementById('kazoo-loading');
+
+        if (!window.WebGLRenderingContext) {
+            loadingEl.textContent = 'お使いの環境では3D表示に対応していません。';
+        } else {
+            const scene = new THREE.Scene();
+
+            const camera = new THREE.PerspectiveCamera(40, wrapper.clientWidth / wrapper.clientHeight, 0.1, 2000);
+
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const group = new THREE.Group();
+            scene.add(group);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+            keyLight.position.set(60, 100, 80);
+            scene.add(keyLight);
+            const fillLight = new THREE.DirectionalLight(0xbfe6ec, 0.6);
+            fillLight.position.set(-80, 20, -60);
+            scene.add(fillLight);
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.08;
+
+            const loader = new STLLoader();
+            const parts = {};
+            const basePath = 'assets/img/Projects/Kazoo/';
+
+            function loadPart(name, file, color, opacity) {
+                return new Promise((resolve) => {
+                    loader.load(basePath + file, (geometry) => {
+                        const material = new THREE.MeshStandardMaterial({
+                            color,
+                            roughness: 0.55,
+                            metalness: 0.06,
+                            transparent: opacity < 1,
+                            opacity: opacity
+                        });
+                        const mesh = new THREE.Mesh(geometry, material);
+                        group.add(mesh);
+                        parts[name] = mesh;
+                        resolve();
+                    });
+                });
+            }
+
+            Promise.all([
+                loadPart('base', 'kazooA10_1.stl', 0xAACDD3, 1),
+                loadPart('slide', 'kazooA10_2.stl', 0x00687A, 1),
+                loadPart('cover', 'kazooB2.stl', 0xE3EEF0, 0.92)
+            ]).then(() => {
+                // 部品の長さ方向(モデルのZ軸)を画面の横方向に見せる
+                group.rotation.y = Math.PI / 2;
+
+                const box = new THREE.Box3().setFromObject(group);
+                const center = box.getCenter(new THREE.Vector3());
+                group.position.sub(center);
+
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+
+                camera.position.set(maxDim * 0.9, maxDim * 0.6, maxDim * 1.15);
+                controls.target.set(0, 0, 0);
+                controls.minDistance = maxDim * 0.35;
+                controls.maxDistance = maxDim * 3.5;
+                controls.update();
+
+                loadingEl.style.display = 'none';
+                animate();
+            });
+
+            function resize() {
+                const w = wrapper.clientWidth;
+                const h = wrapper.clientHeight;
+                if (w === 0 || h === 0) return;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h, false);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+
+            const slider = document.getElementById('explode-slider');
+            slider.addEventListener('input', () => {
+                const t = Number(slider.value) / 100;
+                if (parts.slide) parts.slide.position.z = t * 70;
+                if (parts.cover) {
+                    parts.cover.position.z = t * 70;
+                    parts.cover.position.y = -t * 16;
+                }
+            });
+
+            document.querySelectorAll('.part-toggle').forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    const part = parts[checkbox.dataset.part];
+                    if (part) part.visible = checkbox.checked;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

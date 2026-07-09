@@ -81,6 +81,66 @@ body{
 .header-nav a:hover {
   color: var(--llf-primary);
 }
+
+/* Project ドロップダウン（BREMONS / ID） */
+.header-nav li.has-dropdown {
+  position: relative;
+}
+.header-nav .dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.header-nav .caret {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--llf-black);
+  transition: transform 0.2s, border-top-color 0.2s;
+}
+.header-nav .dropdown-toggle:hover .caret {
+  border-top-color: var(--llf-primary);
+}
+.header-nav li.has-dropdown.open .caret {
+  transform: rotate(180deg);
+}
+.header-nav .dropdown-menu {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--llf-white);
+  border: 1px solid var(--llf-teal-200);
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  min-width: 150px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  z-index: 1100;
+}
+.header-nav li.has-dropdown:hover .dropdown-menu,
+.header-nav li.has-dropdown.open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.header-nav .dropdown-menu li {
+  padding: 0;
+}
+.header-nav .dropdown-menu a {
+  display: block;
+  padding: 10px 20px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+.header-nav .dropdown-menu a:hover {
+  background: var(--llf-teal-100);
+}
 /* main-visual */
 .main-visual {
   margin: 0;
@@ -116,7 +176,7 @@ body{
   height: auto;      /* 高さは比率を保って自動調整 */
   object-fit: contain; /* 確実に枠内に収める */
 
-  /* ロゴ（LLF_2026.svg）はティール単色のため、黒背景のヒーローでは
+  /* ロゴ（LLF_2026.png）はティール単色のため、黒背景のヒーローでは
      filterで白抜きにして視認性を確保する（DESIGN.md 1章参照） */
   filter: brightness(0) invert(1);
 }
@@ -514,6 +574,35 @@ body{
     display: block;
     padding: 15px 0;
     font-size: 16px;
+  }
+
+  /* Project ドロップダウン（スマホ：アコーディオン表示） */
+  .header-nav .dropdown-toggle {
+    justify-content: center;
+  }
+  .header-nav .dropdown-menu {
+    position: static;
+    display: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    min-width: 0;
+    background: rgba(0, 104, 122, 0.05);
+    padding: 0;
+  }
+  .header-nav li.has-dropdown.open .dropdown-menu {
+    display: block;
+  }
+  .header-nav .dropdown-menu li {
+    border-bottom: none;
+  }
+  .header-nav .dropdown-menu a {
+    padding: 12px 0;
+    font-size: 15px;
+    color: #555;
   }
 
   /* --- メインビジュアル --- */

@@ -13,11 +13,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 // メニューボタンを押した時のアニメーション処理
                 const menuBtn = document.getElementById('menu-btn');
                 const headerNav = document.getElementById('header-nav');
-                
+                const projectDropdown = document.getElementById('project-dropdown');
+
                 if (menuBtn && headerNav) {
                     menuBtn.addEventListener('click', () => {
                         menuBtn.classList.toggle('open'); // 三本線を「×」にする
                         headerNav.classList.toggle('open'); // メニューを上から降ろす
+                        if (projectDropdown) projectDropdown.classList.remove('open'); // Projectの開閉状態をリセット
+                    });
+                }
+
+                // 「Project」クリックでBREMONS/IDのドロップダウンを開閉（PC・スマホ共通）
+                if (projectDropdown) {
+                    const dropdownToggle = projectDropdown.querySelector('.dropdown-toggle');
+                    dropdownToggle.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        projectDropdown.classList.toggle('open');
+                    });
+                    document.addEventListener('click', (e) => {
+                        if (!projectDropdown.contains(e.target)) {
+                            projectDropdown.classList.remove('open');
+                        }
                     });
                 }
             }
