@@ -29,8 +29,8 @@ const PRODUCTS = [
         image: 'assets/img/Projects/Kazoo/Kazoo.png',
         description: '分解して丸洗いできる、オリジナル膜鳴楽器。3Dプリンターで製作したパーツを自分で組み立てます。',
         detailUrl: 'kazoo.html',
-        status: 'coming-soon',
-        buyUrl: null
+        status: 'available',
+        buyUrl: 'https://llf.base.ec/items/150576996'
     },
     {
         id: 'bremons',
