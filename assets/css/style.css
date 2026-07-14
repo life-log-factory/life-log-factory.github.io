@@ -28,6 +28,17 @@ body{
   font-family: var(--llf-font-body);
   font-size: 15px;
   line-height: 1.5;
+  /* コンテンツが短いページでもフッターが必ず画面の一番下に来るようにする */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* header/footerはfetchで挿入されるプレースホルダーのdiv。
+   footer側にmargin-top:autoを付けることで、内容が少ないページでも
+   フッターが浮かず、常に画面最下部（またはコンテンツ末尾）に来る */
+#footer-placeholder {
+  margin-top: auto;
 }
 
 /* アニメーションさせたい要素の初期状態 */

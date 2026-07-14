@@ -60,8 +60,16 @@
 
         /* --- Hero --- */
         .yondle-hero {
-            text-align: center;
             padding-top: 120px;
+        }
+        .yondle-hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            align-items: center;
+            gap: 56px;
+        }
+        .yondle-hero-text {
+            text-align: left;
         }
         .yondle-hero .yondle-heading {
             font-size: clamp(2rem, 6vw, 3rem);
@@ -71,7 +79,7 @@
             line-height: 2;
             color: #C9C4B8;
             max-width: 560px;
-            margin: 0 auto 36px;
+            margin: 0 0 36px;
         }
         .yondle-hero-icon {
             width: 88px;
@@ -86,9 +94,9 @@
             color: #6E6B65;
         }
         .yondle-hero-shot {
-            width: 260px;
-            max-width: 78vw;
-            margin: 56px auto 0;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
             padding: 8px;
             background: #1C1916;
             border: 1px solid #2C2924;
@@ -317,6 +325,16 @@
             .yondle-screen-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .yondle-hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .yondle-hero-text {
+                text-align: center;
+            }
+            .yondle-hero p {
+                margin: 0 auto 36px;
+            }
         }
 
         @media (max-width: 640px) {
@@ -337,18 +355,22 @@
 
     <div class="yondle-page">
         <section class="yondle-section yondle-hero fade-in-target">
-            <img class="yondle-hero-icon" src="assets/img/Projects/Yondle/icon.png" alt="Yondle アイコン">
-            <span class="yondle-eyebrow">READING LOG, LIKE A BOOKMARK</span>
-            <h1 class="yondle-heading">読書の記録を、<br>しおりのように。</h1>
-            <p>
-                紙の本の「どこまで読んだか忘れた」をなくす、静かな読書記録アプリ。
-                書籍情報の自動取得から、進捗の記録、読書時間の計測、読了予測まで。
-                あなたの読書を、次のページへ。
-            </p>
-            <a class="yondle-btn" href="https://digital-siori.vercel.app/auth/signup" target="_blank" rel="noopener">無料ではじめる</a>
-            <p class="yondle-note">iOS / Android アプリは近日公開</p>
-            <div class="yondle-hero-shot">
-                <img src="assets/img/Projects/Yondle/shelf.jpg" alt="Yondle 本棚画面">
+            <div class="yondle-hero-grid">
+                <div class="yondle-hero-text">
+                    <img class="yondle-hero-icon" src="assets/img/Projects/Yondle/icon.png" alt="Yondle アイコン">
+                    <span class="yondle-eyebrow">READING LOG, LIKE A BOOKMARK</span>
+                    <h1 class="yondle-heading">読書の記録を、<br>しおりのように。</h1>
+                    <p>
+                        紙の本の「どこまで読んだか忘れた」をなくす、静かな読書記録アプリ。
+                        書籍情報の自動取得から、進捗の記録、読書時間の計測、読了予測まで。
+                        あなたの読書を、次のページへ。
+                    </p>
+                    <a class="yondle-btn" href="https://digital-siori.vercel.app/auth/signup" target="_blank" rel="noopener">無料ではじめる</a>
+                    <p class="yondle-note">iOS / Android アプリは近日公開</p>
+                </div>
+                <div class="yondle-hero-shot">
+                    <img src="assets/img/Projects/Yondle/shelf.jpg" alt="Yondle 本棚画面">
+                </div>
             </div>
         </section>
 
