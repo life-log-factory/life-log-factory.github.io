@@ -85,6 +85,21 @@
             font-size: 0.82rem;
             color: #6E6B65;
         }
+        .yondle-hero-shot {
+            width: 260px;
+            max-width: 78vw;
+            margin: 56px auto 0;
+            padding: 8px;
+            background: #1C1916;
+            border: 1px solid #2C2924;
+            border-radius: 34px;
+            box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
+        }
+        .yondle-hero-shot img {
+            width: 100%;
+            display: block;
+            border-radius: 28px;
+        }
 
         /* --- ボタン --- */
         .yondle-btn {
@@ -173,8 +188,8 @@
         }
         .yondle-screen-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 32px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
         }
         .yondle-screen img {
             width: 100%;
@@ -208,14 +223,7 @@
             text-align: center;
         }
         .yondle-pro .yondle-heading {
-            font-size: clamp(1.5rem, 4vw, 1.9rem);
-            margin-bottom: 6px;
-        }
-        .yondle-pro-sub {
-            font-family: "Cormorant Garamond", Georgia, serif;
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            color: #9A968F;
+            font-size: clamp(1.6rem, 4vw, 2.1rem);
             margin-bottom: 24px;
         }
         .yondle-pro p.yondle-pro-desc {
@@ -305,6 +313,12 @@
             opacity: 0.9;
         }
 
+        @media (max-width: 860px) {
+            .yondle-screen-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 640px) {
             .yondle-feature-list {
                 grid-template-columns: 1fr;
@@ -333,6 +347,9 @@
             </p>
             <a class="yondle-btn" href="https://digital-siori.vercel.app/auth/signup" target="_blank" rel="noopener">無料ではじめる</a>
             <p class="yondle-note">iOS / Android アプリは近日公開</p>
+            <div class="yondle-hero-shot">
+                <img src="assets/img/Projects/Yondle/shelf.jpg" alt="Yondle 本棚画面">
+            </div>
         </section>
 
         <section class="yondle-section yondle-band">
@@ -440,8 +457,8 @@
         </section>
 
         <section class="yondle-section yondle-pro fade-in-target">
-            <h2 class="yondle-heading">YONDLE PRO</h2>
-            <p class="yondle-pro-sub">もっと読む人のために</p>
+            <span class="yondle-eyebrow">YONDLE PRO</span>
+            <h2 class="yondle-heading">もっと読む人のために</h2>
             <p class="yondle-pro-desc">
                 基本機能はすべて無料でお使いいただけます。本棚の冊数やタグ、
                 セッション履歴を無制限にし、統計を全期間さかのぼれる Yondle Pro もご用意しています。
