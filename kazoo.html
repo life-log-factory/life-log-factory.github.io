@@ -71,6 +71,32 @@
             margin: 0 auto;
         }
 
+        .kazoo-buy-btn {
+            display: inline-block;
+            background: var(--llf-primary);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 16px 48px;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(0, 104, 122, 0.25);
+            transition: transform 0.15s, opacity 0.2s;
+        }
+        .kazoo-buy-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+        .kazoo-buy-btn-disabled {
+            background: #eee;
+            color: #999;
+            box-shadow: none;
+        }
+        .kazoo-buy-btn-disabled:hover {
+            transform: none;
+            opacity: 1;
+        }
+
         /* --- スクロール連動の3Dシネマティック --- */
         #kazoo-scrolly {
             position: relative;
@@ -188,11 +214,28 @@
         </div>
     </section>
 
+    <section class="kazoo-section" style="text-align: center; padding-top: 0;">
+        <div id="kazoo-buy-area"></div>
+    </section>
+
     <div class="fade-in-target" style="max-width: 900px; margin: 0 auto; padding: 0 20px 60px; text-align: right;">
         <a href="index.html" class="more-link">>>Home</a>
     </div>
 
     <div id="footer-placeholder"></div>
+    <script src="./assets/js/products-data.js"></script>
+    <script>
+        (function () {
+            const kazoo = PRODUCTS.find((p) => p.id === 'kazoo');
+            const area = document.getElementById('kazoo-buy-area');
+            if (!kazoo || !area) return;
+            if (kazoo.status === 'available' && kazoo.buyUrl) {
+                area.innerHTML = `<a class="kazoo-buy-btn" href="${kazoo.buyUrl}" target="_blank" rel="noopener">購入はこちらから（¥${kazoo.price.toLocaleString('ja-JP')}）</a>`;
+            } else {
+                area.innerHTML = `<span class="kazoo-buy-btn kazoo-buy-btn-disabled">準備中</span>`;
+            }
+        })();
+    </script>
     <script src="./assets/js/script.js" defer></script>
 
     <script type="importmap">

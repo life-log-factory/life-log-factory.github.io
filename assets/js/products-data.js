@@ -25,7 +25,7 @@ const PRODUCTS = [
         name: 'Kazoo',
         type: 'physical',
         tags: ['グッズ', '楽器', '3Dプリント'],
-        price: 500,
+        price: 550,
         image: 'assets/img/Projects/Kazoo/Kazoo.png',
         description: '分解して丸洗いできる、オリジナル膜鳴楽器。3Dプリンターで製作したパーツを自分で組み立てます。',
         detailUrl: 'kazoo.html',
