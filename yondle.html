@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/sanitize.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPMincho:wght@400;500;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Shippori+Mincho:wght@400;500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>Yondle - LIFE LOG Factory</title>
+    <meta name="description" content="読書の記録を、しおりのように。LIFE LOG Factoryメンバーが開発した読書記録アプリ「Yondle」のご紹介ページです。">
+    <meta property="og:site_name" content="LIFE LOG Factory">
+    <meta property="og:title" content="Yondle | LIFE LOG Factory">
+    <meta property="og:description" content="読書の記録を、しおりのように。静かな読書記録アプリ「Yondle」のご紹介ページです。">
+    <meta property="og:type" content="article">
+    <link rel="icon" href="./assets/img/LLF-img/favicon.png">
+    <link rel="apple-touch-icon" href="./assets/img/LLF-img/favicon.png">
+
+    <style>
+        /* Yondleの元サイト（https://digital-siori.vercel.app/）の配色・書体を踏襲した
+           静かな読書アプリらしいダークテーマ。このページの中だけで完結させる */
+        .yondle-page {
+            background: #141210;
+            color: #EDE9DF;
+            font-family: "Zen Kaku Gothic New", "Noto Sans JP", sans-serif;
+        }
+        .yondle-page * {
+            box-sizing: border-box;
+        }
+        .yondle-eyebrow {
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 14px;
+            letter-spacing: 3.5px;
+            color: #9A968F;
+            display: block;
+            margin-bottom: 14px;
+        }
+        .yondle-heading {
+            font-family: "Shippori Mincho", serif;
+            font-weight: 600;
+            line-height: 1.5;
+            margin: 0 0 20px;
+        }
+        .yondle-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 96px 28px;
+        }
+        .yondle-section.yondle-band {
+            max-width: none;
+            background: #1C1916;
+            border-top: 1px solid #2C2924;
+            border-bottom: 1px solid #2C2924;
+        }
+        .yondle-band-inner {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* --- Hero --- */
+        .yondle-hero {
+            text-align: center;
+            padding-top: 120px;
+        }
+        .yondle-hero .yondle-heading {
+            font-size: clamp(2rem, 6vw, 3rem);
+        }
+        .yondle-hero p {
+            font-size: 0.98rem;
+            line-height: 2;
+            color: #C9C4B8;
+            max-width: 560px;
+            margin: 0 auto 36px;
+        }
+        .yondle-hero-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 22px;
+            margin-bottom: 28px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        .yondle-note {
+            margin-top: 18px;
+            font-size: 0.82rem;
+            color: #6E6B65;
+        }
+
+        /* --- ボタン --- */
+        .yondle-btn {
+            display: inline-block;
+            background: #EDE9DF;
+            color: #1C1916;
+            font-family: "Zen Kaku Gothic New", sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 14px 36px;
+            border-radius: 2px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .yondle-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* --- Concept --- */
+        .yondle-concept {
+            text-align: center;
+        }
+        .yondle-concept .yondle-heading {
+            font-size: clamp(1.6rem, 4vw, 2.1rem);
+        }
+        .yondle-concept p {
+            font-size: 0.95rem;
+            line-height: 2.1;
+            color: #C9C4B8;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* --- Features --- */
+        .yondle-features-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .yondle-features-header .yondle-heading {
+            font-size: clamp(1.6rem, 4vw, 2.1rem);
+        }
+        .yondle-feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px 40px;
+        }
+        .yondle-feature {
+            display: flex;
+            gap: 20px;
+        }
+        .yondle-feature-num {
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 30px;
+            color: #6E6B65;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .yondle-feature-tag {
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: #9A968F;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .yondle-feature-title {
+            font-family: "Shippori Mincho", serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 0 0 10px;
+        }
+        .yondle-feature p {
+            font-size: 0.88rem;
+            line-height: 1.9;
+            color: #ABA69C;
+            margin: 0;
+        }
+
+        /* --- Screens --- */
+        .yondle-screens-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .yondle-screens-header .yondle-heading {
+            font-size: clamp(1.6rem, 4vw, 2.1rem);
+        }
+        .yondle-screen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+        }
+        .yondle-screen img {
+            width: 100%;
+            border-radius: 10px;
+            display: block;
+            margin-bottom: 18px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+        }
+        .yondle-screen-tag {
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: #9A968F;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .yondle-screen-title {
+            font-family: "Shippori Mincho", serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin: 0 0 6px;
+        }
+        .yondle-screen p {
+            font-size: 0.85rem;
+            color: #ABA69C;
+            margin: 0;
+        }
+
+        /* --- Pro --- */
+        .yondle-pro {
+            text-align: center;
+        }
+        .yondle-pro .yondle-heading {
+            font-size: clamp(1.5rem, 4vw, 1.9rem);
+            margin-bottom: 6px;
+        }
+        .yondle-pro-sub {
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            color: #9A968F;
+            margin-bottom: 24px;
+        }
+        .yondle-pro p.yondle-pro-desc {
+            font-size: 0.92rem;
+            line-height: 2;
+            color: #C9C4B8;
+            max-width: 600px;
+            margin: 0 auto 44px;
+        }
+        .yondle-pro-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 24px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .yondle-pro-stat {
+            border-top: 1px solid #2C2924;
+            padding-top: 16px;
+        }
+        .yondle-pro-stat-label {
+            font-size: 0.78rem;
+            color: #9A968F;
+            margin-bottom: 8px;
+        }
+        .yondle-pro-stat-value {
+            font-family: "Shippori Mincho", serif;
+            font-size: 1.3rem;
+            color: #EDE9DF;
+        }
+
+        /* --- 締めのCTA（明るいバンド） --- */
+        .yondle-final {
+            background: #EDE9DF;
+            color: #1C1916;
+            text-align: center;
+            padding: 96px 28px;
+            border-top: 1px solid #2C2924;
+        }
+        .yondle-final .yondle-heading {
+            font-size: clamp(1.6rem, 4vw, 2.1rem);
+            color: #1C1916;
+        }
+        .yondle-final .yondle-eyebrow {
+            color: #8A867E;
+        }
+        .yondle-final p.yondle-final-sub {
+            font-size: 0.95rem;
+            color: #4A463F;
+            margin-bottom: 32px;
+        }
+        .yondle-final .yondle-btn {
+            background: #1C1916;
+            color: #EDE9DF;
+        }
+        .yondle-final .yondle-note {
+            color: #8A867E;
+        }
+        .yondle-outro {
+            text-align: center;
+            padding: 40px 28px;
+            font-size: 0.78rem;
+            color: #6E6B65;
+        }
+
+        /* --- 特設ページ誘導ボタン --- */
+        .yondle-external {
+            text-align: center;
+            padding: 20px 20px 70px;
+        }
+        .yondle-external-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--llf-primary);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 16px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(0, 104, 122, 0.2);
+            transition: transform 0.15s, opacity 0.2s;
+        }
+        .yondle-external-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        @media (max-width: 640px) {
+            .yondle-feature-list {
+                grid-template-columns: 1fr;
+            }
+            .yondle-section {
+                padding: 64px 22px;
+            }
+            .yondle-hero {
+                padding-top: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="yondle-page">
+        <section class="yondle-section yondle-hero fade-in-target">
+            <img class="yondle-hero-icon" src="assets/img/Projects/Yondle/icon.png" alt="Yondle アイコン">
+            <span class="yondle-eyebrow">READING LOG, LIKE A BOOKMARK</span>
+            <h1 class="yondle-heading">読書の記録を、<br>しおりのように。</h1>
+            <p>
+                紙の本の「どこまで読んだか忘れた」をなくす、静かな読書記録アプリ。
+                書籍情報の自動取得から、進捗の記録、読書時間の計測、読了予測まで。
+                あなたの読書を、次のページへ。
+            </p>
+            <a class="yondle-btn" href="https://digital-siori.vercel.app/auth/signup" target="_blank" rel="noopener">無料ではじめる</a>
+            <p class="yondle-note">iOS / Android アプリは近日公開</p>
+        </section>
+
+        <section class="yondle-section yondle-band">
+            <div class="yondle-band-inner yondle-concept fade-in-target">
+                <span class="yondle-eyebrow">CONCEPT</span>
+                <h2 class="yondle-heading">書籍のように、静謐に。</h2>
+                <p>
+                    派手な通知も、過剰な装飾もありません。色はすべて本の表紙にゆだね、
+                    数字は書籍のページ番号のように堂々と。読書体験と地続きの、
+                    使っていることを意識させない道具を目指しました。
+                </p>
+            </div>
+        </section>
+
+        <section class="yondle-section fade-in-target">
+            <div class="yondle-features-header">
+                <span class="yondle-eyebrow">FEATURES</span>
+                <h2 class="yondle-heading">できること</h2>
+            </div>
+            <div class="yondle-feature-list">
+                <div class="yondle-feature">
+                    <span class="yondle-feature-num">01</span>
+                    <div>
+                        <span class="yondle-feature-tag">BOOKSHELF</span>
+                        <h3 class="yondle-feature-title">書影が並ぶ、デジタルの本棚</h3>
+                        <p>タイトルで検索するだけで、表紙・著者・ページ数を自動取得。手元の紙の本が、数秒で美しい本棚に並びます。</p>
+                    </div>
+                </div>
+                <div class="yondle-feature">
+                    <span class="yondle-feature-num">02</span>
+                    <div>
+                        <span class="yondle-feature-tag">DIGITAL BOOKMARK</span>
+                        <h3 class="yondle-feature-title">どこまで読んだか、忘れない</h3>
+                        <p>現在のページを記録すれば、進捗率と残りページを常に表示。栞を失くしても、読書の現在地は失われません。</p>
+                    </div>
+                </div>
+                <div class="yondle-feature">
+                    <span class="yondle-feature-num">03</span>
+                    <div>
+                        <span class="yondle-feature-tag">READING TIMER</span>
+                        <h3 class="yondle-feature-title">没入のための、読書タイマー</h3>
+                        <p>読書をはじめたら、タイマーをそっと起動。黒い画面が集中を守り、読んだ時間とページを静かに記録します。</p>
+                    </div>
+                </div>
+                <div class="yondle-feature">
+                    <span class="yondle-feature-num">04</span>
+                    <div>
+                        <span class="yondle-feature-tag">FORECAST</span>
+                        <h3 class="yondle-feature-title">「あと何分で読み終わるか」</h3>
+                        <p>あなた自身の読書ペースから、読了までの残り時間を予測。次の読書時間の計画が立てやすくなります。</p>
+                    </div>
+                </div>
+                <div class="yondle-feature">
+                    <span class="yondle-feature-num">05</span>
+                    <div>
+                        <span class="yondle-feature-tag">READING RECORD</span>
+                        <h3 class="yondle-feature-title">積み重ねが見える、読書手帖</h3>
+                        <p>累計読書時間、読了冊数、読んだページ数、連続読書日数。あなたの読書が、確かな記録として残ります。</p>
+                    </div>
+                </div>
+                <div class="yondle-feature">
+                    <span class="yondle-feature-num">06</span>
+                    <div>
+                        <span class="yondle-feature-tag">MEMO &amp; TAGS</span>
+                        <h3 class="yondle-feature-title">メモ・評価・タグで、自分だけの書斎に</h3>
+                        <p>心に残った一文のメモ、読み終えた本の評価とレビュー、タグでの整理。再読の記録にも対応しています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="yondle-section yondle-band">
+            <div class="yondle-band-inner fade-in-target">
+                <div class="yondle-screens-header">
+                    <span class="yondle-eyebrow">SCREENS</span>
+                    <h2 class="yondle-heading">画面</h2>
+                </div>
+                <div class="yondle-screen-grid">
+                    <div class="yondle-screen">
+                        <img src="assets/img/Projects/Yondle/shelf.jpg" alt="本棚 画面">
+                        <span class="yondle-screen-tag">LIBRARY</span>
+                        <h3 class="yondle-screen-title">本棚</h3>
+                        <p>書影のグリッドと読書中の本</p>
+                    </div>
+                    <div class="yondle-screen">
+                        <img src="assets/img/Projects/Yondle/detail.jpg" alt="書籍詳細 画面">
+                        <span class="yondle-screen-tag">DETAIL</span>
+                        <h3 class="yondle-screen-title">書籍詳細</h3>
+                        <p>進捗と読書の現在地</p>
+                    </div>
+                    <div class="yondle-screen">
+                        <img src="assets/img/Projects/Yondle/timer.jpg" alt="読書タイマー 画面">
+                        <span class="yondle-screen-tag">NOW READING</span>
+                        <h3 class="yondle-screen-title">読書タイマー</h3>
+                        <p>没入の黒い画面</p>
+                    </div>
+                    <div class="yondle-screen">
+                        <img src="assets/img/Projects/Yondle/stats.jpg" alt="読書手帖 画面">
+                        <span class="yondle-screen-tag">STATS</span>
+                        <h3 class="yondle-screen-title">読書手帖</h3>
+                        <p>積み重ねの統計</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="yondle-section yondle-pro fade-in-target">
+            <h2 class="yondle-heading">YONDLE PRO</h2>
+            <p class="yondle-pro-sub">もっと読む人のために</p>
+            <p class="yondle-pro-desc">
+                基本機能はすべて無料でお使いいただけます。本棚の冊数やタグ、
+                セッション履歴を無制限にし、統計を全期間さかのぼれる Yondle Pro もご用意しています。
+            </p>
+            <div class="yondle-pro-stats">
+                <div class="yondle-pro-stat">
+                    <div class="yondle-pro-stat-label">本棚の冊数</div>
+                    <div class="yondle-pro-stat-value">無制限</div>
+                </div>
+                <div class="yondle-pro-stat">
+                    <div class="yondle-pro-stat-label">タグ</div>
+                    <div class="yondle-pro-stat-value">無制限</div>
+                </div>
+                <div class="yondle-pro-stat">
+                    <div class="yondle-pro-stat-label">セッション履歴</div>
+                    <div class="yondle-pro-stat-value">無制限</div>
+                </div>
+                <div class="yondle-pro-stat">
+                    <div class="yondle-pro-stat-label">統計の表示期間</div>
+                    <div class="yondle-pro-stat-value">全期間</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="yondle-final fade-in-target">
+            <span class="yondle-eyebrow">START READING</span>
+            <h2 class="yondle-heading">あなたの読書を、次のページへ。</h2>
+            <p class="yondle-final-sub">メールアドレスだけで登録できます</p>
+            <a class="yondle-btn" href="https://digital-siori.vercel.app/auth/signup" target="_blank" rel="noopener">無料ではじめる</a>
+        </section>
+
+        <div class="yondle-outro">Yondle　・　&copy; 2026 Yondle</div>
+
+        <div class="yondle-external fade-in-target">
+            <a class="yondle-external-btn" href="https://digital-siori.vercel.app/" target="_blank" rel="noopener">
+                専用ページ（特設ページ）はこちら 🔗
+            </a>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="./assets/js/script.js" defer></script>
+</body>
+</html>

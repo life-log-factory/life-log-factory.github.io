@@ -43,5 +43,17 @@ const PRODUCTS = [
         detailUrl: 'bremons.html',
         status: 'available',
         appUrl: 'bremons/'
+    },
+    {
+        id: 'yondle',
+        name: 'Yondle',
+        type: 'app',
+        tags: ['アプリ', '読書', '無料'],
+        price: 0,
+        image: 'assets/img/Projects/Yondle/icon.png',
+        description: '読書の記録を、しおりのように。紙の本の「どこまで読んだか」を記録できる、静かな読書記録アプリ。',
+        detailUrl: 'yondle.html',
+        status: 'available',
+        appUrl: 'https://digital-siori.vercel.app/auth/signup'
     }
 ];
